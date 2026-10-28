@@ -4888,7 +4888,7 @@ async function adminAct(act, t) {
 function confirmTwice(key, msg) { if (A._cf === key && Date.now() - A._cfT < 5000) { A._cf = null; return true; } A._cf = key; A._cfT = Date.now(); toast(msg, 5000); return false; }
 document.addEventListener('click', e => { const b = e.target.closest('[data-act=rktab]'); if (b) { A.rkTab = b.dataset.k; renderRanking(); } });
 
-if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(r => { r.update(); setInterval(() => r.update(), 30 * 60 * 1000); }).catch(() => {}); let rl = !navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (rl) return; rl = true; location.reload(); })); }
+if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(r => { r.update(); setInterval(() => r.update(), 30 * 60 * 1000); }).catch(() => {}); let rl = !navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (rl) return; rl = true; location.reload(); }); }); }
 </script>
 
 </body>
