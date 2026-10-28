@@ -91,7 +91,7 @@ main{min-width:0}
 
 /* Nivel */
 .lvl-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.steps{list-style:none;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:0;margin:16px 0 6px}
+.steps{list-style:none;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;padding:0;margin:16px 0 6px}
 .steps li{height:34px;border-radius:9px;background:var(--brand-soft);display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--muted);font-size:.85rem}
 .steps li.done{background:var(--brand);color:var(--brand-ink);opacity:.55}
 .steps li.now{background:var(--brand);color:var(--brand-ink);box-shadow:0 0 0 3px var(--accent)}
@@ -336,7 +336,8 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .gbtn{display:inline-flex;align-items:center;gap:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:12px 20px;font-size:1rem;box-shadow:var(--shadow)}
 .gbtn:hover{background:var(--paper);border-color:var(--brand-2)}
 .sub2{margin:4px 0 0;font-size:.9rem;opacity:.85}
-.stages{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:6px}
+@media (min-width:1180px){.stages{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}}
 .stg{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 6px;display:grid;gap:2px;text-align:center;min-width:0}
 .stg b{font-size:.76rem;line-height:1.2;overflow-wrap:anywhere}
 .stg .sn{display:none}
@@ -394,7 +395,7 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);bo
   #nav{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--line);z-index:10;gap:0}
   .brand{display:none}
   .nvtheme,.nvsp,.nvuser{display:none}
-  .stages{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .stages{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
   .stg b{font-size:0}
   .stg .sn{display:inline;font-size:.9rem}
   .nv{min-width:0;padding:6px 2px;font-size:.64rem}
@@ -1507,6 +1508,8 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 40633|Estacionamiento de vehículos
 40634|Servicios públicos o arbitrios
 40635|Servicios administrativos o derechos
+407|Administradoras de fondos de pensiones
+408|Empresas prestadoras de servicios de salud
 409|Otros costos administrativos e intereses
 41|REMUNERACIONES Y PARTICIPACIONES POR PAGAR
 411|Remuneraciones por pagar
@@ -2297,7 +2300,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '10';
+const APP_V = '12';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -2609,7 +2612,7 @@ const LIBRO = {
   diario: '5.1 Libro Diario', compras: '8.1 Registro de Compras', ventas: '14.1 Registro de Ventas', sire: 'SIRE',
   caja: '1.1 Caja', banco: '1.2 Bancos', kardex: '13.1 Kárdex valorizado', kardexu: '12.1 Kárdex en unidades',
   mayor: '6.1 Libro Mayor', balance: 'Balance de comprobación', f621: 'PDT 621', activo: '7.1 Activos fijos',
-  costo: '10 Costo de ventas', er: 'Estado de Resultados', esf: 'Situación Financiera', efe: 'Flujo de Efectivo', ecp: 'Cambios en el Patrimonio'
+  costo: '10 Costo de ventas', er: 'Estado de Resultados', esf: 'Situación Financiera', efe: 'Flujo de Efectivo', ecp: 'Cambios en el Patrimonio', planilla: 'Planilla de remuneraciones', plares: 'Resumen de planilla'
 };
 const OPNAME = {
   compra_merc: 'Compra de mercadería', venta_merc: 'Venta de mercadería', compra_serv: 'Servicio recibido', rxh: 'Recibo por honorarios',
@@ -2624,6 +2627,12 @@ const REGIMEN = {
   GEN: {n: 'Régimen General', rate: 0.015, libros: ['Registro de Compras (8.1)', 'Registro de Ventas e Ingresos (14.1)', 'Libro Diario de Formato Simplificado (5.2) — hasta 300 UIT de ingresos', 'Con más de 300 UIT: Libro Diario, Mayor, Compras y Ventas; con más de 500 UIT se suma Inventarios y Balances; desde 1,700 UIT, contabilidad completa']},
 };
 const UIT = 5500;
+// Planilla (vigente desde el 01/10/2026: D.S. 015-2026-TR) y tasas SPP de octubre 2026 (SBS)
+const RMV = 1230, ASIG_FAM = 123;
+const AFP = {Habitat: 0.0147, Integra: 0.0155, Prima: 0.0160, Profuturo: 0.0169};
+const AFP_APORTE = 0.10, AFP_PRIMA = 0.0137, ONP_TASA = 0.13, ESSALUD_TASA = 0.09;
+const CARGOS = [['Asistente administrativo', 'Asistente administrativa', 94], ['Asistente contable', 'Asistente contable', 94], ['Cajero', 'Cajera', 95], ['Vendedor', 'Vendedora', 95], ['Almacenero', 'Almacenera', 94], ['Encargado de compras', 'Encargada de compras', 94]];
+const NOM_F = new Set(['Lucía', 'Rosa', 'Ana', 'Elena', 'Carmen', 'Sofía', 'Valeria', 'Gabriela', 'Mariela']);
 /* ===================== Tiempo: lotes de cada 4 horas (hora de Lima, UTC−5) ===================== */
 const H4 = 4 * 3600e3, OFF = 5 * 3600e3;
 const slotNow = () => Math.floor((Date.now() - OFF) / H4);
@@ -2899,16 +2908,34 @@ function genOp(R, mo, type, date, fmt) {
     }
     case 'planilla': {
       if (st.plaPend > 0) return null;
-      const n = R.int(2, 4), S = r2(Array.from({length: n}, () => R.int(115, 260) * 10).reduce((a, b) => a + b, 0));
-      const ess = r2(S * 0.09), onp = r2(S * 0.13), net = r2(S - onp);
+      const n = R.int(3, 4), used = new Set(), ws = [];
+      const sis = R.shuffle(['ONP', 'AFP Integra', 'AFP Prima', 'AFP Habitat', 'AFP Profuturo', 'ONP']);
+      for (let k = 0; k < n; k++) {
+        let nm, n1; do { n1 = R.pick(NOM); nm = n1 + ' ' + R.pick(APE) + ' ' + R.pick(APE); } while (used.has(nm)); used.add(nm);
+        const cg = CARGOS[R.int(0, CARGOS.length - 1)], cargo = NOM_F.has(n1) ? cg[1] : cg[0], dest = cg[2];
+        const bas = R.int(124, 260) * 10, hijos = R.chance(0.5), af = hijos ? ASIG_FAM : 0, rem = r2(bas + af);
+        const sist = sis[k], afp = sist.startsWith('AFP') ? sist.slice(4) : '';
+        const ap = r2(rem * (afp ? AFP_APORTE : ONP_TASA)), pr = afp ? r2(rem * AFP_PRIMA) : 0, cm = afp ? r2(rem * AFP[afp]) : 0;
+        const desc = r2(ap + pr + cm), net = r2(rem - desc), ess = r2(rem * ESSALUD_TASA);
+        ws.push({nm, dni: String(R.int(40000000, 79999999)), cargo, dest, bas, hijos, af, rem, sist, afp, ap, pr, cm, desc, net, ess});
+      }
+      const T = k => r2(ws.reduce((a, w) => a + w[k], 0));
+      const S = T('rem'), ess = T('ess'), onp = r2(ws.filter(w => !w.afp).reduce((a, w) => a + w.ap, 0)), afpT = r2(ws.filter(w => w.afp).reduce((a, w) => a + w.desc, 0)), net = T('net');
+      const g94 = r2(ws.filter(w => w.dest === 94).reduce((a, w) => a + w.rem + w.ess, 0)), g95 = r2(ws.filter(w => w.dest === 95).reduce((a, w) => a + w.rem + w.ess, 0));
       st.plaPend = net;
-      op.text = `Provisionas la planilla del mes de ${n} trabajadores del área administrativa: sueldos ${money(S)}. Todos aportan a la ONP (13%) y la empresa paga ESSALUD (9%).`;
-      op.cp = {...cpBase, kind: 'pla', title: 'RESUMEN DE PLANILLA', em: co.name, emRuc: co.ruc, serie: 'Mes', num: fmtD(date).slice(3), rcLbl: 'Trabajadores', rc: String(n), rcDoc: '', items: [], tot: [['Remuneraciones', S], ['ONP 13% (retenido)', onp], ['Neto a pagar', net], ['ESSALUD 9% (aporte empleador)', ess]], note: ''};
-      op.lines = [Dl('6211', S, 'Los sueldos son gasto de personal: 6211 al Debe.'), Dl('6271', ess, 'ESSALUD lo paga la empresa: 6271 al Debe.'), Hl('4031', ess, 'ESSALUD por pagar: 4031 al Haber.'), Hl('4032', onp, 'La ONP retenida a los trabajadores se debe al Estado: 4032 al Haber.'), Hl('4111', net, 'Lo que se pagará a los trabajadores: 4111 Sueldos por pagar.'),
-        Dl('94', r2(S + ess), 'Destino: gasto administrativo → 94 (sueldos + ESSALUD).', true), Hl('791', r2(S + ess), '…con abono a la 79.', true)];
+      op.pla = {ws, S, ess, onp, afp: afpT, net, g94, g95};
+      op.text = `Provisionas la planilla del mes: ${n} trabajadores, remuneraciones ${money(S)} (incluye asignación familiar). Retenciones: ONP ${money(onp)} y AFP ${money(afpT)}. La empresa aporta ESSALUD 9% (${money(ess)}). ${g95 ? 'Los vendedores y cajeros son del área de ventas; el resto, administración.' : 'Todos son del área administrativa.'}`;
+      op.cp = {...cpBase, kind: 'pla', title: 'RESUMEN DE PLANILLA', em: co.name, emRuc: co.ruc, serie: 'Mes', num: fmtD(date).slice(3), rcLbl: 'Trabajadores', rc: String(n), rcDoc: '', items: [], tot: [['Remuneraciones', S], ['ONP 13% (retenido)', onp], ['AFP (aporte + prima + comisión, retenido)', afpT], ['Neto a pagar', net], ['ESSALUD 9% (aporte empleador)', ess]], note: ''};
+      op.lines = [Dl('6211', S, 'Las remuneraciones (básico + asignación familiar) son gasto de personal: 6211 al Debe.'), Dl('6271', ess, 'ESSALUD lo paga la empresa: 6271 al Debe.'), Hl('4031', ess, 'ESSALUD por pagar: 4031 al Haber.')];
+      if (onp) op.lines.push(Hl('4032', onp, 'La ONP retenida a los trabajadores se debe al Estado: 4032 al Haber.'));
+      if (afpT) op.lines.push(Hl('407', afpT, 'Lo retenido para las AFP (aporte, prima y comisión) se les debe: 407 al Haber.'));
+      op.lines.push(Hl('4111', net, 'Lo que se pagará a los trabajadores: 4111 Sueldos por pagar.'));
+      if (g94) op.lines.push(Dl('94', g94, 'Destino: personal administrativo → 94 (remuneraciones + ESSALUD).', true));
+      if (g95) op.lines.push(Dl('95', g95, 'Destino: personal de ventas → 95 (remuneraciones + ESSALUD).', true));
+      op.lines.push(Hl('791', r2(g94 + g95), '…con abono a la 79.', true));
       op.glosa = 'Provisión de planilla del mes';
-      op.hint = 'Planilla: 621 (sueldos) + 627 (ESSALUD) contra 4031 ESSALUD, 4032 ONP y 4111 neto.';
-      op.fp = `pl|${S}`;
+      op.hint = 'Planilla: 6211 (remuneraciones) + 6271 (ESSALUD) contra 4031 ESSALUD, 4032 ONP, 407 AFP y 4111 neto.';
+      op.fp = `pl|${ws.map(w => w.nm + w.bas).join('|')}`;
       break;
     }
     case 'pago_planilla': {
@@ -3000,10 +3027,12 @@ const INSTR = {
   banco: 'Anota la operación en el Libro Caja y Bancos – detalle de la cuenta corriente (Formato 1.2) y calcula el saldo final.',
   kardex: 'Registra el movimiento en el Registro de Inventario Permanente Valorizado (Formato 13.1), método promedio ponderado. Redondea el costo unitario a 2 decimales.',
   kardexu: 'Registra el movimiento en el Registro de Inventario Permanente en Unidades Físicas (Formato 12.1).',
+  planilla: 'Completa la línea del trabajador en la planilla de remuneraciones del mes.',
 };
 
 function caseFromOp(op, fmt, co) {
   const c = {fmt, op: op.type, title: OPNAME[op.type], date: op.date, text: op.text, instr: INSTR[fmt], cp: op.cp, hint: op.hint, fp: op.fp, glosa: op.glosa};
+  if (fmt === 'planilla') return null;
   if (fmt === 'diario') { c.kind = 'diario'; c.lines = op.lines.map(l => ({c: l.c, d: l.d, h: l.h, why: l.why, dest: l.dest})); return c; }
   c.kind = 'grid'; const fl = {}; let tbl;
   if (fmt === 'compras' || fmt === 'ventas') {
@@ -3414,16 +3443,23 @@ function solCompact(c, destino) {
   if (c.kind === 'diario') return {L: c.lines.filter(l => destino || !l.dest).map(l => [l.c, l.d, l.h])};
   const o = {}; for (const [k, f] of Object.entries(c.fields)) o[k] = f.v; return o;
 }
-/* ===================== Ciclo contable completo de una empresa (20 operaciones → 7 etapas) ===================== */
+/* ===================== Ciclo contable completo de una empresa (20 operaciones → 10 etapas) ===================== */
 const STAGES = [
-  {n: 1, t: 'Libro Diario', d: 'Registra las 20 operaciones del mes (Formato 5.1)'},
-  {n: 2, t: 'Compras y Ventas', d: 'Pasa los comprobantes a los formatos 8.1 y 14.1'},
-  {n: 3, t: 'Caja y Bancos', d: 'Movimientos de efectivo y cuenta corriente (1.1 y 1.2)'},
-  {n: 4, t: 'Kárdex', d: 'Inventario permanente valorizado (13.1), promedio ponderado'},
-  {n: 5, t: 'Libro Mayor', d: 'Mayoriza las cuentas principales (6.1)'},
-  {n: 6, t: 'Balance de comprobación', d: 'Sumas y saldos de todas las cuentas'},
-  {n: 7, t: 'Cierre y EEFF', d: 'PDT 621, activos fijos, costo de ventas y estados financieros'},
+  {n: 1, t: 'Libro Diario', c: 'Diario', d: 'Registra las 20 operaciones del mes (Formato 5.1)'},
+  {n: 2, t: 'Registro de Compras', c: 'Compras', d: 'Pasa las facturas y recibos de compra al Formato 8.1'},
+  {n: 3, t: 'Registro de Ventas', c: 'Ventas', d: 'Pasa las facturas y boletas de venta al Formato 14.1'},
+  {n: 4, t: 'Libro Caja', c: 'Caja', d: 'Movimientos del efectivo (Formato 1.1)'},
+  {n: 5, t: 'Libro Bancos', c: 'Bancos', d: 'Movimientos de la cuenta corriente (Formato 1.2)'},
+  {n: 6, t: 'Kárdex', c: 'Kárdex', d: 'Inventario permanente valorizado (13.1), promedio ponderado'},
+  {n: 7, t: 'Planilla', c: 'Planilla', d: 'Remuneraciones, ONP/AFP, ESSALUD y neto a pagar de cada trabajador'},
+  {n: 8, t: 'Libro Mayor', c: 'Mayor', d: 'Mayoriza las cuentas principales (6.1)'},
+  {n: 9, t: 'Balance de comprobación', c: 'Balance', d: 'Sumas y saldos de todas las cuentas'},
+  {n: 10, t: 'Cierre y EEFF', c: 'Cierre y EEFF', d: 'PDT 621, activos fijos, costo de ventas y estados financieros'},
 ];
+const NST = STAGES.length;
+// etapa de cada formato (también reubica las empresas creadas con el esquema anterior de 7 etapas)
+const STG_FMT = {diario: 1, compras: 2, ventas: 3, caja: 4, banco: 5, kardex: 6, planilla: 7, plares: 7, mayor: 8, balance: 9};
+function stgOf(fmt) { return STG_FMT[fmt] || 10; }
 const CYCLE_PLAN = ['compra_merc', 'compra_merc', 'venta_merc:F', 'compra_serv', 'venta_merc:B', 'cobro_banco', 'pago_prov', 'compra_merc', 'venta_merc:F', 'gasto_caja',
   'rxh', 'venta_merc:B', 'deposito', 'compra_merc', 'venta_merc:F', 'compra_serv', 'cobro_banco', 'pago_prov', 'planilla', 'depreciacion'];
 const FALLBACK_OPS = ['compra_serv', 'compra_merc', 'gasto_caja', 'aporte', 'rxh'];
@@ -3456,11 +3492,47 @@ const N2 = (v, why, l, k = 'calculo', o = {}) => F('n', v, why, {l, k, tol: 0.02
 
 function stageCasesFromOps(mo, ops) {
   const out = [];
-  const push = (c, st) => { if (c) { c.stage = st; out.push(c); } };
-  ops.forEach(op => push(caseFromOp(op, 'diario', mo.co), 1));
-  ops.forEach(op => { if (op.reg) push(caseFromOp(op, ['venta_merc', 'nota_credito'].includes(op.type) ? 'ventas' : 'compras', mo.co), 2); });
-  ops.forEach(op => { if (op.cash) { if (op.cash.caja) push(caseFromOp(op, 'caja', mo.co), 3); if (op.cash.banco) push(caseFromOp(op, 'banco', mo.co), 3); } });
-  ops.forEach(op => { if (op.kx) push(caseFromOp(op, 'kardex', mo.co), 4); });
+  const push = c => { if (c) { c.stage = stgOf(c.fmt); out.push(c); } };
+  ops.forEach(op => push(caseFromOp(op, 'diario', mo.co)));
+  ops.forEach(op => { if (op.reg && !['venta_merc', 'nota_credito'].includes(op.type)) push(caseFromOp(op, 'compras', mo.co)); });
+  ops.forEach(op => { if (op.reg && ['venta_merc', 'nota_credito'].includes(op.type)) push(caseFromOp(op, 'ventas', mo.co)); });
+  ops.forEach(op => { if (op.cash && op.cash.caja) push(caseFromOp(op, 'caja', mo.co)); });
+  ops.forEach(op => { if (op.cash && op.cash.banco) push(caseFromOp(op, 'banco', mo.co)); });
+  ops.forEach(op => { if (op.kx) push(caseFromOp(op, 'kardex', mo.co)); });
+  ops.forEach(op => { if (op.pla) planillaCases(mo, op).forEach(push); });
+  return out;
+}
+/* Planilla de remuneraciones: una línea por trabajador + el resumen que va al Diario */
+function planillaCases(mo, op) {
+  const P = op.pla, out = [], co = mo.co;
+  P.ws.forEach((w, i) => {
+    const c = {fmt: 'planilla', op: 'planilla', date: op.date, kind: 'grid', cp: null, fields: {}, title: 'Planilla: ' + w.nm}, fl = c.fields;
+    fl.af = N2(w.af, w.hijos ? `Tiene hijos menores: asignación familiar = 10% de la RMV (S/ ${nf(RMV)}) = S/ ${nf(ASIG_FAM)}.` : 'No tiene hijos menores de edad: no le corresponde asignación familiar (0).', 'Asignación familiar', 'calculo', {z: true});
+    fl.rem = N2(w.rem, 'Total remuneración = básico + asignación familiar.', 'Total remuneración', 'calculo');
+    fl.ap = N2(w.ap, w.afp ? 'AFP: aporte obligatorio = 10% de la remuneración.' : 'ONP: aporte = 13% de la remuneración.', w.afp ? 'Aporte AFP 10%' : 'ONP 13%', 'calculo');
+    fl.pr = N2(w.pr, w.afp ? 'Prima de seguro AFP = 1.37% de la remuneración.' : 'Los afiliados a la ONP no pagan prima de seguro (0).', 'Prima de seguro AFP', 'calculo', {z: true});
+    fl.cm = N2(w.cm, w.afp ? `Comisión sobre flujo de AFP ${w.afp} = ${(AFP[w.afp] * 100).toFixed(2)}% de la remuneración.` : 'Los afiliados a la ONP no pagan comisión (0).', 'Comisión AFP', 'calculo', {z: true});
+    fl.desc = N2(w.desc, 'Total descuentos = ' + (w.afp ? 'aporte + prima + comisión.' : 'ONP.'), 'Total descuentos', 'calculo');
+    fl.net = N2(w.net, 'Neto a pagar = total remuneración − total descuentos.', 'Neto a pagar', 'calculo');
+    fl.ess = N2(w.ess, 'ESSALUD = 9% de la remuneración; lo paga la empresa, no se descuenta al trabajador.', 'ESSALUD 9% (empleador)', 'calculo');
+    c.instr = INSTR.planilla;
+    c.text = `${w.nm} (DNI ${w.dni}), ${w.cargo}. Sueldo básico ${money(w.bas)}. ${w.hijos ? 'Tiene hijos menores de edad.' : 'No tiene hijos.'} Sistema de pensiones: ${w.afp ? `AFP ${w.afp} (aporte 10%, prima de seguro 1.37%, comisión sobre flujo ${(AFP[w.afp] * 100).toFixed(2)}%)` : 'ONP (13%)'}. RMV vigente: ${money(RMV)}. No supera 7 UIT al año, así que no hay retención de 5ta categoría.`;
+    c.tbl = {groups: [['Trabajador', 3], ['Ingresos', 3], ['Descuentos', 4], ['', 1], ['Aportes', 1]],
+      cols: ['Apellidos y nombres', 'Cargo', 'Sistema', 'Básico', 'Asig. familiar', 'Total remuneración', w.afp ? 'Aporte 10%' : 'ONP 13%', 'Prima seguro', 'Comisión', 'Total descuentos', 'Neto a pagar', 'ESSALUD 9%'],
+      rows: [[w.nm, w.cargo, w.sist, {s: nf(w.bas), c: 'num'}, {f: 'af'}, {f: 'rem'}, {f: 'ap'}, {f: 'pr'}, {f: 'cm'}, {f: 'desc'}, {f: 'net'}, {f: 'ess'}]]};
+    c.hint = w.afp ? 'AFP: 10% + 1.37% + comisión, todo sobre la remuneración total. ESSALUD 9% lo paga la empresa.' : 'ONP: 13% de la remuneración total. ESSALUD 9% lo paga la empresa.';
+    c.fp = 'pw|' + w.nm + '|' + w.bas; out.push(c);
+  });
+  const c = {fmt: 'plares', op: 'planilla', date: op.date, kind: 'grid', cp: null, fields: {}, title: 'Resumen de la planilla del mes'}, fl = c.fields;
+  fl.S = N2(P.S, 'Suma del total remuneración de todos los trabajadores (va a la 6211).', 'Total remuneraciones (6211)', 'calculo');
+  fl.ess = N2(P.ess, 'Suma del ESSALUD de cada trabajador (6271 al Debe y 4031 al Haber).', 'ESSALUD por pagar (4031)', 'calculo');
+  fl.onp = N2(P.onp, 'Suma de la ONP retenida (4032).', 'ONP por pagar (4032)', 'calculo', {z: true});
+  fl.afp = N2(P.afp, 'Suma de todo lo retenido para las AFP: aportes + primas + comisiones (407).', 'AFP por pagar (407)', 'calculo', {z: true});
+  fl.net = N2(P.net, 'Suma de los netos a pagar (4111).', 'Neto a pagar (4111)', 'calculo');
+  c.instr = 'Totaliza la planilla del mes: estos montos son los que van al asiento de planilla del Libro Diario.';
+  c.text = `${co.name}: planilla de ${mesLbl(mo.id)} con ${P.ws.length} trabajadores. Suma las columnas de la planilla que acabas de llenar.`;
+  c.tbl = {cols: ['Concepto', 'S/'], rows: [[{s: 'Total remuneraciones'}, {f: 'S'}], [{s: 'ESSALUD 9%'}, {f: 'ess'}], [{s: 'ONP retenida'}, {f: 'onp'}], [{s: 'AFP retenida (aporte + prima + comisión)'}, {f: 'afp'}], [{s: 'Neto a pagar a los trabajadores', c: 'b'}, {f: 'net'}]]};
+  c.hint = 'Comprueba: total remuneraciones − ONP − AFP = neto a pagar.'; c.fp = 'pres'; out.push(c);
   return out;
 }
 
@@ -3523,7 +3595,7 @@ function closeCases(mo, ops) {
     fl.c301 = N1(c100, 'Casilla 301: ingresos netos del mes.', '301 Ingresos netos', 'pdt');
     fl.c312 = N1(Math.round(c100 * rate), `Pago a cuenta del ${REGIMEN[reg].n}: ingresos netos × ${(rate * 100).toLocaleString('en-US')}%.`, '312 Pago a cuenta de renta', 'renta');
     c.instr = 'Llena el Formulario Virtual 621 con los datos de tus Registros de Compras y Ventas de este mes (casillas en soles enteros).';
-    c.text = `${co.name} · ${REGIMEN[reg].n} · período ${mesLbl(mo.id)}. Usa los totales de los registros que llenaste en la etapa 2 (aquí van las bases correctas: ventas ${money(vb)}, compras ${money(cb)}).`;
+    c.text = `${co.name} · ${REGIMEN[reg].n} · período ${mesLbl(mo.id)}. Usa los totales de los registros que llenaste en las etapas 2 y 3 (aquí van las bases correctas: ventas ${money(vb)}, compras ${money(cb)}).`;
     c.tbl = {cols: ['Casilla', 'Monto (S/)'], rows: Object.keys(fl).map(k => [fl[k].l, {f: k}])};
     c.hint = 'IGV: 101 − 108 = 140. Renta: ingresos netos × tasa del régimen.'; c.fp = '621'; out.push(c);
   }
@@ -3618,9 +3690,9 @@ function newCycleData(seed, regime, M) {
   const R = rngFrom('ops|' + seed);
   const ops = genCycleOps(R, mo);
   const cases = stageCasesFromOps(mo, ops);
-  ['1041', '101', '1212', '4212', '2011', '40111', '7012'].forEach(code => { const m = mayorCase(mo, ops, code); if (m) { m.stage = 5; cases.push(m); } });
-  const b = balanceCase(mo, ops); b.stage = 6; cases.push(b);
-  closeCases(mo, ops).forEach(c => { c.stage = 7; cases.push(c); });
+  ['1041', '101', '1212', '4212', '2011', '40111', '7012'].forEach(code => { const m = mayorCase(mo, ops, code); if (m) { m.stage = stgOf('mayor'); cases.push(m); } });
+  const b = balanceCase(mo, ops); b.stage = stgOf('balance'); cases.push(b);
+  closeCases(mo, ops).forEach(c => { c.stage = NST; cases.push(c); });
   cases.forEach((c, i) => { c.n = i + 1; c.fp = fpHash(c.fp + '|' + seed); });
   // la empresa del ciclo: datos fijos + saldos de apertura (para "Mi empresa")
   mo.state.log = [];
@@ -3747,7 +3819,7 @@ async function saveProfile() { A.P.ts = Date.now(); await Store.set(PATH.prof(),
 /* ===================== Empresas (ciclos) ===================== */
 function newIndex(b) {
   return {id: b.id, kind: b.kind, ts: b.ts, month: b.month, date: b.date, hour: b.hour || '', n: b.cases.length, cycleNo: b.cycleNo || 0,
-    emp: b.emp, summ: b.cases.map(c => ({f: c.fmt, o: c.op, t: c.title, d: c.date, st: c.stage || 0, g: c.glosa || '', doc: c.cp ? (c.cp.serie + '-' + c.cp.num) : '', rs: c.reg ? c.reg.rs : ''})), ans: {}, done: 0, okc: 0};
+    emp: b.emp, summ: b.cases.map(c => ({f: c.fmt, o: c.op, t: c.title, d: c.date, st: b.kind === 'ciclo' ? stgOf(c.fmt) : (c.stage || 0), g: c.glosa || '', doc: c.cp ? (c.cp.serie + '-' + c.cp.num) : '', rs: c.reg ? c.reg.rs : ''})), ans: {}, done: 0, okc: 0};
 }
 function empOf(mo) { return {id: mo.id, regime: mo.regime, co: mo.co, open: mo.open, c621: null}; }
 function activeCycle() { return A.idx.filter(x => x.kind === 'ciclo').sort((a, b) => b.ts - a.ts).find(x => !x.fin) || null; }
@@ -3767,13 +3839,16 @@ async function ensureCycle(force) {
     A.P.cycleN = n; await saveProfile();
   } finally { A.busy = false; }
 }
-async function loadIdx(n = A.histN) { A.idx = await Store.list(PATH.colI(), {limit: n}); }
-async function getLote(id) { if (!A.lotes[id]) A.lotes[id] = await Store.get(PATH.b(id)); return A.lotes[id]; }
-async function getIndex(id) { let li = A.idx.find(x => x.id === id); if (!li) { li = await Store.get(PATH.i(id)); if (li) A.idx.push(li); } return li; }
+// empresas creadas con el esquema de 7 etapas: cada caso se reubica en su etapa nueva según su libro
+function restageIdx(li) { if (li && li.kind === 'ciclo' && li.summ) li.summ.forEach(x => { x.st = stgOf(x.f); }); return li; }
+function restageLote(b) { if (b && b.kind === 'ciclo' && b.cases) b.cases.forEach(c => { c.stage = stgOf(c.fmt); }); return b; }
+async function loadIdx(n = A.histN) { A.idx = (await Store.list(PATH.colI(), {limit: n})).map(restageIdx); }
+async function getLote(id) { if (!A.lotes[id]) A.lotes[id] = restageLote(await Store.get(PATH.b(id))); return A.lotes[id]; }
+async function getIndex(id) { let li = A.idx.find(x => x.id === id); if (!li) { li = restageIdx(await Store.get(PATH.i(id))); if (li) A.idx.push(li); } return li; }
 function stageOf(li, n) { return (li.summ[n - 1] || {}).st || 0; }
 function stageInfo(li) {
   const per = {}; li.summ.forEach((s, i) => { const st = s.st || 0; const o = per[st] || (per[st] = {n: 0, done: 0, ok: 0}); o.n++; const a = li.ans[i + 1]; if (a && !a.draft) { o.done++; if (a.ok) o.ok++; } });
-  let cur = 7; for (let s = 1; s <= 7; s++) if (per[s] && per[s].done < per[s].n) { cur = s; break; }
+  let cur = NST; for (let s = 1; s <= NST; s++) if (per[s] && per[s].done < per[s].n) { cur = s; break; }
   return {per, cur};
 }
 /* Ranking: resumen público de cada estudiante */
@@ -3846,7 +3921,7 @@ function renderHome() {
     <div class="lote-h"><div><p class="eyebrow">Empresa ${li.cycleNo} · ${mesLbl(li.emp.id)}</p><h2>${esc(li.emp.co.name)}</h2><p class="sub2">RUC ${li.emp.co.ruc} · ${esc(li.emp.co.giro)}</p></div>
     <div class="nums"><b>${li.done}/${li.n}</b><span>${li.okc} correctos</span></div></div>
     ${stepsHtml(si)}
-    <p class="sub2">Etapa ${si.cur} de 7: <b>${esc(stg.t)}</b> · ${esc(stg.d)}</p>
+    <p class="sub2">Etapa ${si.cur} de ${NST}: <b>${esc(stg.t)}</b> · ${esc(stg.d)}</p>
     <button class="btn">${li.done ? 'Continuar' : 'Empezar'}</button>
   </section>` : `<section class="card"><p>Preparando tu empresa…</p></section>`}
   <div class="grid3">
@@ -3860,7 +3935,7 @@ function showLevels() {
   const li = activeCycle(), si = li ? stageInfo(li) : {cur: 1, per: {}};
   modal(`<h3 class="mh">Etapas del ciclo contable <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3>
   <ol class="levels">${STAGES.map(s => `<li class="${s.n < si.cur ? 'done' : s.n === si.cur ? 'now' : ''}"><span>${s.n}</span><div><b>${s.t}</b><small>${s.d}</small></div></li>`).join('')}</ol>
-  <p class="mini">Cada etapa se abre al terminar la anterior. Al completar la etapa 7, llega una empresa nueva.</p>`, 'narrow');
+  <p class="mini">Cada etapa se abre al terminar la anterior. Al completar la etapa ${NST}, llega una empresa nueva.</p>`, 'narrow');
 }
 
 /* ===================== Práctica ===================== */
@@ -3905,7 +3980,7 @@ function renderLote() {
     <div class="lt"><h1>${title}</h1><p class="sub">${cyc ? `Empresa ${li.cycleNo} · ` : ''}${li.done}/${li.n} resueltos · ${li.okc} correctos</p></div>
     ${isExamOpen() ? `<div class="timer" id="timer">--:--</div>` : ''}
   </div>
-  ${cyc ? `<div class="stages" role="tablist">${STAGES.map(s => { const p = si.per[s.n] || {n: 0, done: 0}; const lock = !unlocked(s.n); return `<button role="tab" class="stg ${s.n === curSt ? 'on' : ''} ${lock ? 'lock' : ''} ${p.n && p.done === p.n ? 'fin' : ''}" data-stg="${s.n}" ${lock ? 'aria-disabled="true"' : ''}><b><span class="sn">${s.n}</span>${lock ? '🔒 ' : ''}${esc(s.t)}</b><span>${p.done}/${p.n}</span></button>`; }).join('')}</div>` : ''}
+  ${cyc ? `<div class="stages" role="tablist">${STAGES.filter(s => (si.per[s.n] || {}).n).map(s => { const p = si.per[s.n] || {n: 0, done: 0}; const lock = !unlocked(s.n); return `<button role="tab" class="stg ${s.n === curSt ? 'on' : ''} ${lock ? 'lock' : ''} ${p.n && p.done === p.n ? 'fin' : ''}" data-stg="${s.n}" ${lock ? 'aria-disabled="true"' : ''}><b><span class="sn">${s.n}</span>${lock ? '🔒 ' : ''}${esc(s.c || s.t)}</b><span>${p.done}/${p.n}</span></button>`; }).join('')}</div>` : ''}
   <div class="chips">${shown.map(c => `<button class="chip ${st(c.n)} ${c.n === A.cur ? 'cur' : ''}" data-case="${c.n}" aria-label="Caso ${c.n}">${cyc ? shown.indexOf(c) + 1 : c.n}</button>`).join('')}</div>
   ${empresaCard(A.loteMo, li)}
   ${cyc ? stageSummary(curSt) : ''}
@@ -3918,8 +3993,9 @@ function stageSummary(stn) {
   const li = A.li, p = stageInfo(li).per[stn]; const s = STAGES[stn - 1];
   if (!p) return '';
   if (p.done < p.n) return `<div class="bsum"><b>Etapa ${stn}: ${esc(s.t)}.</b> ${esc(s.d)}.</div>`;
-  return `<div class="bsum good">Etapa ${stn} terminada: <b>${p.ok} de ${p.n}</b> correctos.${stn < 7 ? ' Ya puedes pasar a la etapa ' + (stn + 1) + '.' : ''}</div>`;
+  return `<div class="bsum good">Etapa ${stn} terminada: <b>${p.ok} de ${p.n}</b> correctos.${(() => { const nx = nextStage(li, stn); return nx ? ' Ya puedes pasar a la etapa ' + nx + ': ' + esc(STAGES[nx - 1].t) + '.' : ''; })()}</div>`;
 }
+function nextStage(li, stn) { const per = stageInfo(li).per; for (let s = stn + 1; s <= NST; s++) if (per[s] && per[s].n) return s; return 0; }
 function caseByN(n) { return A.lote.cases.find(c => c.n === n); }
 
 function renderCP(cp) {
@@ -4080,8 +4156,8 @@ async function checkCycle(li, stn) {
     li.fin = true; li.finAt = Date.now(); await saveIndex(li); pushRank();
     const nota = Math.round(li.okc / li.n * 20);
     modal(`<div class="ob">${LOGO(56)}<h2>¡Terminaste el ciclo contable!</h2><p>Completaste la contabilidad de <b>${esc(li.emp.co.name)}</b> del Diario a los estados financieros.</p><p class="big">${nota}/20</p><p>${li.okc} de ${li.n} casos correctos.</p><div class="row"><button class="btn" data-act="newcycle">Empezar la siguiente empresa</button><button class="ghost" data-act="close">Revisar esta empresa</button></div></div>`, 'narrow');
-  } else if (p && p.done === p.n && stn < 7) {
-    toast(`Etapa ${stn} terminada (${p.ok}/${p.n}). Se abrió la etapa ${stn + 1}: ${STAGES[stn].t}.`, 5000);
+  } else if (p && p.done === p.n && nextStage(li, stn)) {
+    const nx = nextStage(li, stn); toast(`Etapa ${stn} terminada (${p.ok}/${p.n}). Se abrió la etapa ${nx}: ${STAGES[nx - 1].t}.`, 5000);
   }
 }
 
@@ -4094,12 +4170,12 @@ async function makeExtra(kind) {
     const fails = allAnswers().filter(x => !x.a.ok).sort((a, b) => b.a.at - a.a.at).slice(0, 40);
     if (!fails.length) { toast('Todavía no tienes errores para repasar. ¡Bien!'); return; }
     const R = rngFrom('rp' + Date.now());
-    plan = Array.from({length: 10}, () => { const x = R.pick(fails); return x.s.o && x.s.o !== 'synth' ? x.s.f + ':' + x.s.o : x.s.f; });
+    plan = Array.from({length: 10}, () => { const x = R.pick(fails); if (/^(planilla|plares)$/.test(x.s.f)) return 'diario:planilla'; return x.s.o && x.s.o !== 'synth' ? x.s.f + ':' + x.s.o : x.s.f; });
   } else {
     const ex = A.idx.find(x => x.kind === 'examen' && x.exam && !x.exam.fin);
     if (ex) return openLote(ex.id);
     const R = rngFrom('ex' + Date.now());
-    const maxSt = A.idx.some(x => x.kind === 'ciclo' && x.fin) ? 7 : (activeCycle() ? stageInfo(activeCycle()).cur : 1);
+    const LV = [0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 7], maxSt = A.idx.some(x => x.kind === 'ciclo' && x.fin) ? 7 : (activeCycle() ? LV[stageInfo(activeCycle()).cur] : 1);
     const fm = LEVELS.slice(0, maxSt).flatMap(l => l.f);
     plan = Array.from({length: 20}, () => R.pick(fm));
   }
@@ -4401,7 +4477,7 @@ async function renderMes() {
   A.mesData = {mo, items, li};
   const dia = items.filter(it => it.s.f === 'diario');
   const cnt = f => items.filter(it => it.s.f === f).length;
-  const tabs = [['resumen', 'Resumen'], ['compras', '8.1 Compras'], ['ventas', '14.1 Ventas'], ['diario', '5.1 Diario'], ['mayor', '6.1 Mayor'], ['hoja', 'Hoja de trabajo'], ['pdt', 'PDT 621'], ['eeff', 'EEFF']];
+  const tabs = [['resumen', 'Resumen'], ['compras', '8.1 Compras'], ['ventas', '14.1 Ventas'], ['planilla', 'Planilla'], ['diario', '5.1 Diario'], ['mayor', '6.1 Mayor'], ['hoja', 'Hoja de trabajo'], ['pdt', 'PDT 621'], ['eeff', 'EEFF']];
   const T = A.mesTab;
   $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Mi empresa ${li.cycleNo}${li.fin ? ' · ciclo terminado' : ''}</p><h1>${esc(mo.co.name)}</h1><p class="sub">RUC ${mo.co.ruc} · ${esc(mo.co.giro)} · período ${mesLbl(M)} (01/${M.slice(5)} al ${lastDay(M)}/${M.slice(5)}/${M.slice(0, 4)})</p></div>
     <div class="hx"><select id="mSel" aria-label="Empresa">${cycles.map(c => `<option value="${c.id}" ${c.id === li.id ? 'selected' : ''}>Empresa ${c.cycleNo} · ${esc(c.emp.co.name)}</option>`).join('')}</select>
@@ -4443,7 +4519,16 @@ function renderMesTab() {
       <div class="tw"><table class="book"><thead><tr><th>Caso</th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${L.map(it => `<tr class="click" data-hist="${it.li.id}:${it.n}"><td class="mini">${esc(it.tag)}</td>${cols.map(([k]) => `<td class="${isN(k) ? 'num' : ''} ${same(it, k) ? '' : 'badc'}">${esc(isN(k) ? (it.a.v[k] === '' || it.a.v[k] == null ? '' : nf(parseNum(it.a.v[k]) || 0)) : it.a.v[k])}</td>`).join('')}</tr>`).join('')}</tbody>
       <tfoot><tr><td colspan="7" class="b">Totales (tus registros)</td><td class="num b">${nf(tot('u', 'bi'))}</td><td class="num b">${nf(tot('u', 'igv'))}</td><td class="num b">${nf(tot('u', 'ng'))}</td><td class="num b">${nf(tot('u', 'tot'))}</td></tr>
       <tr><td colspan="7" class="b">Totales correctos</td><td class="num">${nf(tot('s', 'bi'))}</td><td class="num">${nf(tot('s', 'igv'))}</td><td class="num">${nf(tot('s', 'ng'))}</td><td class="num">${nf(tot('s', 'tot'))}</td></tr></tfoot></table></div></section>`
-      : `<p class="empty">Aún no registraste ${T === 'compras' ? 'compras' : 'ventas'} este mes. Se llenan en la etapa 2 de la empresa.</p>`;
+      : `<p class="empty">Aún no registraste ${T === 'compras' ? 'compras' : 'ventas'} este mes. Se llenan en la etapa ${T === 'compras' ? 2 : 3} de la empresa.</p>`;
+  } else if (T === 'planilla') {
+    const L = items.filter(it => it.s.f === 'planilla');
+    const cols = [['af', 'Asig. fam.'], ['rem', 'Total remun.'], ['ap', 'ONP / AFP'], ['pr', 'Prima'], ['cm', 'Comisión'], ['desc', 'Descuentos'], ['net', 'Neto'], ['ess', 'ESSALUD']];
+    const uv = (it, k) => parseNum(it.a.v[k]) || 0, sv = (it, k) => it.a.s[k] || 0;
+    const tot = (w, k) => r2(L.reduce((a, it) => a + (w === 'u' ? uv(it, k) : sv(it, k)), 0));
+    box.innerHTML = L.length ? `<section class="card"><h2>Planilla de remuneraciones del mes</h2><p class="mini">Tu planilla, trabajador por trabajador. Celdas en rojo: no coinciden con el cálculo correcto. Toca la fila para ver el caso.</p>
+      <div class="tw"><table class="book"><thead><tr><th>Trabajador</th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${L.map(it => `<tr class="click" data-hist="${it.li.id}:${it.n}"><td>${esc(String(it.s.t || '').replace(/^Planilla: /, ''))}</td>${cols.map(([k]) => `<td class="num ${Math.abs(uv(it, k) - sv(it, k)) < 0.021 ? '' : 'badc'}">${nf(uv(it, k))}</td>`).join('')}</tr>`).join('')}</tbody>
+      <tfoot><tr><td class="b">Totales (tu planilla)</td>${cols.map(([k]) => `<td class="num b">${nf(tot('u', k))}</td>`).join('')}</tr><tr><td class="b">Totales correctos</td>${cols.map(([k]) => `<td class="num">${nf(tot('s', k))}</td>`).join('')}</tr></tfoot></table></div></section>`
+      : '<p class="empty">Aún no llenaste la planilla de este mes. Se llena en la etapa 7 de la empresa.</p>';
   } else if (T === 'diario') {
     box.innerHTML = dia.length ? dia.map(it => `<section class="card asi"><div class="asi-h"><span class="st ${it.a.ok ? 'ok' : 'bad'}">${it.a.ok ? '✔' : '✘'}</span><b>${esc(it.s.g || it.s.t)}</b><button class="link" data-hist="${it.li.id}:${it.n}">${esc(it.tag)}</button></div>${linesTable(uLines(it))}</section>`).join('') : '<p class="empty">Aún no hay asientos de este mes.</p>';
   } else if (T === 'mayor') {
