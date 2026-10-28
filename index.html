@@ -14,6 +14,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
 <title>Viernes</title>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-firestore-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
@@ -108,7 +111,8 @@ main{min-width:0}
 .lote-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .nums{text-align:right}
 .nums b{font-family:var(--mono);font-size:1.25rem;display:block}
-.nums span{font-size:.8rem;color:var(--muted)}
+.nums span{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.nums{flex:none}
 .bar{height:8px;border-radius:99px;background:var(--brand-soft);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:99px;background:var(--brand-2)}
 .bar.bad i{background:var(--accent)}
@@ -162,7 +166,9 @@ button.tile:hover{border-color:var(--brand-2)}
 .cp-m b{color:var(--ink);font-weight:600}
 .cpt{width:100%;border-collapse:collapse;font-size:.86rem}
 .cpt th{text-align:left;font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--line);padding:4px 6px}
-.cpt td{padding:5px 6px;border-bottom:1px dashed var(--line);vertical-align:top;overflow-wrap:anywhere}
+.cpt td{padding:5px 6px;border-bottom:1px dashed var(--line);vertical-align:top;overflow-wrap:break-word}
+.cpt td.num,.cpt th{white-space:nowrap}
+.cpt td.num{text-align:right}
 .cp-t{justify-self:end;display:grid;gap:2px;min-width:240px}
 .cp-t div{display:flex;justify-content:space-between;gap:16px}
 .cp-t .last{border-top:1px solid var(--ink);padding-top:4px;font-weight:700}
@@ -188,6 +194,7 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .book td.in.mid input{background:var(--warn-bg);color:var(--warn);-webkit-text-fill-color:var(--warn)}
 .book .den{color:var(--muted);font-size:.82rem;min-width:10em}
 .book.diario{min-width:560px}
+.den-m{display:none;font-size:.72rem;color:var(--muted);line-height:1.2;margin-top:3px;overflow-wrap:anywhere}
 .book.compras,.book.ventas{min-width:1320px}
 .book.banco{min-width:960px}
 .book.kardex{min-width:1320px}
@@ -203,6 +210,8 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .book tr.click:hover td{background:var(--brand-soft)}
 .book.pdt td.in{min-width:8em}
 .swipe{display:none;margin:-4px 0 0}
+.nv .ls{display:none}
+.book td.in input:disabled::placeholder{color:transparent;-webkit-text-fill-color:transparent}
 .glosa{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:.85rem;color:var(--muted);padding:2px 2px 0}
 .addl{justify-self:start}
 
@@ -293,6 +302,38 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .aci{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:.86rem}
 .aci span:last-child{overflow-wrap:anywhere}
 .aci:hover,.aci.on{background:var(--brand-soft)}
+.login{display:grid;justify-items:center;text-align:center;gap:14px;padding:clamp(40px,10vh,110px) 8px;max-width:520px;margin:0 auto}
+.login h1{font-size:2.6rem}
+.gbtn{display:inline-flex;align-items:center;gap:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:12px 20px;font-size:1rem;box-shadow:var(--shadow)}
+.gbtn:hover{background:var(--paper);border-color:var(--brand-2)}
+.sub2{margin:4px 0 0;font-size:.9rem;opacity:.85}
+.stages{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.stg{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 6px;display:grid;gap:2px;text-align:center;min-width:0}
+.stg b{font-size:.76rem;line-height:1.2;overflow-wrap:anywhere}
+.stg .sn{display:none}
+.stg span{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.stg.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.stg.fin{background:var(--ok-bg)} .stg.fin span{color:var(--ok)}
+.stg.lock{opacity:.55}
+.nvuser{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:.85rem;font-weight:600;min-width:0}
+.nvuser img{width:30px;height:30px;border-radius:50%}
+.nvuser span{min-width:0;overflow-wrap:anywhere}
+.nvuser small{display:block;color:var(--accent);font-weight:700;font-size:.7rem}
+.nvadm{color:var(--accent)}
+.aviso{background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:10px 14px}
+.acct{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.acct img{width:44px;height:44px;border-radius:50%}
+.acct div{flex:1;min-width:160px} .acct small{display:block;color:var(--muted);overflow-wrap:anywhere}
+.pill{display:inline-block;border-radius:99px;padding:2px 9px;font-size:.74rem;font-weight:700}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.who{display:inline-flex;align-items:center;gap:8px}
+.who img{width:26px;height:26px;border-radius:50%;flex:none}
+.book.rank tr.me td{background:var(--brand-soft);font-weight:700}
+.adl{list-style:none;padding:0;margin:6px 0 12px;display:grid;gap:6px}
+.adl li{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;overflow-wrap:anywhere}
+.seg.rk{max-width:420px}
+textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;text-transform:none;letter-spacing:0;font-weight:500}
+.pa.lv1{font-weight:800;text-transform:uppercase;font-size:.8rem;color:var(--brand-2)}
 .foot{color:var(--muted);font-size:.78rem;text-align:center}
 
 /* Ventanas */
@@ -323,7 +364,14 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
   .app{grid-template-columns:minmax(0,1fr)}
   #nav{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--line);z-index:10;gap:0}
   .brand{display:none}
-  .nvtheme,.nvsp{display:none}
+  .nvtheme,.nvsp,.nvuser{display:none}
+  .stages{grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .stg b{font-size:0}
+  .stg .sn{display:inline;font-size:.9rem}
+  .nv{min-width:0;padding:6px 2px;font-size:.64rem}
+  .nv .ll{display:none}
+  .nv .ls{display:block;white-space:nowrap}
+  .nv svg{width:21px;height:21px}
   .empresa{grid-template-columns:minmax(0,1fr)}
   .nv{flex-direction:column;gap:2px;font-size:.68rem;padding:6px 4px;flex:1;align-items:center;border-radius:10px}
   #view{padding:16px 16px 110px}
@@ -346,6 +394,13 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
   #modal{align-items:flex-end;padding:0}
   .sheet{border-radius:18px 18px 0 0;max-height:92vh;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
   .cp-t{min-width:0;width:100%}
+  .book.diario{min-width:0;table-layout:fixed}
+  .book.diario .den,.book.diario th.dh{display:none}
+  .book.diario .den-m{display:block}
+  .book.diario th:first-child{width:38%!important}
+  .book.diario td.in input{padding:6px 6px;font-size:15px}
+  .cpt{font-size:.8rem}
+  .cpt th,.cpt td{padding:4px 4px}
 }
 </style>
 </head>
@@ -373,6 +428,1774 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 <div id="toast" hidden role="status"></div>
 <datalist id="pcgeList"></datalist>
 <script>
+/* PCGE 2019 completo (MEF). Datos: proyecto pcge-peru, licencia Apache 2.0. Clase 9: cuentas analíticas de uso común. */
+const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
+10|EFECTIVO Y EQUIVALENTES DE EFECTIVO
+101|Caja
+102|Fondos fijos
+103|Efectivo y cheques en tránsito
+1031|Efectivo en tránsito
+1032|Cheques en tránsito
+104|Cuentas corrientes en instituciones financieras
+1041|Cuentas corrientes operativas
+1042|Cuentas corrientes para fines específicos
+105|Otros equivalentes de efectivo
+1051|Otro equivalentes de efectivo
+106|Depósitos en instituciones financieras
+1061|Depósitos de ahorro
+1062|Depósitos a plazo
+107|Fondos sujetos a restricción
+1071|Fondos en garantía
+1072|Fondos retenidos por mandato de la autoridad
+1073|Otros fondos sujetos a restricción
+11|INVERSIONES FINANCIERAS
+111|Inversiones mantenidas para negociación
+1111|Valores emitidos o garantizados por el Estado
+11111|Costo
+11112|Valor Razonable
+1112|Valores emitidos por el sistema financiero
+11121|Costo
+11122|Valor Razonable
+1113|Valores emitidos por entidades
+11131|Costo
+11132|Valor Razonable
+1114|Otros títulos representativos de deuda
+11141|Costo
+11142|Valor Razonable
+1115|Participaciones en entidades
+11151|Costo
+11152|Valor Razonable
+112|Otras inversiones financieras
+1121|Otras inversiones financieras
+11211|Costo
+11212|Valor Razonable
+113|Activos financieros – Acuerdo de compra
+1131|Inversiones mantenidas para negociación – Acuerdo de compra
+11311|Costo
+11312|Valor Razonable
+1132|Otras inversiones financieras
+11321|Costo
+11322|Valor Razonable
+12|CUENTAS POR COBRAR COMERCIALES – TERCEROS
+121|Facturas, boletas y otros comprobantes por cobrar
+1211|No emitidas
+1212|Emitidas en cartera
+1213|En cobranza
+1214|En descuento
+122|Anticipos de clientes
+123|Letras por cobrar
+1232|En cartera
+1233|En cobranza
+1234|En descuento
+13|CUENTAS POR COBRAR COMERCIALES – RELACIONADAS
+131|Facturas, boletas y otros comprobantes por cobrar
+1311|No emitidas
+1312|En cartera
+1313|En cobranza
+1314|En descuento
+132|Anticipos recibidos
+1321|Anticipos recibidos
+133|Letras por cobrar
+1331|En cartera
+1332|En cobranza
+1333|En descuento
+14|CUENTAS POR COBRAR AL PERSONAL, A LOS ACCIONISTAS (SOCIOS) y DIRECTORES
+141|Personal
+1411|Préstamos
+1412|Adelanto de remuneraciones
+1413|Entregas a rendir cuenta
+1419|Otras cuentas por cobrar al personal
+142|Accionistas (o socios)
+1421|Suscripciones por cobrar a socios o accionistas
+1422|Préstamos
+143|Directores
+1431|Préstamos
+1432|Adelanto de dietas
+1433|Entregas a rendir cuenta
+149|Diversas
+16|CUENTAS POR COBRAR DIVERSAS – TERCEROS
+161|Préstamos
+1611|Con garantía
+1612|Sin garantía
+162|Reclamaciones a terceros
+1621|Compañías aseguradoras
+1622|Transportadoras
+1623|Servicios públicos
+1624|Tributos
+1629|Otras
+163|Intereses, regalías y dividendos
+1631|Intereses
+1632|Regalías
+1633|Dividendos
+164|Depósitos otorgados en garantía
+1641|Préstamos de instituciones financieras
+1642|Préstamos de instituciones no financieras
+1643|Depósitos en garantía por alquileres
+1649|Otros depósitos en garantía
+165|Venta de activo inmovilizado
+1651|Inversión mobiliaria
+1652|Propiedades de inversión
+1653|Propiedad, planta y equipo
+1654|Intangibles
+1655|Activos biológicos
+1659|Otros activos inmovilizados
+166|Activos por instrumentos financieros
+1661|Instrumentos financieros primarios
+16611|Costo
+16612|Valor razonable
+1662|Instrumentos financieros derivados
+16621|Costo
+16622|Valor razonable
+167|Tributos por acreditar
+1671|Pagos a cuenta del impuesto a la renta
+1672|Pagos a cuenta de ITAN
+1673|IGV por acreditar en compras
+1674|IGV por acreditar no domiciliados
+1675|Obras por impuestos
+169|Otras cuentas por cobrar diversas
+1691|Entregas a rendir cuenta a terceros
+1699|Otras cuentas por cobrar diversas
+17|CUENTAS POR COBRAR DIVERSAS – RELACIONADAS
+171|Préstamos
+1711|Con garantía
+1712|Sin garantía
+173|Intereses, regalías y dividendos
+1731|Intereses
+1732|Regalías
+1733|Dividendos
+174|Depósitos otorgados en garantía
+1741|Préstamos de instituciones financieras
+1742|Préstamos de instituciones no financieras
+1743|Depósitos en garantía por alquileres
+1749|Otros depósitos en garantía
+175|Venta de activo inmovilizado
+1751|Inversión mobiliaria
+1752|Propiedades de inversión
+1753|Propiedad, planta y equipo
+1754|Intangibles
+1755|Activos biológicos
+1759|Otros activos inmovilizados
+176|Activos por instrumentos financieros
+1761|Instrumentos financieros primarios
+17611|Costo
+17612|Valor razonable
+1762|Instrumentos financieros derivados
+17621|Costo
+17622|Valor razonable
+179|Otras cuentas por cobrar diversas
+18|SERVICIOS Y OTROS CONTRATADOS POR ANTICIPADO
+181|Costos financieros
+182|Seguros
+183|Alquileres
+184|Primas pagadas por opciones
+185|Mantenimiento de activos inmovilizados
+189|Otros gastos contratados por anticipado
+19|ESTIMACIÓN DE CUENTAS DE COBRANZA DUDOSA
+191|Cuentas por cobrar comerciales – Terceros
+1911|Facturas, boletas y otros comprobantes por cobrar
+1913|Letras por cobrar
+192|Cuentas por cobrar comerciales – Relacionadas
+1921|Facturas, boletas y otros comprobantes por cobrar
+1923|Letras por cobrar
+193|Cuentas por cobrar al personal, a los accionistas (socios) y directores
+1931|Personal
+1932|Accionistas (o socios)
+1933|Directores
+1939|Diversas
+194|Cuentas por cobrar diversas – Terceros
+1941|Préstamos
+1942|Reclamaciones a terceros
+1943|Intereses, regalías y dividendos
+1944|Depósitos otorgados en garantía
+1945|Venta de activo inmovilizado
+1946|Activos por instrumentos financieros
+1949|Otras cuentas por cobrar diversas
+195|Cuentas por cobrar diversas – Relacionadas
+1951|Préstamos
+1953|Intereses, regalías y dividendos
+1954|Depósitos otorgados en garantía
+1955|Venta de activo inmovilizado
+1956|Activos por instrumentos financieros
+1959|Otras cuentas por cobrar diversas
+2|ACTIVO REALIZABLE
+20|MERCADERÍAS
+201|Mercaderías
+2011|Mercaderías
+20111|Costo
+20114|Valor razonable
+21|PRODUCTOS TERMINADOS
+211|Productos terminados
+2111|Productos terminados
+21111|Costo
+21113|Costo de financiación
+21114|Valor razonable
+215|Inventario de servicios terminados
+2151|Servicios terminados
+21511|Costo
+22|SUBPRODUCTOS, DESECHOS Y DESPERDICIOS
+221|Subproductos
+222|Desechos y desperdicios
+23|PRODUCTOS EN PROCESO
+231|Productos en proceso
+2311|Productos en proceso
+23111|Costo
+23113|Costo de financiación
+235|Inventario de servicios en proceso
+2351|Servicios en proceso
+23511|Costo
+24|MATERIAS PRIMAS
+241|Materias primas
+2411|Materias primas
+24111|Costo
+24114|Valor razonable
+25|MATERIALES AUXILIARES, SUMINISTROS Y REPUESTOS
+251|Materiales auxiliares
+252|Suministros
+2521|Combustibles
+2522|Lubricantes
+2523|Energía
+2524|Otros suministros
+253|Repuestos
+26|ENVASES Y EMBALAJES
+261|Envases
+262|Embalajes
+27|ACTIVOS NO CORRIENTES MANTENIDOS PARA LA VENTA
+271|Propiedades de inversión
+2711|Terrenos
+27111|Costo
+27112|Revaluación
+27114|Valor razonable
+2712|Edificaciones
+27121|Costo
+27122|Revaluación
+27123|Costos de financiación
+27124|Valor razonable
+272|Propiedad, planta y equipo
+2720|Planta productora en producción
+27201|Costo
+27202|Revaluación
+27203|Costo de financiación
+27204|Valor razonable
+2721|Planta productora en desarrollo
+27211|Costo
+27212|Revaluación
+27213|Costo de financiación
+27214|Valor razonable
+2722|Terrenos
+27221|Costo
+27222|Revaluación
+2723|Edificaciones
+27231|Costo
+27232|Revaluación
+27233|Costo de financiación
+2724|Maquinarias y equipos de explotación
+27241|Costo
+27242|Revaluación
+2725|Unidades de transporte
+27251|Costo
+27252|Revaluación
+2726|Muebles y enseres
+27261|Costo
+27262|Revaluación
+2727|Equipos diversos
+27271|Costo
+27272|Revaluación
+2728|Herramientas y unidades de reemplazo
+27281|Costo
+27282|Revaluación
+2729|Obras en curso
+27291|Costo
+27292|Revaluación
+273|Intangibles
+2731|Concesiones, licencias y derechos
+27311|Costo
+27312|Revaluación
+2732|Patentes y propiedad industrial
+27321|Costo
+27322|Revaluación
+2733|Programas de computadora (software)
+27331|Costo
+27332|Revaluación
+2734|Costos de exploración y desarrollo
+27341|Costo
+27342|Revaluación
+2735|Fórmulas, diseños y prototipos
+27351|Costo
+27352|Revaluación
+2739|Otros activos intangibles
+27391|Costo
+27392|Revaluación
+274|Activos biológicos
+2741|Activos biológicos en producción
+27411|Costo
+27413|Costos de financiación
+27414|Valor razonable
+2742|Activos biológicos en desarrollo
+27421|Costo
+27423|Costos de financiación
+27424|Valor razonable
+275|Depreciación acumulada – Propiedades de inversión
+2752|Edificaciones
+27521|Costo
+27522|Revaluación
+27523|Costo de financiación
+276|Depreciación acumulada – Propiedad, planta y equipo
+2760|Planta productora en producción
+27601|Costo
+27602|Revaluación
+27603|Costo de financiación
+27604|Valor razonable
+2762|Edificaciones
+27621|Costo
+27622|Revaluación
+27623|Costo de financiación
+2763|Maquinarias y equipo de explotación
+27631|Costo
+27632|Revaluación
+27633|Costo de financiación
+2764|Unidades de transporte
+27641|Costo
+27642|Revaluación
+2765|Muebles y enseres
+27651|Costo
+27652|Revaluación
+2766|Equipos diversos
+27661|Costo
+27662|Revaluación
+2767|Herramientas y unidades de reemplazo
+27671|Costo
+27672|Revaluación
+277|Amortización acumulada – Intangibles
+2771|Concesiones, licencias y derechos
+27711|Costo
+27712|Revaluación
+2772|Patentes y propiedad industrial
+27721|Costo
+27722|Revaluación
+2773|Programas de computadora (software)
+27731|Costo
+27732|Revaluación
+2774|Costos de exploración y desarrollo
+27741|Costo
+27742|Revaluación
+2775|Fórmulas, diseños y prototipos
+27751|Costo
+27752|Revaluación
+2779|Otros activos intangibles
+27791|Costo
+27792|Revaluación
+278|Depreciación acumulada – Activos biológicos
+2781|Activos biológicos en producción
+27811|Costo
+27813|Costo de financiación
+2782|Activos biológicos en desarrollo
+27821|Costo
+27823|Costo de financiación
+279|Desvalorización acumulada
+2791|Propiedad de inversión
+27910|Planta productora en producción
+27911|Planta productora en desarrollo
+27912|Terrenos
+27913|Edificaciones
+2793|Propiedad, planta y equipo
+27930|Plantas productoras en producción
+27931|Planta productora en desarrollo
+27932|Terrenos
+27933|Edificaciones
+27934|Maquinarias y equipos de explotación
+27935|Unidades de transporte
+27936|Muebles y enseres
+27937|Equipos diversos
+27938|Herramientas y unidades de reemplazo
+2794|Intangibles
+27941|Concesiones, licencias y otros derechos
+27942|Patentes y propiedad industrial
+27943|Programas de computadora (software)
+27944|Costos de exploración y desarrollo
+27945|Fórmulas, diseños y prototipos
+27949|Otros activos intangibles
+2795|Activos biológicos
+27951|Activos biológicos en producción
+27952|Activos biológicos en desarrollo
+28|INVENTARIOS POR RECIBIR
+281|Mercaderías
+284|Materias primas
+285|Materiales auxiliares, suministros y repuestos
+286|Envases y embalajes
+29|DESVALORIZACIÓN DE INVENTARIOS
+291|Mercaderías
+2911|Mercaderías
+29111|Costo
+292|Productos terminados
+2921|Productos terminados
+29211|Costo
+29213|Costo de financiación
+2925|Inventario de servicios terminados
+29251|Costo
+293|Subproductos, desechos y desperdicios
+2931|Subproductos
+2932|Desechos y desperdicios
+294|Productos en proceso
+2941|Productos en proceso
+29411|Costo
+29413|Costo de financiación
+2945|Inventario de servicios en proceso
+295|Materias primas
+2951|Materias primas
+29511|Costo
+296|Materiales auxiliares, suministros y repuestos
+2961|Materiales auxiliares
+2962|Suministros
+2963|Repuestos
+297|Envases y embalajes
+2971|Envases
+2972|Embalajes
+298|Existencias por recibir
+2981|Mercaderías
+2982|Materias primas
+2983|Materiales auxiliares, suministros y repuestos
+2984|Envases y embalajes
+3|ACTIVO INMOVILIZADO
+30|INVERSIONES MOBILIARIAS
+301|Inversiones a ser mantenidas hasta el vencimiento
+3011|Instrumentos financieros representativos de deuda
+302|Instrumentos financieros representativos de derecho patrimonial
+3021|Certificados de suscripción preferente
+3022|Acciones representativas de capital social – Comunes
+30221|Costo
+30224|Valor razonable
+30225|Participación patrimonial
+3023|Acciones representativas de capital social – Preferentes
+30231|Costo
+30234|Valor razonable
+30235|Participación patrimonial
+3024|Acciones de inversión
+30241|Costo
+30244|Valor razonable
+30245|Participación patrimonial
+3028|Otros títulos representativos de patrimonio
+30281|Costo
+30284|Valor razonable
+30285|Participación patrimonial
+303|Certificados de participación en fondos - Cuotas
+3031|Fondos de inversión
+30311|Costo
+30314|Valor razonable
+3032|Fondos mutuos
+30321|Costo
+30324|Valor razonable
+304|Participaciones en acuerdos conjuntos
+3041|Operaciones conjuntas
+30411|Costo
+30414|Valor razonable
+30415|Participación patrimonial
+3042|Negocios conjuntos
+30421|Costo
+30424|Valor razonable
+30425|Participación patrimonial
+308|Inversiones mobiliarias – Acuerdos de compra
+3081|Instrumentos financieros representativos de deuda – Acuerdo de compra
+30811|Costo
+30814|Valor razonable
+3082|Instrumentos financieros representativos de derecho patrimonial – Acuerdo de compra
+30821|Costo
+30824|Valor razonable
+31|PROPIEDADES DE INVERSIÓN
+311|Terrenos
+3111|Urbanos
+31111|Costo
+31112|Revaluación
+31114|Valor razonable
+3112|Rurales
+31121|Costo
+31122|Revaluación
+31124|Valor razonable
+312|Edificaciones
+3121|Edificaciones
+31211|Costo
+31212|Revaluación
+31213|Costos de financiación
+31214|Valor razonable
+313|Construcciones en curso
+3131|Edificaciones
+31311|Costo
+31312|Revaluación
+31313|Costos de financiación
+31314|Valor razonable
+32|ACTIVOS POR DERECHO DE USO
+321|Propiedades de inversión - Arrendamiento financiero
+3211|Terrenos
+32111|Costo
+32112|Revaluación
+32114|Valor razonable
+3212|Edificaciones
+32121|Costo
+32122|Revaluación
+32123|Costo de financiación
+32124|Valor razonable
+322|Propiedad, planta y equipo - Arrendamiento financiero
+3220|Planta productora en producción
+32201|Costo
+32202|Revaluación
+32203|Costo de financiación
+3221|Planta productora en desarrollo
+32211|Costo
+32212|Revaluación
+32213|Costo de financiación
+3222|Terrenos
+32221|Costo
+32222|Revaluación
+3223|Edificaciones
+32231|Costo
+32232|Revaluación
+32233|Costo de financiación
+3224|Maquinaria y equipo de explotación
+32241|Costo
+32242|Revaluación
+32243|Costo de financiación
+3225|Unidades de transporte
+32251|Costo
+32252|Revaluación
+3226|Muebles y enseres
+32261|Costo
+32262|Revaluación
+3227|Equipos diversos
+32271|Costo
+32272|Revaluación
+3228|Herramientas y unidades de reemplazo
+32281|Costo
+32282|Revaluación
+323|Propiedad, planta y equipo - Arrendamiento operativo
+3230|Planta productora en producción
+32301|Costo
+32302|Revaluación
+3232|Terrenos
+32321|Costo
+3233|Edificaciones
+32331|Costo
+32332|Revaluación
+3234|Maquinaria y equipo de explotación
+32341|Costo
+32342|Revaluación
+3235|Unidades de transporte
+32351|Costo
+32352|Revaluación
+3236|Equipos diversos
+32361|Costo
+32362|Revaluación
+33|PROPIEDAD, PLANTA Y EQUIPO
+330|Planta productora
+3301|Planta productora en producción
+33011|Costo
+33012|Revaluación
+33013|Costo de financiación
+33014|Valor razonable
+3302|Planta productora en desarrollo
+33021|Costo
+33022|Revaluación
+33023|Costo de financiación
+33024|Valor razonable
+331|Terrenos
+3311|Terrenos
+33111|Costo
+33112|Revaluación
+332|Edificaciones
+3321|Edificaciones
+33211|Costo
+33212|Revaluación
+33213|Costo de financiación
+3324|Instalaciones
+33241|Costo
+33242|Revaluación
+33243|Costo de financiación
+3325|Mejoras en locales arrendados.
+33251|Costo
+33252|Revaluación
+33253|Costo de Financiación
+333|Maquinaria y equipo de explotación
+3331|Maquinaria y equipo de explotación
+33311|Costo
+33312|Revaluación
+33313|Costo de financiación
+334|Unidades de transporte
+3341|Vehículos motorizados
+33411|Costo
+33412|Revaluación
+3342|Vehículos no motorizados
+33421|Costo
+33422|Revaluación
+335|Muebles y enseres
+3351|Muebles
+33511|Costo
+33512|Revaluación
+3352|Enseres
+33521|Costo
+33522|Revaluación
+336|Equipos diversos
+3361|Equipo para procesamiento de información
+33611|Costo
+33612|Revaluación
+3362|Equipo de comunicación
+33621|Costo
+33622|Revaluación
+3363|Equipo de seguridad
+33631|Costo
+33632|Revaluación
+3364|Equipo de medio ambiente
+33641|Costo
+33642|Revaluación
+3369|Otros equipos
+33691|Costo
+33692|Revaluación
+337|Herramientas y unidades de reemplazo
+3371|Herramientas
+33711|Costo
+33712|Revaluación
+3372|Unidades de reemplazo
+33721|Costo
+33722|Revaluación
+338|Unidades por recibir
+3381|Maquinaria y equipo de explotación
+3382|Equipo de transporte
+3383|Muebles y enseres
+3386|Equipos diversos
+3387|Herramientas y unidades de reemplazo
+339|Obras en curso
+3391|Adecuación de terrenos
+3392|Edificaciones en curso
+33921|Costo
+33922|Costo de financiación
+3393|Maquinaria en montaje
+33931|Costo
+33932|Costo de financiación
+34|INTANGIBLES
+341|Concesiones, licencias y otros derechos
+3411|Derechos por concesiones
+34111|Costo
+34112|Revaluación
+3412|Licencias
+34121|Costo
+34122|Revaluación
+3419|Otros derechos
+34191|Costo
+34192|Revaluación
+342|Patentes y propiedad industrial
+3421|Patentes
+34211|Costo
+34212|Revaluación
+3422|Marcas
+34221|Costo
+34222|Revaluación
+343|Programas de computadora ( software )
+3431|Aplicaciones informáticas
+34311|Costo
+34312|Revaluación
+344|Costos de exploración y desarrollo
+3441|Costos de exploración
+34411|Costo
+34412|Revaluación
+34413|Costo de financiación
+3442|Costos de desarrollo
+34421|Costo
+34422|Revaluación
+34423|Costo de financiación
+345|Fórmulas, diseños y prototipos
+3451|Fórmulas
+34511|Costo
+34512|Revaluación
+3452|Diseños y prototipos
+34521|Costo
+34522|Revaluación
+347|Plusvalía mercantil
+3471|Plusvalía mercantil
+349|Otros activos intangibles
+3491|Otros activos intangibles
+34911|Costo
+34912|Revaluación
+35|ACTIVOS BIOLÓGICOS
+351|Activos biológicos en producción
+3511|De origen animal
+35111|Costo
+35113|Costo de financiación
+35114|Valor razonable
+3512|De origen vegetal
+35121|Costo
+35123|Costo de financiación
+35124|Valor razonable
+352|Activos biológicos en desarrollo
+3521|De origen animal
+35211|Costo
+35213|Costo de financiación
+35214|Valor razonable
+3522|De origen vegetal
+35221|Costo
+35223|Costo de financiación
+35224|Valor razonable
+36|DESVALORIZACIÓN DE ACTIVO INMOVILIZADO
+361|Desvalorización de propiedades de inversión
+3611|Terrenos
+36111|Costo
+36112|Revaluación
+3612|Edificaciones
+36121|Costo
+36122|Revaluación
+36123|Costo de financiación
+3613|Construcciones en curso - edificaciones
+36131|Costo
+36132|Revaluación
+36133|Costo de financiación
+362|Desvalorización de propiedades de inversión - Arrendamiento financiero
+3621|Terrenos
+36211|Costo
+36212|Revaluación
+3622|Edificaciones
+36221|Costo
+36222|Revaluación
+36223|Costo de financiación
+363|Desvalorización de propiedad, planta y equipo - Arrendamiento financiero
+3631|Terrenos
+36311|Costo
+36312|Revaluación
+3632|Edificaciones
+36321|Costo
+36322|Revaluación
+36323|Costo de financiación
+3633|Maquinaria y equipo de explotación
+36331|Costo
+36332|Revaluación
+36333|Costo de financiación
+3634|Unidades de transporte
+36341|Costo
+36342|Revaluación
+3635|Muebles y enseres
+36351|Costo
+36352|Revaluación
+3636|Equipos diversos
+36361|Costo
+36362|Revaluación
+364|Desvalorización de propiedad, planta y equipo
+3640|Planta productora en producción
+36401|Costo
+36402|Planta productora en producción - Revaluación
+36403|Planta productora en producción - Costo de financiación
+36405|Planta productora en desarrollo - Costo
+36406|Planta productora en desarrollo - Revaluación
+36407|Planta productora en desarrollo - Costo de financiación
+36408|Planta productora en desarrollo - Valor razonable
+3641|Terrenos
+36411|Costo
+36412|Revaluación
+3642|Edificaciones
+36421|Edificaciones - Costo
+36422|Edificaciones - Revaluación
+36423|Edificaciones - Costo de financiación
+36424|Instalaciones - Costo
+36425|Instalaciones - Revaluación
+36426|Instalaciones - Costo de financiación
+36427|Mejoras en locales arrendados - Costo
+36428|Mejoras en locales arrendados - Revaluación
+36429|Mejoras en locales arrendados - Costo de financiación
+3643|Maquinaria y equipo de explotación
+36431|Costo
+36432|Revaluación
+36433|Costo de financiación
+3644|Unidades de transporte
+36441|Costo
+36442|Revaluación
+3645|Muebles y enseres
+36451|Costo
+36452|Revaluación
+3646|Equipos diversos
+36461|Costo
+36462|Revaluación
+3647|Herramientas y unidades de reemplazo
+36471|Herramientas - Costo
+3649|Obras en curso
+36491|Costo
+36492|Revaluación
+365|Desvalorización de intangibles
+3651|Concesiones, licencias y otros derechos
+36511|Costo
+36512|Revaluación
+3652|Patentes y propiedad industrial
+36521|Costo
+36522|Revaluación
+3653|Programas de computadora ( software )
+36531|Costo
+36532|Revaluación
+3654|Costos de exploración y desarrollo
+36541|Costo
+36542|Revaluación
+36543|Costo de financiación
+3655|Fórmulas, diseños y prototipos
+36551|Costo
+36552|Revaluación
+3657|Plusvalía mercantil
+3659|Otros activos intangibles
+36591|Costo
+36592|Revaluación
+366|Desvalorización de activos biológicos
+3661|Activos biológicos en producción
+36611|Costo
+36613|Costo de financiación
+3662|Activos biológicos en desarrollo
+36621|Costo
+36622|Costo de financiación
+367|Desvalorización de inversiones mobiliarias
+3671|Inversiones a ser mantenidas hasta el vencimiento
+36711|Costo
+3672|Inversiones financieras repres entativas de derecho patrimonial
+36721|Costo
+3673|Otras inversiones financieras
+36731|Costo
+37|ACTIVO DIFERIDO
+371|Impuesto a la renta diferido
+3711|Impuesto a la renta diferido – Patrimonio
+3712|Impuesto a la renta diferido – Resultados
+372|Participaciones de los trabajadores diferidas
+3721|Participaciones de los trabajadores diferidas – Patrimonio
+3722|Participaciones de los trabajadores diferidas – Resultados
+373|Intereses diferidos
+3731|Intereses no devengados en transacciones con terceros
+3732|Intereses no devengados en medición a valor descontado
+38|OTROS ACTIVOS
+381|Bienes de arte y cultura
+3811|Obras de arte
+3812|Biblioteca
+3813|Otros
+382|Diversos
+3821|Monedas y joyas
+3822|Bienes entregados en comodato
+3823|Bienes recibidos en pago (adjudicados y realizables)
+3829|Otros
+39|DEPRECIACIÓN y AMORTIZACIÓN ACUMULADOS
+391|Depreciación acumulada propiedades de inversión
+3911|Edificaciones
+39111|Costo
+39112|Revaluación
+39113|Costo de financiación
+392|Depreciación acumulada propiedades de inversión - Arrendamiento financiero
+3921|Edificaciones
+39211|Costo
+39212|Revaluación
+39213|Costo de financiación
+393|Depreciación acumulada propiedad, planta y equipo - Arrendamiento financiero
+3932|Edificaciones
+39321|Costo
+39322|Revaluación
+39323|Costo de financiación
+3933|Maquinarias y equipos de explotación
+39331|Costo
+39332|Revaluación
+39333|Costo de financiación
+3934|Unidades de transporte
+39341|Costo
+39342|Revaluación
+3935|Muebles y enseres
+39351|Costo
+3936|Equipos diversos
+39361|Costo
+39362|Revaluación
+394|Depreciación acumulada - Arrendamiento operativo
+3941|Activos por derecho de uso - arrendamiento operativo
+39410|Plantas productoras
+39411|Terrenos
+39412|Edificaciones
+39413|Maquinarias y equipos de explotación
+39414|Unidades de transporte
+39415|Equipos diversos
+395|Depreciación acumulada de propiedad, planta y equipo
+3952|Depreciación acumulada - Costo
+39520|Plantas productoras
+39521|Edificaciones
+39522|Instalaciones
+39523|Mejoras en locales arrendados
+39524|Maquinarias y equipos de explotación
+39525|Unidades de transporte
+39526|Muebles y enseres
+39527|Equipos diversos
+39528|Herramientas
+39529|Unidades de reemplazo
+3953|Propiedad, planta y equipo - Revaluación
+39530|Plantas productoras
+39531|Edificaciones
+39532|Instalaciones
+39533|Mejoras en locales arrendados
+39534|Maquinarias y equipos de explotación
+39535|Unidades de transporte
+39536|Muebles y enseres
+39537|Equipos diversos
+39538|Herramientas y unidades de reemplazo
+3954|Propiedad, planta y equipo - Costo de financiación
+39540|Plantas productoras
+39541|Edificaciones
+39542|Maquinarias y equipos de explotación
+3955|Propiedad, planta y equipo - Valor razonable
+39550|Plantas productoras
+396|Amortización acumulada
+3961|Intangibles – Costo
+39611|Concesiones, licencias y otros derechos
+39612|Patentes y propiedad industrial
+39613|Programas de computadora ( software )
+39614|Costos de exploración y desarrollo
+39615|Fórmulas, diseños y prototipos
+39619|Otros activos intangibles
+3962|Intangibles – Revaluación
+39621|Concesiones, licencias y otros derechos
+39622|Patentes y propiedad industrial
+39623|Programas de computadora ( software )
+39624|Costos de exploración y desarrollo
+39625|Fórmulas, diseños y prototipos
+39629|Otros activos intangibles
+3963|Intangibles – Costos de financiación
+39633|Programas de computadora
+39634|Costos de exploración
+39635|Costos de desarrollo
+398|Depreciación acumulada - Activos biológicos en producción
+3981|Activos biológicos en producción - Costo
+39811|Activos biológicos en producción
+4|PASIVO
+40|TRIBUTOS, CONTRAPRESTACIONES Y APORTES AL SISTEMA PÚBLICO DE PENSIONES Y DE SALUD POR PAGAR
+401|Gobierno nacional
+4011|Impuesto general a las ventas
+40111|IGV – Cuenta propia
+40112|IGV – Servicios prestados por no domiciliados
+40113|IGV – Régimen de percepciones
+40114|IGV – Régimen de retenciones
+40115|IGV – Importaciones
+40116|IGV – Destinado a operaciones gravadas
+40117|IGV - Destinado a operaciones comunes
+4012|Impuesto selectivo al consumo
+4015|Derechos aduaneros
+40151|Derechos arancelarios
+40152|Otros derechos arancelarios
+4017|Impuesto a la renta
+40171|Renta de tercera categoría
+40172|Renta de cuarta categoría
+40173|Renta de quinta categoría
+40174|Renta de no domiciliados
+40175|Otras retenciones
+4018|Otros impuestos y contraprestaciones
+40181|Impuesto a las transacciones financieras
+40182|Impuesto a los juegos de casino y tragamonedas
+40183|Tasas por la prestación de servicios públicos
+40184|Regalías
+40185|Impuesto a los dividendos
+40186|Impuesto temporal a los activos netos
+40189|Otros impuestos
+402|Certificados tributarios
+403|Instituciones públicas
+4031|ESSALUD
+4032|ONP
+4033|Contribución al SENATI
+4034|Contribución al SENCICO
+4039|Otras instituciones
+405|Gobiernos regionales
+406|Gobiernos locales
+4061|Impuestos
+40611|Impuesto al patrimonio vehicular
+40612|Impuesto a las apuestas
+40613|Impuesto a los juegos
+40614|Impuesto de alcabala
+40615|Impuesto predial
+40616|Impuesto a los espectáculos públicos no deportivos
+4062|Contribuciones
+4063|Tasas
+40631|Licencia de apertura de establecimientos
+40632|Transporte público
+40633|Estacionamiento de vehículos
+40634|Servicios públicos o arbitrios
+40635|Servicios administrativos o derechos
+409|Otros costos administrativos e intereses
+41|REMUNERACIONES Y PARTICIPACIONES POR PAGAR
+411|Remuneraciones por pagar
+4111|Sueldos y salarios por pagar
+4112|Comisiones por pagar
+4113|Remuneraciones en especie por pagar
+4114|Gratificaciones por pagar
+4115|Vacaciones por pagar
+413|Participaciones de los trabajadores por pagar
+415|Beneficios sociales de los trabajadores por pagar
+4151|Compensación por tiempo de servicios
+4152|Adelanto de compensación por tiempo de servicios
+4153|Pensiones y jubilaciones
+417|Administradoras de fondos de pensiones
+419|Otras remuneraciones y participaciones por pagar
+42|CUENTAS POR PAGAR COMERCIALES TERCEROS
+421|Facturas, boletas y otros comprobantes por pagar
+4211|No emitidas
+4212|Emitidas
+422|Anticipos a proveedores
+423|Letras por pagar
+424|Honorarios por pagar
+43|CUENTAS POR PAGAR COMERCIALES RELACIONADAS
+431|Facturas, boletas y otros comprobantes por pagar
+4311|No emitidas
+4312|Emitidas
+432|Anticipos otorgados
+4321|Anticipos otorgados
+433|Letras por pagar
+4331|Letras por pagar
+434|Honorarios por pagar
+4341|Honorarios por pagar
+44|CUENTAS POR PAGAR A LOS ACCIONISTAS (SOCIOS, PARTÍCIPES) Y DIRECTORES
+441|Accionistas ( socios, partícipes)
+4411|Préstamos
+4412|Dividendos
+4419|Otras cuentas por pagar
+442|Directores
+4421|Dietas
+4429|Otras cuentas por pagar
+45|OBLIGACIONES FINANCIERAS
+451|Préstamos de instituciones financieras y otras entidades
+4511|Instituciones financieras
+4512|Otras entidades
+452|Contratos de arrendamiento financiero
+453|Obligaciones emitidas
+4531|Bonos emitidos
+4532|Bonos titulizados
+4533|Papeles comerciales
+4539|Otras obligaciones
+454|Otros Instrumentos financieros por pagar
+4541|Letras
+4542|Papeles comerciales
+4543|Bonos
+4544|Pagarés
+4545|Facturas conformadas
+4549|Otras obligaciones financieras
+455|Costos de financiación por pagar
+4551|Préstamos de instituciones financieras y otras entidades
+45511|Instituciones financieras
+45512|Otras entidades
+4552|Contratos de arrendamiento financiero
+4553|Obligaciones emitidas
+45531|Bonos emitidos
+45532|Bonos titulizados
+45533|Papeles comerciales
+45539|Otras obligaciones
+4554|Otros instrumentos financieros por pagar
+45541|Letras
+45542|Papeles comerciales
+45543|Bonos
+45544|Pagarés
+45545|Facturas conformadas
+45549|Otras obligaciones financieras
+456|Préstamos con compromisos de recompra
+46|CUENTAS POR PAGAR DIVERSAS – TERCEROS
+461|Reclamaciones de terceros
+464|Pasivos por instrumentos financieros
+4641|Instrumentos financieros primarios
+4642|Instrumentos financieros derivados
+46421|Cartera de negociación
+46422|Instrumentos de cobertura
+465|Pasivos por compra de activo inmovilizado
+4651|Inversiones mobiliarias
+4652|Propiedades de inversión
+4653|Activos adquiridos en arrendamiento financiero
+4654|Propiedad, planta y equipo
+4655|Intangibles
+4656|Activos biológicos
+466|Participación de terceros en acuerdos conjuntos
+467|Depósitos recibidos en garantía
+469|Otras cuentas por pagar diversas
+4691|Subsidios gubernamentales
+4692|Donaciones condicionadas
+4699|Otras cuentas por pagar
+47|CUENTAS POR PAGAR DIVERSAS – RELACIONADAS
+471|Préstamos
+472|Costos de financiación
+473|Anticipos recibidos
+474|Regalías
+475|Dividendos
+476|Depósitos recibidos en garantía
+477|Pasivo por compra de activo inmovilizado
+4771|Inversiones mobiliarias
+4772|Inversiones inmobiliarias
+4773|Activos adquiridos en arrendamiento financiero
+4774|Propiedad, planta y equipo
+4775|Intangibles
+4776|Activos biológicos
+479|Otras cuentas por pagar diversas
+4791|Otras cuentas por pagar diversas
+48|PROVISIONES
+481|Provisión para litigios
+482|Provisión por desmantelamiento, retiro o rehabilitación del inmovilizado
+483|Provisión para reestructuraciones
+484|Provisión para protección y remediación del medio ambiente
+485|Provisión para gastos de responsabilidad social
+486|Provisión para garantías
+487|Provisión por activos por derecho de uso
+489|Otras provisiones
+49|PASIVO DIFERIDO
+491|Impuesto a la renta diferido
+4911|Impuesto a la renta diferido – Patrimonio
+4912|Impuesto a la renta diferido – Resultados
+492|Participaciones de los trabajadores diferidas
+4921|Participaciones de los trabajadores diferidas – Patrimonio
+4922|Participaciones de los trabajadores diferidas – Resultados
+493|Intereses diferidos
+4931|Intereses no devengados en transacciones con terceros
+4932|Intereses no devengados en medición a valor descontado
+494|Ganancia en venta con arrendamiento financiero paralelo
+495|Subsidios recibidos diferidos
+496|Ingresos diferidos
+497|Costos diferidos
+5|PATRIMONIO NETO
+50|CAPITAL
+501|Capital social
+5011|Acciones
+5012|Participaciones
+502|Acciones en tesorería
+51|ACCIONES DE INVERSIÓN
+511|Acciones de inversión
+512|Acciones de inversión en tesorería
+52|CAPITAL ADICIONAL
+521|Primas (descuento) de acciones
+522|Capitalizaciones en trámite
+5221|Aportes
+5222|Reservas
+5223|Acreencias
+5224|Utilidades
+523|Reducciones de capital pendientes de formalización
+56|RESULTADOS NO REALIZADOS
+561|Diferencia en cambio de inversiones permanentes en entidades extranjeras
+562|Instrumentos financieros – Coberturas
+563|Resultado en activos o pasivos financieros mantenidos para negociación
+5631|Ganancia
+5632|Pérdida
+564|Resultado en otros activos o pasivos por inversiones financieras
+5641|Ganancia
+5642|Pérdida
+565|Resultado en activos o pasivos financieros mantenidos para negociación – Compra o venta convencional fecha de liquidación
+5651|Ganancia
+5652|Pérdida
+57|EXCEDENTE DE REVALUACIÓN
+571|Excedente de revaluación
+5711|Propiedad de inversión
+57111|Adquisición directa
+57112|Arrendamiento financiero
+5712|Propiedad, planta y equipo
+57121|Adquisición directa
+57122|Arrendamiento financiero
+5713|Intangibles
+5714|Activos por derecho de uso - arrendamiento operativo
+572|Excedente de revaluación – Acciones liberadas recibidas
+573|Participación en excedente de revaluación – Inversiones en entidades relacionadas
+58|RESERVAS
+581|Reinversión
+582|Legal
+583|Contractuales
+584|Estatutarias
+585|Facultativas
+589|Otras reservas
+59|RESULTADOS ACUMULADOS
+591|Utilidades no distribuidas
+5911|Utilidades acumuladas
+5912|Ingresos de años anteriores
+592|Pérdidas acumuladas
+5921|Pérdidas acumuladas
+5922|Gastos de años anteriores
+6|GASTOS POR NATURALEZA
+60|COMPRAS
+601|Mercaderías
+6011|Mercaderías
+602|Materias primas
+603|Materiales auxiliares, suministros y repuestos
+6031|Materiales auxiliares
+6032|Suministros
+6033|Repuestos
+604|Envases y embalajes
+6041|Envases
+6042|Embalajes
+609|Costos vinculados con las compras
+6091|Costos vinculados con las compras de mercaderías
+60911|Transporte
+60912|Seguros
+60913|Derechos aduaneros
+60914|Comisiones
+60919|Otros costos
+6092|Costos vinculados con las compras de materias primas
+60921|Transporte
+60922|Seguros
+60923|Derechos aduaneros
+60924|Comisiones
+60925|Otros costos
+6093|Costos vinculados con las compras de materiales, suministros y repuestos
+60931|Transporte
+60932|Seguros
+60933|Derechos aduaneros
+60934|Comisiones
+60935|Otros costos
+6094|Costos vinculados con las compras de envases y embalajes
+60941|Transporte
+60942|Seguros
+60943|Derechos aduaneros
+60944|Comisiones
+60945|Otros costos
+61|VARIACIÓN DE INVENTARIOS
+611|Mercaderías
+6111|Mercaderías
+612|Materias primas
+6121|Materias primas
+613|Materiales auxiliares, suministros y repuestos
+6131|Materiales auxiliares
+6132|Suministros
+6133|Repuestos
+614|Envases y embalajes
+6141|Envases
+6142|Embalajes
+62|GASTOS DE PERSONAL Y DIRECTORES
+621|Remuneraciones
+6211|Sueldos y salarios
+6212|Comisiones
+6213|Remuneraciones en especie
+6214|Gratificaciones
+6215|Vacaciones
+622|Otras remuneraciones
+623|Indemnizaciones al personal
+624|Capacitación
+625|Atención al personal
+627|Seguridad, previsión social y otras contribuciones
+6271|Régimen de prestaciones de salud
+6272|Régimen de pensiones - Aporte de empresa
+6273|Seguro complementario de trabajo de riesgo, accidentes de trabajo y enfermedades profesionales
+6274|Seguro de vida
+6275|Seguros particulares de prestaciones de salud – EPS y otros particulares
+6276|Caja de beneficios de seguridad social del pescador
+6277|Contribuciones al SENATI
+628|Retribuciones al directorio
+629|Beneficios sociales de los trabajadores
+6291|Compensación por tiempo de servicio
+6292|Pensiones y jubilaciones
+6293|Otros beneficios post-empleo
+6294|Participación en las utilidades
+62941|Participación corriente
+62942|Participación diferida
+63|GASTOS DE SERVICIOS PRESTADOS POR TERCEROS
+631|Transporte, correos y gastos de viaje
+6311|Transporte
+63111|De carga
+63112|De pasajeros
+6312|Correos
+6313|Alojamiento
+6314|Alimentación
+6315|Otros gastos de viaje
+632|Asesoría y consultoría
+6321|Administrativa
+6322|Legal y tributaria
+6323|Auditoría y contable
+6324|Mercadotecnia
+6325|Medioambiental
+6326|Investigación y desarrollo
+6327|Producción
+6329|Otros
+633|Producción encargada a terceros
+634|Mantenimiento y reparaciones
+6341|Propiedad de inversión
+6342|Activos por derecho de uso
+63421|Financiero
+6343|Propiedad, planta y equipo
+6344|Intangibles
+6345|Activos biológicos
+635|Alquileres
+6351|Terrenos
+6352|Edificaciones
+6353|Maquinarias y equipos de explotación
+6354|Equipo de transporte
+6355|Muebles y enseres
+6356|Equipos diversos
+636|Servicios básicos
+6361|Energía eléctrica
+6362|Gas
+6363|Agua
+6364|Teléfono
+6365|Internet
+6366|Radio
+6367|Cable
+637|Publicidad, publicaciones, relaciones públicas
+6371|Publicidad
+6372|Publicaciones
+6373|Relaciones públicas
+638|Servicios de contratistas
+639|Otros servicios prestados por terceros
+6391|Gastos bancarios
+6392|Gastos de laboratorio
+64|GASTOS POR TRIBUTOS
+641|Gobierno nacional
+6411|Impuesto general a las ventas y selectivo al consumo
+6412|Impuesto a las transacciones financieras
+6413|Impuesto temporal a los activos netos
+6414|Impuesto a los juegos de casino y máquinas tragamonedas
+6415|Regalías mineras
+6416|Cánones
+6419|Otros
+642|Gobierno regional
+643|Gobierno local
+6431|Impuesto predial
+6432|Arbitrios municipales y seguridad ciudadana
+6433|Impuesto al patrimonio vehicular
+6434|Licencia de funcionamiento
+6439|Otros
+644|Otros gastos por tributos
+6442|Contribución al SENCICO
+6443|Otros
+645|Gastos en deuda tributaria
+6451|Intereses
+6452|intereses - fraccionamiento
+6453|Multas
+6454|Costas y otros
+65|OTROS GASTOS DE GESTION
+651|Seguros
+652|Regalías
+653|Suscripciones
+654|Licencias y derechos de vigencia
+655|Costo neto de enajenación de activos inmovilizados y operaciones discontinuadas
+6551|Costo neto de enajenación de activos inmovilizados
+65511|Inversiones mobiliarias
+65512|Propiedades de inversión
+65513|Activos por derecho de uso - arrendamiento financiero
+65514|Propiedad, planta y equipo
+65515|Intangibles
+65516|Activos biológicos
+6552|Operaciones discontinuadas – Abandono de activos
+65521|Propiedades de inversión
+65522|Activos por derecho de uso - Arrendamiento financiero
+65523|Propiedad, planta y equipo
+65524|Intangibles
+65525|Activos biológicos
+656|Suministros
+658|Gestión medioambiental
+659|Otros gastos de gestión
+6591|Donaciones
+6592|Sanciones administrativas
+66|PERDIDA POR MEDICIÓN DE ACTIVOS NO FINANCIEROS AL VALOR RAZONABLE
+661|Activo realizable
+6611|Mercaderías
+6612|Productos terminados
+6613|Activos no corrientes mantenidos para la venta
+66131|Propiedades de inversión
+66132|Propiedad, planta y equipo
+66133|Intangibles
+66134|Activos biológicos
+662|Activo inmovilizado
+6621|Propiedades de inversión
+6622|Activos biológicos
+67|GASTOS FINANCIEROS
+671|Gastos en operaciones de endeudamiento y otros
+6711|Préstamos de instituciones financieras y otras entidades
+6712|Contratos de arrendamiento financiero
+6713|Emisión y colocación de instrumentos representativos de deuda y patrimonio
+6714|Documentos vendidos o descontados
+672|Pérdida por instrumentos financieros derivados
+673|Intereses por préstamos y otras obligaciones
+6731|Préstamos de instituciones financieras y otras entidades
+67311|Instituciones financieras
+67312|Otras entidades
+6732|Contratos de arrendamiento financiero
+6733|Otros instrumentos financieros por pagar
+6734|Documentos vendidos o descontados
+6735|Obligaciones emitidas
+6736|Obligaciones comerciales
+674|Gastos en operaciones de factoraje (factoring)
+6741|Pérdida en instrumentos vendidos
+675|Descuentos concedidos por pronto pago
+676|Diferencia de cambio
+677|Pérdida por medición de activos y pasivos financieros al valor razonable
+6771|Inversiones mantenidas para negociación
+6772|Otras inversiones financieras
+6773|Otros
+678|Participación en resultados de entidades relacionadas
+6781|Participación en los resultados de subsidiarias y asociadas bajo el método del valor patrimonial
+6782|Participaciones en negocios conjuntos
+679|Otros gastos financieros
+6791|Primas por opciones
+6792|Gastos financieros en medición a valor descontado
+6793|Gastos financieros en actualización de activos por derecho de uso
+68|VALUACIÓN Y DETERIORO DE ACTIVOS Y PROVISIONES
+681|Depreciación de propiedades de inversión
+6811|Edificaciones
+68111|Costo
+68112|Revaluación
+68113|Costo de financiación
+682|Depreciación de activos por derecho de uso - arrendamiento financiero
+6821|Propiedades de inversión
+68211|Edificaciones
+682111|Costo
+682112|Revaluación
+682113|Costo de financiación
+6822|Propiedad, planta y equipo
+68221|Edificaciones
+682211|Costo
+682212|Revaluación
+682213|Costo de financiación
+68222|Maquinarias y equipos de explotación
+682221|Costo
+682222|Revaluación
+682223|Costo de financiación
+68223|Unidades de transporte
+682231|Costo
+682232|Revaluación
+68225|Equipos diversos
+682251|Costo
+682252|Revaluación
+683|Depreciación de activos por derecho de uso - arrendamiento operativo
+6831|Depreciación de activos por derecho de uso - arrendamiento operativo
+68311|Edificaciones
+683111|Costo
+683112|Revaluación
+68312|Maquinarias y equipos de explotación
+683121|Costo
+683122|Revaluación
+68313|Unidades de transporte
+683131|Costo
+683132|Revaluación
+68315|Equipos diversos
+683152|Revaluación
+684|Depreciación de propiedad, planta y equipo
+6841|Depreciación de propiedad, planta y equipo - Costo
+68410|Plantas productoras
+68411|Edificaciones
+68412|Maquinarias y equipos de explotación
+68413|Unidades de transporte
+68414|Muebles y enseres
+68415|Equipos diversos
+68416|Herramientas y unidades de reemplazo
+6842|Depreciación de propiedad, planta y equipo - Revaluación
+68420|Plantas productoras
+68421|Edificaciones
+68422|Maquinarias y equipos de explotación
+68423|Unidades de transporte
+68424|Muebles y enseres
+68425|Equipos diversos
+68426|Herramientas y unidades de reemplazo
+6843|Depreciación de propiedad, planta y equipo - Costos de financiación
+68430|Plantas productoras
+68431|Edificaciones
+68432|Maquinarias y equipos de explotación
+685|Depreciación de activos biológicos en producción
+6851|Depreciación de activos biológicos en producción - costo
+68511|Activos biológicos de origen animal
+68512|Activos biológicos de origen vegetal
+6852|Depreciación de activos biológicos en producción - costo de financiación
+68521|Activos biológicos de origen animal
+68522|Activos biológicos de origen vegetal
+686|Amortización de intangibles
+6861|Amortización de intangibles – Costo
+68611|Concesiones, licencias y otros derechos
+68612|Patentes y propiedad industrial
+68613|Programas de computadora ( software )
+68614|Costos de exploración y desarrollo
+68615|Fórmulas, diseños y prototipos
+68619|Otros activos intangibles
+6862|Amortización de intangibles – Revaluación
+68621|Concesiones, licencias y otros derechos
+68622|Patentes y propiedad industrial
+68623|Programas de computadora ( software )
+68624|Costos de exploración y desarrollo
+68625|Fórmulas, diseños y prototipos
+68629|Otros activos intangibles
+687|Valuación de activos
+6871|Estimación de cuentas de cobranza dudosa
+68711|Cuentas por cobrar comerciales – Terceros
+68712|Cuentas por cobrar comerciales – Relacionadas
+68713|Cuentas por cobrar al personal , a los accionistas (socios) y directores
+68714|Cuentas por cobrar diversas – Terceros
+68715|Cuentas por cobrar diversas – Relacionadas
+6873|Desvalorización de inversiones mobiliarias
+68731|Inversiones a ser mantenidas hasta el vencimiento
+68732|Instrumentos financieros representativos de derecho patrimonial
+688|Deterioro del valor de los activos
+6882|Desvalorización de activos por derecho de uso - arrendamiento financiero
+68820|Planta productora en producción
+68821|Planta productora en desarrollo
+68822|Terrenos
+68823|Edificaciones
+68824|Maquinarias y equipos de explotación
+68825|Unidades de transporte
+68826|Muebles y enseres
+68827|Equipos diversos
+68828|Herramientas y unidades de reemplazo
+6883|Desvalorización de propiedad, planta y equipo
+68830|Planta productora en producción
+68831|Planta productora en desarrollo
+68832|Terrenos
+68833|Edificaciones
+68834|Maquinarias y equipos de explotación
+68835|Unidades de transporte
+68836|Muebles y enseres
+68837|Equipos diversos
+68838|Herramientas y unidades de reemplazo
+6884|Desvalorización de intangibles
+68841|Concesiones, licencias y otros derechos
+68842|Patentes y propiedad industrial
+68843|Programas de computadora ( software )
+68844|Costos de exploración y desarrollo
+68845|Fórmulas, diseños y prototipos
+68846|Otros activos intangibles
+68847|Plusvalía mercantil
+6889|Desvalorización de activos biológicos en producción
+68891|Activos biológicos de origen animal
+68892|Activos biológicos de origen vegetal
+689|Provisiones
+6891|Provisión para litigios
+68911|Provisión para litigios – Costo
+68912|Provisión para litigios – Actualización financiera
+6892|Provisión por desmantelamiento, retiro o rehabilitación del inmovilizado
+68921|Provisión por desmantelamiento, retiro o rehabilitación del inmovilizado – Costo
+68922|Provisión por desmantelamiento, retiro o rehabilitación del inmovilizado – Actualización financiera
+6893|Provisión para reestructuraciones
+6894|Provisión para protección y remediación del medio ambiente
+68941|Provisión para protección y remediación del medio ambiente – Costo
+68942|Provisión para protección y remediación del medio ambiente – Actualización financiera
+6896|Provisión para garantías
+68961|Provisión para garantías – Costo
+68962|Provisión para garantías – Actualización financiera
+6897|Provisión por activos por derecho de uso
+68971|Provisión por activos por derecho de uso arrendamiento operativo
+68972|Provisión por activos por derecho de uso arrendamiento operativo - actualización financiera
+6899|Otras provisiones
+69|COSTO DE VENTAS
+691|Mercaderías
+6911|Mercaderías - exportación
+69111|Terceros
+69112|Relacionadas
+6912|Mercaderías - venta local
+69121|Terceros
+69122|Relacionadas
+692|Productos terminados
+6921|Productos terminados - Exportación
+69211|Terceros
+69212|Relacionadas
+6922|Productos terminados - Venta local
+69221|Terceros
+69222|Relacionadas
+6923|Costos de financiación – Productos terminados
+69231|Terceros
+69232|Relacionadas
+6924|Costos de producción no absorbido – Productos terminados
+6925|Costo de ineficiencia – Productos terminados
+693|Servicios terminados
+6931|Servicios – Exportación
+69311|Terceros
+69312|Relacionadas
+6932|Servicios – local
+69321|Terceros
+69322|Relacionadas
+694|Subproductos, desechos y desperdicios
+6941|Subproductos
+69411|Terceros
+69412|Relacionadas
+6942|Desechos y desperdicios
+69421|Terceros
+69422|Relacionadas
+695|Gastos por desvalorización de inventarios al costo
+6951|Mercaderías
+6952|Productos terminados
+6953|Subproductos, desechos y desperdicios
+6954|Productos en proceso
+6955|Materias primas
+6956|Materiales auxiliares, suministros y repuestos
+6957|Envases y embalajes
+6958|Inventarios por recibir
+7|INGRESOS
+70|VENTAS
+701|Mercaderías
+7011|Mercaderías - venta de exportación
+70111|Terceros
+70112|Relacionadas
+7012|Mercaderías - venta local
+702|Productos terminados
+7021|Productos terminados - venta de exportación
+70211|Terceros
+70212|Relacionadas
+7022|Productos terminados - venta local
+70221|Terceros
+70222|Relacionadas
+703|Servicios terminados
+7031|Servicios – exportación
+70311|Terceros
+70312|Relacionadas
+7032|Servicios – local
+70321|Terceros
+70322|Relacionadas
+704|Subproductos, desechos y desperdicios
+7041|Subproductos
+70411|Terceros
+70412|Relacionadas
+7042|Desechos y desperdicios
+70421|Terceros
+70422|Relacionadas
+709|Devoluciones sobre ventas
+7091|Mercaderías - Venta de exportación
+70911|Terceros
+70912|Relacionadas
+7092|Mercaderías - Venta local
+70921|Terceros
+70922|Relacionadas
+7093|Productos terminados - Venta de exportación
+70931|Terceros
+70932|Relacionadas
+7094|Productos terminados - Venta local
+70941|Terceros
+70942|Relacionadas
+7095|Inventarios de servicios rechazados
+70951|Terceros
+70952|Relacionadas
+7096|Subproductos, desechos y desperdicios
+70961|Terceros
+70962|Relacionadas
+71|VARIACIÓN DE LA PRODUCCIÓN ALMACENADA
+711|Variación de productos terminados
+7111|Productos terminados
+712|Variación de subproductos, desechos y desperdicios
+7121|Subproductos
+7122|Desechos y desperdicios
+713|Variación de productos en proceso
+7131|Productos en proceso de manufactura
+714|Variación de envases y embalajes
+7141|Envases
+7142|Embalajes
+715|Variación de inventarios de servicios
+7151|Inventarios de servicios en proceso
+72|PRODUCCIÓN DE ACTIVO INMOVILIZADO
+721|Propiedades de inversión
+7211|Edificaciones
+722|Propiedad, planta y equipo
+7220|Planta productora
+7221|Edificaciones
+7222|Maquinarias y otros equipos de explotación
+7223|Unidades de transporte
+7224|Muebles y enseres
+7225|Equipos diversos
+723|Intangibles
+7231|Programas de computadora ( software )
+7232|Costos de exploración y desarrollo
+7233|Fórmulas, diseños y prototipos
+724|Activos biológicos
+7241|Activos biológicos en desarrollo de origen animal
+7242|Activos biológicos en desarrollo de origen vegetal
+725|Costos de financiación capitalizados
+7251|Costos de financiación – Propiedades de inversión
+72511|Plantas productoras en desarrollo
+72512|Edificaciones
+7252|Costos de financiación – Propiedad, planta y equipo
+72521|Plantas productoras en desarrollo
+72522|Edificaciones
+72523|Maquinarias y otros equipos de explotación
+7253|Costos de financiación – Intangibles
+7254|Costos de financiación – Activos biológicos en desarrollo
+72541|Activos biológicos de origen animal
+72542|Activos biológicos de origen vegetal
+73|DESCUENTOS, REBAJAS Y BONIFICACIONES OBTENIDOS
+731|Descuentos, rebajas y bonificaciones obtenidos
+7311|Terceros
+7312|Relacionadas
+74|DESCUENTOS, REBAJAS y BONIFICACIONES CONCEDIDOS
+741|Descuentos, rebajas y bonificaciones concedidos
+7411|Terceros
+7412|Relacionadas
+75|OTROS INGRESOS DE GESTIÓN
+751|Servicios en beneficio del personal
+752|Comisiones y corretajes
+753|Regalías
+754|Alquileres
+7540|Plantas productoras
+7541|Terrenos
+7542|Edificaciones
+7543|Maquinarias y equipos de explotación
+7544|Unidades de transporte
+7545|Equipos diversos
+755|Recuperación de cuentas de valuación
+7551|Recuperación – Cuentas de cobranza dudosa
+7552|Recuperación – Desvalorización de inventarios
+7553|Recuperación – Desvalorización de inversiones mobiliarias
+756|Enajenación de activos inmovilizados
+7561|Inversiones mobiliarias
+7562|Propiedades de inversión
+7563|Activos adquiridos en arrendamiento financiero
+7564|Propiedad, planta y equipo
+7565|Intangibles
+7566|Activos biológicos
+757|Recuperación de deterioro de cuentas de activos inmovilizados
+7571|Recuperación de deterioro de propiedades de inversión
+7572|Recuperación de deterioro de propiedad, planta y equipo
+7573|Recuperación de deterioro de intangibles
+7574|Recuperación de deterioro de activos biológicos
+759|Otros ingresos de gestión
+7591|Subsidios gubernamentales
+7592|Reclamos al seguro
+7593|Donaciones
+7594|Devoluciones tributarias
+7599|Otros ingresos de gestión
+76|GANANCIA POR MEDICIÓN DE ACTIVOS NO FINANCIEROS AL VALOR RAZONABLE
+761|Activo realizable
+7611|Mercaderías
+7612|Productos terminados
+7613|Activos no corrientes mantenidos para la venta
+76131|Propiedades de inversión
+76132|Propiedad, planta y equipo
+76133|Intangibles
+76134|Activos biológicos
+762|Activo inmovilizado
+7621|Propiedades de inversión
+7622|Activos biológicos
+77|INGRESOS FINANCIEROS
+771|Ganancia por instrumento financiero derivado
+772|Rendimientos ganados
+7721|Depósitos en instituciones financieras
+7722|Cuentas por cobrar comerciales
+7723|Préstamos otorgados
+7724|Inversiones a ser mantenidas hasta el vencimiento
+7725|Instrumentos financieros representativos de derecho patrimonial
+773|Dividendos
+774|Ingresos en operaciones de factoraje (factoring)
+775|Descuentos obtenidos por pronto pago
+776|Diferencia en cambio
+777|Ganancia por medición de activos y pasivos financieros al valor razonable
+7771|Inversiones mantenidas para negociación
+7772|Otras inversiones
+7773|Otras
+778|Participación en resultados de entidades relacionadas
+7781|Participación en los resultados de subsidiarias y asociadas bajo el método del valor patrimonial
+7782|Ingresos por participaciones en negocios conjuntos
+779|Otros ingresos financieros
+7792|Ingresos financieros en medición a valor descontado
+78|CARGAS CUBIERTAS POR PROVISIONES
+781|Cargas cubiertas por provisiones
+79|CARGAS IMPUTABLES A CUENTAS DE COSTOS Y GASTOS
+791|Cargas imputables a cuentas de costos y gastos
+792|Gastos financieros imputables a cuentas de inventarios
+8|SALDOS INTERMEDIARIOS DE GESTIÓN Y DETERMINACIÓN DEL RESULTADO DEL EJERCICIO
+80|MARGEN COMERCIAL
+801|Margen comercial
+81|PRODUCCIÓN DEL EJERCICIO
+811|Producción de bienes
+812|Producción de servicios
+813|Producción de activo inmovilizado
+82|VALOR AGREGADO
+821|Valor agregado
+83|EXCEDENTE BRUTO (INSUFICIENCIA BRUTA) DE EXPLOTACIÓN
+831|Excedente bruto (insuficiencia bruta) de explotación
+84|RESULTADO DE EXPLOTACIÓN
+841|Resultado de explotación
+85|RESULTADO ANTES DE IMPUESTO A LAS GANANCIAS
+851|Resultado antes del impuesto a las ganancias
+88|IMPUESTO A LAS GANANCIAS
+881|Impuesto a las ganancias – Corriente
+882|Impuesto a las ganancias – Diferido
+89|DETERMINACIÓN DEL RESULTADO DEL EJERCICIO
+891|Utilidad
+892|Pérdida
+9|CONTABILIDAD ANALÍTICA DE EXPLOTACIÓN (de libre uso)
+90|COSTO DE PRODUCCIÓN (cuentas analíticas)
+91|COSTO DE PRODUCCIÓN (cuentas analíticas)
+92|COSTO DE PRODUCCIÓN (cuentas analíticas)
+93|CENTROS DE COSTOS
+94|GASTOS ADMINISTRATIVOS
+95|GASTOS DE VENTAS
+96|GASTOS DE OPERACIÓN (cuentas analíticas)
+97|GASTOS FINANCIEROS
+98|CUENTAS ANALÍTICAS (de libre uso)`;
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -617,7 +2440,7 @@ const PCGE_TXT = `10|Efectivo y equivalentes de efectivo
 94|Gastos administrativos
 95|Gastos de ventas
 97|Gastos financieros`;
-const PCGE = PCGE_TXT.split('\n').map(l => { const [c, n] = l.split('|'); return {c, n}; });
+const PCGE = PCGE_FULL.split('\n').map(l => { const i = l.indexOf('|'); return {c: l.slice(0, i), n: l.slice(i + 1)}; });
 const PCGE_MAP = Object.fromEntries(PCGE.map(a => [a.c, a.n]));
 function acctName(code) {
   const c = String(code || '').replace(/\D/g, '');
@@ -712,8 +2535,8 @@ const lastDay = M => { const [y, m] = M.split('-').map(Number); return new Date(
 
 /* ===================== Empresa simulada del mes ===================== */
 function personName(R) { return R.pick(NOM) + ' ' + R.pick(APE) + ' ' + R.pick(APE); }
-function newMonth(M, regime) {
-  const R = rngFrom('mes:' + M);
+function newMonth(M, regime, seed = '') {
+  const R = rngFrom('mes:' + M + seed);
   const giro = R.pick(GIROS);
   const name = R.pick(['Distribuidora', 'Comercializadora', 'Importaciones', 'Negocios', 'Inversiones']) + ' ' + R.pick(W1) + ' ' + R.pick(['S.A.C.', 'E.I.R.L.', 'S.R.L.']);
   const prods = R.shuffle(giro.prods.slice()).slice(0, 4).map(([n, u, lo, hi], i) => ({id: 'P' + (i + 1), n, u, cu: R.amt(lo, hi), cod: 'MER-' + p2(i + 1)}));
@@ -735,7 +2558,7 @@ function newMonth(M, regime) {
   const cxcT = r2(cxc.reduce((s, x) => s + x.total, 0)), cxpT = r2(cxp.reduce((s, x) => s + x.total, 0));
   const open = [['101', caja, 0], ['1041', bco, 0], ['1212', cxcT, 0], ['2011', invT, 0]];
   assets.forEach(a => open.push([a.c, a.cost, 0]));
-  open.push(['391', 0, depAc], ['4212', 0, cxpT]);
+  open.push(['395', 0, depAc], ['4212', 0, cxpT]);
   const dT = open.reduce((s, l) => s + l[1], 0), hT = open.reduce((s, l) => s + l[2], 0);
   open.push(['5011', 0, r2(dT - hT)]);
   return {
@@ -802,10 +2625,10 @@ function genOp(R, mo, type, date, fmt) {
       const cand = co.prods.filter(p => st.inv[p.id].q >= 12);
       if (!cand.length) return null;
       const p = R.pick(cand), I = st.inv[p.id];
-      const bol = fmt === 'caja' ? true : (fmt === 'kardex' || fmt === 'kardexu') ? R.chance(0.3) : R.chance(0.3);
-      let q = R.int(Math.max(1, Math.floor(I.q * 0.08)), Math.max(2, Math.floor(I.q * 0.45)));
+      const bol = fmt === 'caja' || fmt === 'B' ? true : fmt === 'F' ? false : R.chance(0.3);
+      let q = R.int(Math.max(1, Math.floor(I.q * 0.15)), Math.max(2, Math.floor(I.q * 0.55)));
       const cuAvg = r2(I.t / I.q);
-      let pu = r2(cuAvg * (1.25 + R() * 0.35));
+      let pu = r2(cuAvg * (1.35 + R() * 0.45));
       if (bol) { q = Math.min(q, Math.max(1, Math.floor(1500 / (pu * 1.18)))); }
       const base = r2(q * pu), igv = r2(base * 0.18), total = r2(base + igv);
       const costT = r2(q * cuAvg);
@@ -817,10 +2640,10 @@ function genOp(R, mo, type, date, fmt) {
         const prevCaja = st.caja; st.caja = r2(st.caja + total);
         op.text = `Vendes al contado en efectivo a ${per.n} (DNI ${per.dni}) ${q} ${p.u}${q > 1 ? 's' : ''} de «${p.n}». Emites la boleta ${serie}-${num}. El costo promedio de la mercadería es ${money(cuAvg)} por ${p.u}.`;
         op.cp = {...cpBase, kind: 'bol', title: 'BOLETA DE VENTA ELECTRÓNICA', em: co.name, emRuc: co.ruc, serie, num, rcLbl: 'Cliente', rc: per.n, rcDoc: 'DNI ' + per.dni, items: [[q, p.u, p.n, pu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: 'Pago al contado en efectivo'};
-        op.lines = [Dl('101', total, 'Cobras en efectivo: entra dinero a Caja (101) por el total.'), Hl('40111', igv, 'El IGV de la venta es débito fiscal: 40111 al Haber.'), Hl('7011', base, 'La venta se abona a la 70 Ventas (7011) por el valor de venta.'),
-          Dl('6911', costT, 'Costo de ventas (inventario permanente): 69 al Debe por el costo promedio.'), Hl('2011', costT, '…y sale la mercadería del almacén: 20 al Haber.')];
+        op.lines = [Dl('101', total, 'Cobras en efectivo: entra dinero a Caja (101) por el total.'), Hl('40111', igv, 'El IGV de la venta es débito fiscal: 40111 al Haber.'), Hl('7012', base, 'La venta se abona a la 70 Ventas (7012 venta local) por el valor de venta.'),
+          Dl('6912', costT, 'Costo de ventas (inventario permanente): 69 al Debe por el costo promedio.'), Hl('2011', costT, '…y sale la mercadería del almacén: 20 al Haber.')];
         op.reg = {fe: date, tcp: '03', serie, num: String(num), td: '1', nd: per.dni, rs: per.n, bi: base, igv, ng: 0, tot: total};
-        op.cash = {caja: {desc: `Venta al contado B ${serie}-${num}`, cta: '7011', alts: ['12', '70'], ing: total, sal: 0, prev: prevCaja}};
+        op.cash = {caja: {desc: `Venta al contado B ${serie}-${num}`, cta: '7012', alts: ['12', '70'], ing: total, sal: 0, prev: prevCaja}};
         op.glosa = `Venta al contado s/ B ${serie}-${num}`;
         op.kx = {pid: p.id, prod: p.n, u: p.u, cod: p.cod, tcp: '03', serie, num: String(num), top: '01', prev, ent: null, sal: {q, cu: cuAvg, t: costT}, fin};
         op.hint = 'Venta al contado con boleta: 10 (total) contra 40111 (IGV) y 70 (valor de venta). Luego el costo: 69 a 20 al costo promedio.';
@@ -829,8 +2652,8 @@ function genOp(R, mo, type, date, fmt) {
         st.cxc.push({doc: serie + '-' + num, base, igv, total, cli, pid: p.id, q, pu, cu: cuAvg});
         op.text = `Vendes al crédito (15 días) a ${cli.n} ${q} ${p.u}${q > 1 ? 's' : ''} de «${p.n}» a ${money(pu)} c/u más IGV. Emites la factura ${serie}-${num}. El costo promedio es ${money(cuAvg)} por ${p.u}.`;
         op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: co.name, emRuc: co.ruc, serie, num, rcLbl: 'Cliente', rc: cli.n, rcDoc: 'RUC ' + cli.ruc, items: [[q, p.u, p.n, pu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: 'Forma de pago: crédito a 15 días'};
-        op.lines = [Dl('1212', total, 'El cliente te debe el total: 1212 Emitidas en cartera al Debe.'), Hl('40111', igv, 'El IGV de la venta es débito fiscal: 40111 al Haber.'), Hl('7011', base, 'La venta se abona a la 70 Ventas (7011) por el valor de venta.'),
-          Dl('6911', costT, 'Costo de ventas (inventario permanente): 69 al Debe por el costo promedio.'), Hl('2011', costT, '…y sale la mercadería del almacén: 20 al Haber.')];
+        op.lines = [Dl('1212', total, 'El cliente te debe el total: 1212 Emitidas en cartera al Debe.'), Hl('40111', igv, 'El IGV de la venta es débito fiscal: 40111 al Haber.'), Hl('7012', base, 'La venta se abona a la 70 Ventas (7012 venta local) por el valor de venta.'),
+          Dl('6912', costT, 'Costo de ventas (inventario permanente): 69 al Debe por el costo promedio.'), Hl('2011', costT, '…y sale la mercadería del almacén: 20 al Haber.')];
         op.reg = {fe: date, tcp: '01', serie, num: String(num), td: '6', nd: cli.ruc, rs: cli.n, bi: base, igv, ng: 0, tot: total};
         op.glosa = `Venta al crédito s/ F ${serie}-${num}`;
         op.kx = {pid: p.id, prod: p.n, u: p.u, cod: p.cod, tcp: '01', serie, num: String(num), top: '01', prev, ent: null, sal: {q, cu: cuAvg, t: costT}, fin};
@@ -974,7 +2797,7 @@ function genOp(R, mo, type, date, fmt) {
     }
     case 'planilla': {
       if (st.plaPend > 0) return null;
-      const n = R.int(3, 6), S = r2(Array.from({length: n}, () => R.int(115, 320) * 10).reduce((a, b) => a + b, 0));
+      const n = R.int(2, 4), S = r2(Array.from({length: n}, () => R.int(115, 260) * 10).reduce((a, b) => a + b, 0));
       const ess = r2(S * 0.09), onp = r2(S * 0.13), net = r2(S - onp);
       st.plaPend = net;
       op.text = `Provisionas la planilla del mes de ${n} trabajadores del área administrativa: sueldos ${money(S)}. Todos aportan a la ONP (13%) y la empresa paga ESSALUD (9%).`;
@@ -1006,7 +2829,7 @@ function genOp(R, mo, type, date, fmt) {
       const tot = r2(rows.reduce((s, r) => s + r[3], 0));
       op.text = `Registras la depreciación del mes de tus activos fijos (método de línea recta, tasas SUNAT): ${rows.map(r => `${r[0]} (costo ${money(r[1])}, ${r[2] * 100}% anual)`).join('; ')}. Gasto administrativo.`;
       op.cp = {...cpBase, kind: 'pla', title: 'CUADRO DE DEPRECIACIÓN DEL MES', em: co.name, emRuc: co.ruc, serie: 'Mes', num: fmtD(date).slice(3), rcLbl: 'Activos', rc: String(rows.length), rcDoc: '', items: rows.map(r => [1, '', r[0] + ' · ' + r[2] * 100 + '%', r[1], r[3]]), tot: [['Depreciación del mes', tot]], note: 'Depreciación mensual = costo × tasa ÷ 12'};
-      op.lines = [Dl('681', tot, 'La depreciación es un gasto: 681 Depreciación al Debe.'), Hl('391', tot, 'Se acumula en la 391 Depreciación acumulada (cuenta de valuación del activo).'), Dl('94', tot, 'Destino: gasto administrativo → 94.', true), Hl('791', tot, '…con abono a la 79.', true)];
+      op.lines = [Dl('684', tot, 'La depreciación es un gasto: 684 Depreciación de propiedad, planta y equipo al Debe.'), Hl('395', tot, 'Se acumula en la 395 Depreciación acumulada de propiedad, planta y equipo.'), Dl('94', tot, 'Destino: gasto administrativo → 94.', true), Hl('791', tot, '…con abono a la 79.', true)];
       op.glosa = 'Depreciación del mes';
       op.hint = 'Depreciación mensual = costo × tasa anual ÷ 12. Asiento: 68 al Debe y 39 al Haber.';
       op.fp = `de|${tot}`;
@@ -1018,7 +2841,7 @@ function genOp(R, mo, type, date, fmt) {
       st.assets.push({n: a.n, c: a.c, rate: a.rate, cost: base, months: 0});
       op.text = `Compras a ${sup.n} un(a) ${a.n.toLowerCase()} por ${money(base)} más IGV, para uso de la empresa (no para vender). Pagarás en 30 días. Factura ${serie}-${num}.`;
       op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: sup.n, emRuc: sup.ruc, serie, num, rcLbl: 'Cliente', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [[1, 'unidad', a.n, base, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: 'Forma de pago: crédito a 30 días'};
-      op.lines = [Dl(a.c, base, `Es un activo fijo: ${a.c} ${acctName(a.c)} (clase 33) al Debe.`), Dl('40111', igv, 'El IGV es crédito fiscal: 40111 al Debe.'), Hl('465', total, 'La deuda por compra de activo inmovilizado va a la 465 (no a la 42).')];
+      op.lines = [Dl(a.c, base, `Es un activo fijo: ${a.c} ${acctName(a.c)} (clase 33) al Debe.`), Dl('40111', igv, 'El IGV es crédito fiscal: 40111 al Debe.'), Hl('4654', total, 'La deuda por compra de activo inmovilizado va a la 4654 Pasivos por compra de activo inmovilizado – PPE (no a la 42).')];
       op.glosa = `Compra de activo fijo s/ F ${serie}-${num}`;
       op.reg = {fe: date, tcp: '01', serie, num: String(num), td: '6', nd: sup.ruc, rs: sup.n, bi: base, igv, ng: 0, tot: total};
       op.hint = 'Activo fijo: clase 33 + 40111 contra 465 Pasivos por compra de activo inmovilizado.';
@@ -1036,8 +2859,8 @@ function genOp(R, mo, type, date, fmt) {
       const num = ++st.seqNC, serie = 'FC01', [rs, rn] = x.doc.split('-');
       op.text = `${x.cli.n} te devuelve ${k} ${p.u}${k > 1 ? 's' : ''} de «${p.n}» de la factura ${x.doc} (vendidas a ${money(x.pu)} c/u más IGV; costo ${money(x.cu)}). Emites la nota de crédito ${serie}-${num} y la mercadería regresa al almacén.`;
       op.cp = {...cpBase, kind: 'fact', title: 'NOTA DE CRÉDITO ELECTRÓNICA', em: co.name, emRuc: co.ruc, serie, num, rcLbl: 'Cliente', rc: x.cli.n, rcDoc: 'RUC ' + x.cli.ruc, items: [[k, p.u, p.n + ' (devolución)', x.pu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: 'Documento que modifica: Factura ' + x.doc + ' · Motivo: devolución total por ítem'};
-      op.lines = [Dl('709', base, 'La devolución disminuye las ventas: 709 Devoluciones sobre ventas al Debe.'), Dl('40111', igv, 'Se revierte el débito fiscal: 40111 al Debe.'), Hl('1212', total, 'El cliente te debe menos: 1212 al Haber.'),
-        Dl('2011', cost, 'La mercadería regresa al almacén: 20 al Debe al costo.'), Hl('6911', cost, '…y se reduce el costo de ventas: 69 al Haber.')];
+      op.lines = [Dl('7092', base, 'La devolución disminuye las ventas: 7092 Devoluciones sobre ventas – mercaderías venta local al Debe.'), Dl('40111', igv, 'Se revierte el débito fiscal: 40111 al Debe.'), Hl('1212', total, 'El cliente te debe menos: 1212 al Haber.'),
+        Dl('2011', cost, 'La mercadería regresa al almacén: 20 al Debe al costo.'), Hl('6912', cost, '…y se reduce el costo de ventas: 69 al Haber.')];
       op.glosa = `Devolución s/ NC ${serie}-${num} (ref. F ${x.doc})`;
       op.reg = {fe: date, tcp: '07', serie, num: String(num), td: '6', nd: x.cli.ruc, rs: x.cli.n, bi: -base, igv: -igv, ng: 0, tot: -total, rtcp: '01', rserie: rs, rnum: rn};
       op.hint = 'Nota de crédito: 709 + 40111 contra 12; la mercadería vuelve: 20 contra 69. En el Registro de Ventas va con montos negativos y tipo 07.';
@@ -1489,177 +3312,409 @@ function solCompact(c, destino) {
   if (c.kind === 'diario') return {L: c.lines.filter(l => destino || !l.dest).map(l => [l.c, l.d, l.h])};
   const o = {}; for (const [k, f] of Object.entries(c.fields)) o[k] = f.v; return o;
 }
-/* ===================== Almacenamiento (nube del artifact, con respaldo local) ===================== */
-const Store = {
-  mode: 'local', db: null, base: 'local/app', mem: {}, ch: {},
-  async init() {
-    try {
-      if (window.claude && typeof claude.use === 'function') {
-        const [db, us] = await Promise.all([claude.use('db'), claude.use('user')]);
-        if (db && us) { const id = await us.id(); if (id) { this.db = db; this.base = 'data/users/' + id + '/app'; this.mode = 'db'; } }
-      }
-    } catch (e) { console.warn('db no disponible', e); }
-  },
-  lk(p) { return 'viernes:' + p; },
-  async retry(fn) { try { return await fn(); } catch (e) { if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 400 + Math.random() * 600)); return fn(); } throw e; } },
-  async get(path) {
-    if (this.mode === 'db') { const s = await this.retry(() => this.db.doc(path).get()); return s.exists ? JSON.parse(JSON.stringify(s.data())) : null; }
-    try { const v = localStorage.getItem(this.lk(path)); return v ? JSON.parse(v) : (this.mem[path] ? JSON.parse(this.mem[path]) : null); } catch { return this.mem[path] ? JSON.parse(this.mem[path]) : null; }
-  },
-  set(path, data) {
-    const body = JSON.parse(JSON.stringify(data));
-    const run = async () => {
-      if (this.mode === 'db') return this.retry(() => this.db.doc(path).set(body));
-      const str = JSON.stringify(body);
-      try { localStorage.setItem(this.lk(path), str); } catch { this.mem[path] = str; }
-    };
-    const prev = this.ch[path] || Promise.resolve();
-    const p = prev.catch(() => {}).then(run);
-    this.ch[path] = p;
-    return p;
-  },
-  async list(col, {field, val, limit = 200} = {}) {
-    if (this.mode === 'db') {
-      let q = this.db.collection(col);
-      if (field) q = q.where(field, '==', val);
-      q = q.orderBy('ts', 'desc').limit(Math.min(limit, 1000));
-      const s = await this.retry(() => q.get());
-      return s.docs.map(d => JSON.parse(JSON.stringify(d.data())));
-    }
-    const pre = this.lk(col + '/'), out = [];
-    const take = (k, v) => { const rest = k.slice(pre.length); if (rest.includes('/')) return; try { const o = JSON.parse(v); if (!field || o[field] === val) out.push(o); } catch {} };
-    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(pre)) take(k, localStorage.getItem(k)); } } catch {}
-    for (const [k, v] of Object.entries(this.mem)) if (this.lk(k).startsWith(pre)) take(this.lk(k), v);
-    return out.sort((a, b) => b.ts - a.ts).slice(0, limit);
+/* ===================== Ciclo contable completo de una empresa (20 operaciones → 7 etapas) ===================== */
+const STAGES = [
+  {n: 1, t: 'Libro Diario', d: 'Registra las 20 operaciones del mes (Formato 5.1)'},
+  {n: 2, t: 'Compras y Ventas', d: 'Pasa los comprobantes a los formatos 8.1 y 14.1'},
+  {n: 3, t: 'Caja y Bancos', d: 'Movimientos de efectivo y cuenta corriente (1.1 y 1.2)'},
+  {n: 4, t: 'Kárdex', d: 'Inventario permanente valorizado (13.1), promedio ponderado'},
+  {n: 5, t: 'Libro Mayor', d: 'Mayoriza las cuentas principales (6.1)'},
+  {n: 6, t: 'Balance de comprobación', d: 'Sumas y saldos de todas las cuentas'},
+  {n: 7, t: 'Cierre y EEFF', d: 'PDT 621, activos fijos, costo de ventas y estados financieros'},
+];
+const CYCLE_PLAN = ['compra_merc', 'compra_merc', 'venta_merc:F', 'compra_serv', 'venta_merc:B', 'cobro_banco', 'pago_prov', 'compra_merc', 'venta_merc:F', 'gasto_caja',
+  'rxh', 'venta_merc:B', 'deposito', 'compra_merc', 'venta_merc:F', 'compra_serv', 'cobro_banco', 'pago_prov', 'planilla', 'depreciacion'];
+const FALLBACK_OPS = ['compra_serv', 'compra_merc', 'gasto_caja', 'aporte', 'rxh'];
+
+function genCycleOps(R, mo) {
+  const M = mo.id, L = lastDay(M), ops = [];
+  CYCLE_PLAN.forEach((item, i) => {
+    const day = Math.min(L, Math.round(1 + i * (L - 2) / (CYCLE_PLAN.length - 1)));
+    const date = `${M}-${p2(day)}`;
+    const [type, f] = item.split(':');
+    let op = null;
+    for (let t = 0; t < 30 && !op; t++) { const snap = JSON.stringify(mo.state); op = genOp(R, mo, type, date, f || 'diario'); if (!op) mo.state = JSON.parse(snap); }
+    for (let k = 0; !op && k < FALLBACK_OPS.length * 3; k++) { const snap = JSON.stringify(mo.state); op = genOp(R, mo, FALLBACK_OPS[k % FALLBACK_OPS.length], date, 'diario'); if (!op) mo.state = JSON.parse(snap); }
+    if (op) ops.push(op);
+  });
+  return ops;
+}
+function accLinesAll(mo, ops, withDest = true) {
+  const L = mo.open.map(([c, d, h]) => ({c, d, h, f: mo.id + '-01', g: 'Asiento de apertura'}));
+  ops.forEach(op => op.lines.forEach(l => { if (withDest || !l.dest) L.push({c: l.c, d: l.d, h: l.h, f: op.date, g: op.glosa}); }));
+  return L;
+}
+function cycleAgg(mo, ops) {
+  const acc = {};
+  accLinesAll(mo, ops).forEach(l => { const k = k2(l.c); const o = acc[k] || (acc[k] = {d: 0, h: 0}); o.d = r2(o.d + l.d); o.h = r2(o.h + l.h); });
+  return acc;
+}
+const N1 = (v, why, l, k = 'calculo', o = {}) => F('n', v, why, {l, k, tol: 1, ...o});
+const N2 = (v, why, l, k = 'calculo', o = {}) => F('n', v, why, {l, k, tol: 0.02, ...o});
+
+function stageCasesFromOps(mo, ops) {
+  const out = [];
+  const push = (c, st) => { if (c) { c.stage = st; out.push(c); } };
+  ops.forEach(op => push(caseFromOp(op, 'diario', mo.co), 1));
+  ops.forEach(op => { if (op.reg) push(caseFromOp(op, ['venta_merc', 'nota_credito'].includes(op.type) ? 'ventas' : 'compras', mo.co), 2); });
+  ops.forEach(op => { if (op.cash) { if (op.cash.caja) push(caseFromOp(op, 'caja', mo.co), 3); if (op.cash.banco) push(caseFromOp(op, 'banco', mo.co), 3); } });
+  ops.forEach(op => { if (op.kx) push(caseFromOp(op, 'kardex', mo.co), 4); });
+  return out;
+}
+
+function mayorCase(mo, ops, code) {
+  const openL = mo.open.find(o => o[0] === code);
+  const si = openL ? r2(openL[1] - openL[2]) : 0;
+  const mv = []; ops.forEach(op => op.lines.forEach(l => { if (l.c === code) mv.push({f: op.date, g: op.glosa, d: l.d, h: l.h}); }));
+  if (mv.length < 2) return null;
+  const td = r2(mv.reduce((s, l) => s + l.d, 0)), th = r2(mv.reduce((s, l) => s + l.h, 0)), sf = r2(si + td - th);
+  const c = {fmt: 'mayor', op: 'synth', date: ops[ops.length - 1].date, kind: 'grid', cp: null, fields: {}, title: 'Mayorizar ' + code + ' ' + acctName(code)};
+  c.instr = 'Mayoriza la cuenta (Formato 6.1): suma los movimientos del mes, determina el saldo final y su naturaleza.';
+  c.text = `Cuenta ${code} ${acctName(code)}. Saldo inicial del mes (asiento de apertura): ${money(Math.abs(si))} ${si >= 0 ? 'deudor' : 'acreedor'}. Estos son sus movimientos del Libro Diario de la empresa.`;
+  c.fields.td = N2(td, 'Suma de todos los cargos (Debe) del mes, sin el saldo inicial.', 'Total movimiento Debe', 'saldo');
+  c.fields.th = N2(th, 'Suma de todos los abonos (Haber) del mes.', 'Total movimiento Haber', 'saldo');
+  c.fields.sf = N2(Math.abs(sf), 'Saldo final = saldo inicial + Debe − Haber (en valor absoluto).', 'Saldo final', 'saldo');
+  c.fields.nat = F('sel', sf >= 0 ? 'Deudor' : 'Acreedor', 'Si los cargos (más el saldo deudor inicial) superan a los abonos, el saldo es deudor; si no, acreedor.', {l: 'Naturaleza del saldo', k: 'naturaleza', opts: ['Deudor', 'Acreedor']});
+  c.tbl = {cols: ['Fecha', 'Glosa', 'Debe', 'Haber'], rows: [
+    ['', {s: 'Saldo inicial', c: 'b'}, si >= 0 ? {s: nf(si), c: 'num'} : '', si < 0 ? {s: nf(-si), c: 'num'} : ''],
+    ...mv.map(l => [{s: fmtD(l.f)}, l.g, l.d ? {s: nf(l.d), c: 'num'} : '', l.h ? {s: nf(l.h), c: 'num'} : '']),
+    ['', {s: 'Total movimiento del mes', c: 'b'}, {f: 'td'}, {f: 'th'}],
+    ['', {s: 'Saldo final', c: 'b'}, {f: 'sf'}, {f: 'nat'}]]};
+  c.hint = 'Suma por separado el Debe y el Haber del mes. Luego: saldo inicial (+ si es deudor, − si es acreedor) + Debe − Haber.';
+  c.fp = 'my|' + code;
+  return c;
+}
+function balanceCase(mo, ops) {
+  const acc = cycleAgg(mo, ops), ks = Object.keys(acc).sort();
+  const c = {fmt: 'balance', op: 'synth', date: ops[ops.length - 1].date, kind: 'grid', cp: null, fields: {}, title: 'Balance de comprobación de la empresa'};
+  let tD = 0, tH = 0, tSD = 0, tSA = 0;
+  const rows = ks.map((k, i) => { const o = acc[k], s = r2(o.d - o.h); const sd = s > 0 ? s : 0, sa = s < 0 ? -s : 0; tD += o.d; tH += o.h; tSD += sd; tSA += sa;
+    c.fields['sd' + i] = F('n', sd, 'Saldo deudor = Debe − Haber cuando el Debe es mayor.', {l: `Saldo deudor ${k}`, k: 'saldo', z: true, tol: 0.02});
+    c.fields['sa' + i] = F('n', sa, 'Saldo acreedor = Haber − Debe cuando el Haber es mayor.', {l: `Saldo acreedor ${k}`, k: 'saldo', z: true, tol: 0.02});
+    return [k, acctName(k), {s: nf(o.d), c: 'num'}, {s: nf(o.h), c: 'num'}, {f: 'sd' + i}, {f: 'sa' + i}]; });
+  c.fields.tSD = F('n', r2(tSD), 'Suma de los saldos deudores. Debe ser igual a la de saldos acreedores.', {l: 'Total saldos deudores', k: 'calculo', tol: 0.05});
+  c.fields.tSA = F('n', r2(tSA), 'Suma de los saldos acreedores.', {l: 'Total saldos acreedores', k: 'calculo', tol: 0.05});
+  c.instr = 'Completa el Balance de comprobación del mes (incluye apertura, asientos del mes y destino): calcula el saldo de cada cuenta. Deja vacío el lado que no corresponda.';
+  c.text = `Sumas del Libro Mayor de ${mo.co.name} al cierre de ${mesLbl(mo.id)}, agrupadas por cuenta (2 dígitos).`;
+  c.tbl = {groups: [['Cuenta', 2], ['Sumas', 2], ['Saldos', 2]], cols: ['Código', 'Denominación', 'Debe', 'Haber', 'Deudor', 'Acreedor'], rows: [...rows, ['', {s: 'Totales', c: 'b'}, {s: nf(r2(tD)), c: 'num'}, {s: nf(r2(tH)), c: 'num'}, {f: 'tSD'}, {f: 'tSA'}]]};
+  c.hint = 'En cada cuenta resta el menor del mayor. Al final, la suma de saldos deudores debe igualar a la de acreedores.';
+  c.fp = 'bc';
+  return c;
+}
+function closeCases(mo, ops) {
+  const out = [], date = ops[ops.length - 1].date, co = mo.co;
+  const base = (fmt, title) => ({fmt, op: 'synth', date, kind: 'grid', cp: null, fields: {}, title});
+  const L = (t, v, ent) => [t, {s: ent ? ni(v) : nf(v), c: 'num'}];
+  // PDT 621 con los registros de la empresa
+  {
+    const reg = mo.regime || 'MYPE', rate = REGIMEN[reg].rate;
+    const vb = r2(ops.filter(o => o.reg && ['venta_merc', 'nota_credito'].includes(o.type)).reduce((s, o) => s + o.reg.bi, 0));
+    const cb = r2(ops.filter(o => o.reg && !['venta_merc', 'nota_credito'].includes(o.type)).reduce((s, o) => s + o.reg.bi, 0));
+    const c100 = Math.round(vb), c101 = Math.round(c100 * 0.18), c107 = Math.round(cb), c108 = Math.round(c107 * 0.18), c140 = c101 - c108;
+    const c = base('f621', 'PDT 621 del mes'), fl = c.fields;
+    fl.c100 = N1(c100, 'Casilla 100: suma de bases imponibles de tu Registro de Ventas, en soles enteros.', '100 Ventas netas gravadas (base)', 'pdt');
+    fl.c101 = N1(c101, 'Casilla 101 = casilla 100 × 18%.', '101 IGV de ventas', 'igv');
+    fl.c107 = N1(c107, 'Casilla 107: suma de bases imponibles de tu Registro de Compras, en soles enteros.', '107 Compras netas gravadas (base)', 'pdt');
+    fl.c108 = N1(c108, 'Casilla 108 = casilla 107 × 18%.', '108 IGV de compras', 'igv');
+    fl.c140 = N1(c140, 'Casilla 140 = 101 − 108 (si sale negativo, es saldo a favor).', '140 Impuesto resultante', 'igv');
+    fl.c184 = N1(Math.max(0, c140), 'Casilla 184: IGV a pagar (0 si hay saldo a favor). No hay saldo a favor del mes anterior.', '184 IGV a pagar', 'igv', {z: true});
+    fl.c301 = N1(c100, 'Casilla 301: ingresos netos del mes.', '301 Ingresos netos', 'pdt');
+    fl.c312 = N1(Math.round(c100 * rate), `Pago a cuenta del ${REGIMEN[reg].n}: ingresos netos × ${(rate * 100).toLocaleString('en-US')}%.`, '312 Pago a cuenta de renta', 'renta');
+    c.instr = 'Llena el Formulario Virtual 621 con los datos de tus Registros de Compras y Ventas de este mes (casillas en soles enteros).';
+    c.text = `${co.name} · ${REGIMEN[reg].n} · período ${mesLbl(mo.id)}. Usa los totales de los registros que llenaste en la etapa 2 (aquí van las bases correctas: ventas ${money(vb)}, compras ${money(cb)}).`;
+    c.tbl = {cols: ['Casilla', 'Monto (S/)'], rows: Object.keys(fl).map(k => [fl[k].l, {f: k}])};
+    c.hint = 'IGV: 101 − 108 = 140. Renta: ingresos netos × tasa del régimen.'; c.fp = '621'; out.push(c);
   }
+  // Activos fijos (7.1)
+  mo.state.assets.forEach((a, i) => {
+    const months = (a.months || 0) + 1, anual = r2(a.cost * a.rate), mens = r2(anual / 12), acum = r2(mens * months), vn = r2(a.cost - acum);
+    const c = base('activo', 'Activo fijo: ' + a.n), fl = c.fields;
+    fl.anual = N2(anual, 'Depreciación anual = costo × tasa.', 'Depreciación anual', 'calculo', {tol: 0.05});
+    fl.mens = N2(mens, 'Depreciación mensual = depreciación anual ÷ 12.', 'Depreciación del mes', 'calculo', {tol: 0.05});
+    fl.acum = N2(acum, `Depreciación acumulada = mensual × ${months} meses (los que ya tenía + este mes).`, 'Depreciación acumulada al cierre', 'calculo', {tol: 0.1});
+    fl.vn = N2(vn, 'Valor neto = costo − depreciación acumulada.', 'Valor neto en libros', 'calculo', {tol: 0.1});
+    c.instr = 'Completa la línea del Registro de Activos Fijos (Formato 7.1) al cierre del mes (línea recta, tasas SUNAT).';
+    c.text = `${a.n} (cuenta ${a.c}), costo ${money(a.cost)}, tasa ${a.rate * 100}% anual. Al empezar el mes ya tenía ${a.months || 0} meses depreciados.`;
+    c.tbl = {cols: ['Código', 'Descripción', 'Valor histórico', '% deprec.', 'Deprec. anual', 'Deprec. del mes', 'Deprec. acumulada', 'Valor neto'], rows: [[a.c, a.n, {s: nf(a.cost), c: 'num'}, {s: a.rate * 100 + '%', c: 'num'}, {f: 'anual'}, {f: 'mens'}, {f: 'acum'}, {f: 'vn'}]]};
+    c.hint = 'Mensual = costo × tasa ÷ 12.'; c.fp = 'af' + i; out.push(c);
+  });
+  // Costo de ventas desde el kárdex
+  {
+    const open = mo.open.find(o => o[0] === '2011'); const ii = open ? open[1] : 0;
+    const comp = r2(ops.filter(o => o.type === 'compra_merc').reduce((s, o) => s + o.reg.bi, 0));
+    const dev = r2(ops.filter(o => o.type === 'nota_credito').reduce((s, o) => s + o.lines.find(l => l.c === '2011').d, 0));
+    const fin = r2(Object.values(mo.state.inv).reduce((s, x) => s + x.t, 0));
+    const disp = r2(ii + comp), cv = r2(disp + dev - fin);
+    const c = base('costo', 'Costo de ventas del mes'), fl = c.fields;
+    fl.disp = N2(disp, 'Mercadería disponible = inventario inicial + compras.', 'Mercadería disponible', 'calculo', {tol: 0.05});
+    fl.cv = N2(cv, 'Costo de ventas = disponible − inventario final (según tu kárdex).', 'Costo de ventas', 'calculo', {tol: 0.05});
+    c.instr = 'Determina el costo de ventas del mes (estado de costo de ventas, formato 10) con los datos de tu kárdex.';
+    c.text = `${co.name}: inventario inicial ${money(ii)} (apertura); compras de mercadería del mes ${money(comp)}; inventario final valorizado según el kárdex ${money(fin)}${dev ? `; devoluciones recibidas de clientes al costo ${money(dev)}` : ''}.`;
+    c.tbl = {cols: ['Concepto', 'S/'], rows: [L('Inventario inicial', ii), L('(+) Compras', comp), [{s: 'Mercadería disponible', c: 'b'}, {f: 'disp'}], L('(−) Inventario final', fin), [{s: 'Costo de ventas', c: 'b'}, {f: 'cv'}]]};
+    c.hint = 'CV = II + compras − IF.'; c.fp = 'cv'; out.push(c);
+  }
+  // Estados financieros a partir de los saldos correctos de la empresa
+  const acc = cycleAgg(mo, ops), net = k => acc[k] ? r2(acc[k].d - acc[k].h) : 0;
+  const sumK = (ks, sg = 1) => r2(ks.reduce((s, k) => s + net(k) * sg, 0));
+  {
+    const V = -net('70'), CV = net('69'), GA = net('94'), GV = net('95'), GF = net('97');
+    const ub = r2(V - CV), uo = r2(ub - GA - GV), res = r2(uo - GF);
+    const c = base('er', 'Estado de Resultados del mes'), fl = c.fields;
+    fl.ub = N2(ub, 'Utilidad bruta = ventas netas − costo de ventas.', 'Utilidad bruta', 'calculo', {tol: 0.05});
+    fl.uo = N2(uo, 'Utilidad operativa = utilidad bruta − gastos de administración − gastos de ventas.', 'Resultado de operación', 'calculo', {tol: 0.05});
+    fl.res = N2(res, 'Resultado del mes = resultado de operación − gastos financieros (antes de impuesto a la renta).', 'Resultado del mes (antes de IR)', 'calculo', {tol: 0.05});
+    c.instr = 'Completa el Estado de Resultados por función del mes con los saldos de la empresa (usa signo negativo si hay pérdida).';
+    c.text = `${co.name} · ${mesLbl(mo.id)}. Saldos tomados del balance de comprobación (cuentas 70, 69 y de destino 94, 95, 97).`;
+    c.tbl = {cols: ['Concepto', 'S/'], rows: [L('Ventas netas (70)', V), L('(−) Costo de ventas (69)', CV), [{s: 'Utilidad bruta', c: 'b'}, {f: 'ub'}], L('(−) Gastos de administración (94)', GA), L('(−) Gastos de ventas (95)', GV), [{s: 'Resultado de operación', c: 'b'}, {f: 'uo'}], L('(−) Gastos financieros (97)', GF), [{s: 'Resultado del mes', c: 'b'}, {f: 'res'}]]};
+    c.hint = 'Resta en cascada: ventas − costo − gastos operativos − gastos financieros.'; c.fp = 'er'; out.push(c);
+    // Situación financiera
+    const ef = net('10'), cxc = sumK(['12', '14', '16']), inv = sumK(['20', '28']), tr = net('40');
+    const ac = r2(ef + cxc + inv + (tr > 0 ? tr : 0)), ppe = net('33'), dep = -net('39'), anc = r2(ppe - dep), ta = r2(ac + anc);
+    const trp = tr < 0 ? -tr : 0, rem = -net('41'), cxp = -sumK(['42', '46']), fin = -net('45'), tp = r2(trp + rem + cxp + fin);
+    const cap = -net('50'), resC = r2(ta - tp - cap), pat = r2(cap + resC);
+    const e = base('esf', 'Situación Financiera al cierre'), fe = e.fields;
+    fe.ac = N2(ac, 'Activo corriente: efectivo + cuentas por cobrar + mercaderías' + (tr > 0 ? ' + IGV a favor.' : '.'), 'Total activo corriente', 'calculo', {tol: 0.05});
+    fe.anc = N2(anc, 'Activo no corriente: propiedad, planta y equipo − depreciación acumulada.', 'Total activo no corriente', 'calculo', {tol: 0.05});
+    fe.ta = N2(ta, 'Total activo = corriente + no corriente.', 'Total activo', 'calculo', {tol: 0.05});
+    fe.tp = N2(tp, 'Total pasivo = tributos + remuneraciones + proveedores y otras cuentas por pagar + obligaciones financieras.', 'Total pasivo', 'calculo', {tol: 0.05});
+    fe.pat = N2(pat, 'Patrimonio = capital + resultado del mes.', 'Total patrimonio', 'calculo', {tol: 0.05});
+    fe.tpp = N2(r2(tp + pat), 'Total pasivo y patrimonio: debe ser igual al total activo.', 'Total pasivo y patrimonio', 'calculo', {tol: 0.05});
+    e.instr = 'Completa los totales del Estado de Situación Financiera al cierre del mes.';
+    e.text = `Saldos de ${co.name} al ${lastDay(mo.id)}/${mo.id.slice(5)}/${mo.id.slice(0, 4)}.`;
+    e.tbl = {cols: ['Rubro', 'S/'], rows: [L('Efectivo y equivalentes (10)', ef), L('Cuentas por cobrar comerciales (12)', cxc), L('Mercaderías (20)', inv), ...(tr > 0 ? [L('IGV a favor (40)', tr)] : []), [{s: 'Total activo corriente', c: 'b'}, {f: 'ac'}], L('Propiedad, planta y equipo (33)', ppe), L('(−) Depreciación acumulada (39)', dep), [{s: 'Total activo no corriente', c: 'b'}, {f: 'anc'}], [{s: 'TOTAL ACTIVO', c: 'b'}, {f: 'ta'}],
+      ...(trp ? [L('Tributos por pagar (40)', trp)] : []), L('Remuneraciones por pagar (41)', rem), L('Cuentas por pagar comerciales y diversas (42, 46)', cxp), ...(fin ? [L('Obligaciones financieras (45)', fin)] : []), [{s: 'TOTAL PASIVO', c: 'b'}, {f: 'tp'}], L('Capital (50)', cap), L('Resultado del mes', resC), [{s: 'TOTAL PATRIMONIO', c: 'b'}, {f: 'pat'}], [{s: 'TOTAL PASIVO Y PATRIMONIO', c: 'b'}, {f: 'tpp'}]]};
+    e.hint = 'El total activo debe ser igual al total pasivo + patrimonio.'; e.fp = 'esf'; out.push(e);
+    // Flujo de efectivo
+    let opI = 0, opE = 0, inv2 = 0, fn = 0;
+    ops.forEach(op => { const cash = r2(op.lines.filter(l => !l.dest && l.c.startsWith('10')).reduce((s, l) => s + l.d - l.h, 0)); if (!cash) return; const oth = op.lines.filter(l => !l.dest && !l.c.startsWith('10')).map(l => l.c);
+      if (oth.some(c => /^(33|34|46)/.test(c))) inv2 += cash; else if (oth.some(c => /^(45|50|67)/.test(c))) fn += cash; else if (cash > 0) opI += cash; else opE += cash; });
+    opI = r2(opI); opE = r2(opE); inv2 = r2(inv2); fn = r2(fn);
+    const efi = r2(mo.open.filter(o => o[0].startsWith('10')).reduce((s, o) => s + o[1] - o[2], 0)), fo = r2(opI + opE), vr = r2(fo + inv2 + fn);
+    const f = base('efe', 'Flujo de efectivo del mes'), ff = f.fields;
+    ff.fo = N2(fo, 'Flujo de operación = cobros − pagos de operación.', 'Flujo neto de operación', 'calculo', {tol: 0.05});
+    ff.vr = N2(vr, 'Variación neta = operación + inversión + financiamiento.', 'Aumento (disminución) neto del efectivo', 'calculo', {tol: 0.05});
+    ff.sf = N2(r2(efi + vr), 'Efectivo final = efectivo inicial + variación neta (debe coincidir con el saldo de la 10).', 'Efectivo al final del mes', 'calculo', {tol: 0.05});
+    f.instr = 'Completa el Estado de Flujos de Efectivo del mes (método directo). Usa signo negativo para las salidas netas.';
+    f.text = `Movimientos de efectivo (caja y cuenta corriente) de ${co.name} en ${mesLbl(mo.id)}.`;
+    f.tbl = {cols: ['Concepto', 'S/'], rows: [L('Cobros de operación (clientes)', opI), L('Pagos de operación (proveedores, sueldos, gastos)', opE), [{s: 'Flujo de operación', c: 'b'}, {f: 'fo'}], L('Flujo de inversión', inv2), L('Flujo de financiamiento', fn), [{s: 'Variación neta del efectivo', c: 'b'}, {f: 'vr'}], L('Efectivo al inicio del mes', efi), [{s: 'Efectivo al final del mes', c: 'b'}, {f: 'sf'}]]};
+    f.hint = 'Los pagos se escriben en negativo; la suma de las tres actividades es la variación del efectivo.'; f.fp = 'efe'; out.push(f);
+    // Cambios en el patrimonio
+    const capI = r2(mo.open.filter(o => o[0].startsWith('5')).reduce((s, o) => s + o[2] - o[1], 0)), apo = r2(cap - capI);
+    const p = base('ecp', 'Cambios en el patrimonio'), fp2 = p.fields;
+    fp2.capF = N2(cap, 'Capital al cierre = capital inicial + aportes.', 'Capital al cierre', 'calculo', {tol: 0.05});
+    fp2.tot = N2(pat, 'Patrimonio al cierre = capital + resultado del mes.', 'Total patrimonio al cierre', 'calculo', {tol: 0.05});
+    p.instr = 'Completa los saldos finales del Estado de Cambios en el Patrimonio Neto del mes.';
+    p.text = `${co.name}: capital al inicio ${money(capI)}, aportes del mes ${money(apo)}, resultado del mes ${money(resC)}.`;
+    p.tbl = {groups: [['', 1], ['Capital', 1], ['Resultados', 1], ['Total', 1]], cols: ['Concepto', 'S/', 'S/', 'S/'], rows: [['Saldo inicial', {s: nf(capI), c: 'num'}, '', {s: nf(capI), c: 'num'}], ['Aportes', {s: nf(apo), c: 'num'}, '', ''], ['Resultado del mes', '', {s: nf(resC), c: 'num'}, ''], [{s: 'Saldo final', c: 'b'}, {f: 'capF'}, {s: nf(resC), c: 'num'}, {f: 'tot'}]]};
+    p.hint = 'Suma cada columna hacia abajo.'; p.fp = 'ecp'; out.push(p);
+  }
+  return out;
+}
+/* Crea la empresa del ciclo y todos sus casos (las 7 etapas) */
+function newCycleData(seed, regime, M) {
+  const mo = newMonth(M, regime, '|' + seed);
+  const R = rngFrom('ops|' + seed);
+  const ops = genCycleOps(R, mo);
+  const cases = stageCasesFromOps(mo, ops);
+  ['1041', '101', '1212', '4212', '2011', '40111', '7012'].forEach(code => { const m = mayorCase(mo, ops, code); if (m) { m.stage = 5; cases.push(m); } });
+  const b = balanceCase(mo, ops); b.stage = 6; cases.push(b);
+  closeCases(mo, ops).forEach(c => { c.stage = 7; cases.push(c); });
+  cases.forEach((c, i) => { c.n = i + 1; c.fp = fpHash(c.fp + '|' + seed); });
+  // la empresa del ciclo: datos fijos + saldos de apertura (para "Mi empresa")
+  mo.state.log = [];
+  return {mo, cases, nOps: ops.length};
+}
+/* ===================== Almacenamiento en la nube (Firebase: Google + Firestore) ===================== */
+const FB_CONFIG = {apiKey: 'AIzaSyChvSDiM9fzq4a1AE9RsLmccYqc-c8fH_Y', authDomain: 'viernes-app.firebaseapp.com', projectId: 'viernes-app', storageBucket: 'viernes-app.firebasestorage.app', messagingSenderId: '467188144319', appId: '1:467188144319:web:f96901e0185534556c4e0a'};
+const SUPER_ADMIN = 'joswesf@gmail.com';
+const Store = {
+  db: null, auth: null, base: null, ch: {},
+  ready() {
+    if (this.db) return true;
+    if (typeof firebase === 'undefined') return false;
+    try {
+      firebase.initializeApp(FB_CONFIG);
+      this.auth = firebase.auth(); this.db = firebase.firestore();
+      this.db.enablePersistence({synchronizeTabs: true}).catch(() => {});
+      return true;
+    } catch (e) { console.error(e); return false; }
+  },
+  onAuth(fn) { this.auth.onAuthStateChanged(fn); },
+  async login() {
+    const p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt: 'select_account'});
+    try { await this.auth.signInWithPopup(p); }
+    catch (e) {
+      if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment', 'auth/cancelled-popup-request'].includes(e.code)) return this.auth.signInWithRedirect(p);
+      if (e.code !== 'auth/popup-closed-by-user') toast('No se pudo entrar: ' + (e.message || e.code));
+    }
+  },
+  logout() { return this.auth.signOut().then(() => location.reload()); },
+  useUser(uid) { this.base = 'users/' + uid; },
+  // Los documentos con datos anidados se guardan como texto JSON (Firestore no admite listas dentro de listas)
+  pack(data) { const o = {_j: JSON.stringify(data)}; ['ts', 'kind', 'month'].forEach(k => { if (data[k] !== undefined) o[k] = data[k]; }); return o; },
+  unpack(d) { if (!d) return null; return d._j ? JSON.parse(d._j) : d; },
+  async get(path) { const s = await this.db.doc(path).get(); return s.exists ? this.unpack(s.data()) : null; },
+  set(path, data, plain) {
+    const body = plain ? JSON.parse(JSON.stringify(data)) : this.pack(data);
+    const prev = this.ch[path] || Promise.resolve();
+    const p = prev.catch(() => {}).then(() => this.db.doc(path).set(body));
+    this.ch[path] = p; return p;
+  },
+  del(path) { return this.db.doc(path).delete(); },
+  async list(col, {field, val, limit = 200} = {}) {
+    let q = this.db.collection(col);
+    if (field) q = q.where(field, '==', val); else q = q.orderBy('ts', 'desc').limit(Math.min(limit, 1000));
+    const s = await q.get();
+    return s.docs.map(d => this.unpack(d.data())).sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, limit);
+  },
+  async listPlain(col, limit = 1000) { const s = await this.db.collection(col).limit(limit).get(); return s.docs.map(d => ({id: d.id, ...d.data()})); },
 };
 const PATH = {
   prof: () => Store.base,
   b: id => Store.base + '/b/' + id,
   i: id => Store.base + '/i/' + id,
-  m: M => Store.base + '/m/' + M,
   colI: () => Store.base + '/i',
 };
 /* ===================== Estado de la app ===================== */
-const A = {P: null, idx: [], months: {}, lotes: {}, view: 'home', li: null, lote: null, cur: 1, drafts: {}, hint: {}, showSol: {}, lastCode: null, busy: false, histN: 200, mesM: null, mesTab: 'resumen', timer: null};
+const A = {P: null, user: null, isAdmin: false, idx: [], months: {}, lotes: {}, view: 'home', li: null, lote: null, cur: 1, drafts: {}, hint: {}, showSol: {}, lastCode: null, busy: false, histN: 200, mesM: null, mesTab: 'resumen', timer: null};
 const LOGO = (s = 40) => `<svg class="logo" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="13" fill="var(--brand)"/><path d="M12.5 13.5 22 31.5 35.5 9.5" fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 37.2h24M12 41.6h24" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
 function toast(msg, ms = 3200) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, ms); }
 function modal(html, cls = '') { const m = $('#modal'); m.innerHTML = `<div class="sheet ${cls}" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; const f = m.querySelector('[autofocus]'); if (f) setTimeout(() => f.focus(), 30); }
 function closeModal() { $('#modal').hidden = true; $('#modal').innerHTML = ''; }
 
-/* ===================== Arranque ===================== */
+/* ===================== Arranque, ingreso con Google ===================== */
 async function boot() {
   renderNav();
   $('#view').innerHTML = `<div class="loading">${LOGO(56)}<p>Preparando tus libros…</p></div>`;
-  await Store.init();
-  try { A.P = await Store.get(PATH.prof()); } catch (e) { A.P = null; }
-  if (!A.P) { onboarding(); return; }
+  if (!Store.ready()) { $('#view').innerHTML = `<section class="card ob">${LOGO(56)}<h2>Abre Viernes desde su enlace</h2><p>Esta versión necesita internet y tu cuenta de Google. Ábrela en <b>josueoo07.github.io/viernes</b>.</p></section>`; return; }
+  Store.onAuth(async user => {
+    if (!user) return showLogin();
+    try { await startSession(user); } catch (e) { console.error(e); $('#view').innerHTML = `<section class="card ob"><h2>No se pudo cargar tu cuenta</h2><p>${esc(e.message || e)}</p><button class="btn" onclick="location.reload()">Reintentar</button></section>`; }
+  });
+}
+function showLogin() {
+  A.user = null; renderNav();
+  $('#view').innerHTML = `<section class="login">
+    ${LOGO(72)}
+    <h1>Viernes</h1>
+    <p class="sub">Practica los libros contables de SUNAT con empresas simuladas: del Libro Diario a los estados financieros.</p>
+    <button class="btn gbtn" data-act="login"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Entrar con Google</button>
+    <p class="mini">Tu progreso se guarda en tu cuenta y lo ves igual en el celular y en la computadora.</p>
+  </section>`;
+}
+async function startSession(user) {
+  A.user = {uid: user.uid, name: user.displayName || 'Estudiante', email: user.email || '', photo: user.photoURL || ''};
+  Store.useUser(user.uid);
+  $('#view').innerHTML = `<div class="loading">${LOGO(56)}<p>Cargando tu progreso…</p></div>`;
+  const [blk, adm, aviso] = await Promise.all([Store.get('blocked/' + user.uid).catch(() => null), A.user.email ? Store.get('admins/' + A.user.email).catch(() => null) : null, Store.get('config/aviso').catch(() => null)]);
+  if (blk) { $('#view').innerHTML = `<section class="card ob">${LOGO(56)}<h2>Cuenta bloqueada</h2><p>El administrador bloqueó esta cuenta. Si crees que es un error, comunícate con él.</p><button class="ghost" data-act="logout">Cerrar sesión</button></section>`; return; }
+  A.isAdmin = A.user.email.toLowerCase() === SUPER_ADMIN || !!adm;
+  A.aviso = aviso && aviso.on && aviso.text ? aviso : null;
+  renderNav();
+  A.P = await Store.get(PATH.prof());
+  if (!A.P) return onboarding();
+  if (A.P.name !== A.user.name || A.P.photo !== A.user.photo || A.P.email !== A.user.email) { A.P.name = A.user.name; A.P.photo = A.user.photo; A.P.email = A.user.email; saveProfile(); }
   await afterProfile();
 }
 async function afterProfile() {
-  $('#mode').hidden = Store.mode === 'db' || !window.claude;
-  await ensureBatches();
   await loadIdx();
+  await ensureCycle();
   go(location.hash.slice(1) || 'home');
-  clearInterval(A.tick); A.tick = setInterval(tick, 30000);
+  pushRank();
 }
 function onboarding() {
-  modal(`<div class="ob">${LOGO(56)}<h2>Bienvenido a Viernes</h2>
-    <p>Cada 4 horas llega un lote de <b>50 operaciones nuevas</b> que nunca se repiten. Las registras en los libros de SUNAT, Viernes te corrige celda por celda y todo queda guardado.</p>
-    <label class="fld">¿Desde qué nivel empiezas?<select id="obL">${LEVELS.map(l => `<option value="${l.n}">Nivel ${l.n} · ${l.t}</option>`).join('')}</select></label>
-    <p class="mini">Si ya dominas el Diario, puedes empezar más arriba; los lotes repasan siempre los niveles anteriores.</p>
-    <label class="fld">Régimen de la empresa simulada<select id="obR"><option value="MYPE">Régimen MYPE Tributario</option><option value="GEN">Régimen General</option><option value="RER">Régimen Especial (RER)</option></select></label>
-    <button class="btn" id="obGo">Empezar</button></div>`, 'narrow');
+  modal(`<div class="ob">${LOGO(56)}<h2>Hola, ${esc(A.user.name.split(' ')[0])}</h2>
+    <p>En Viernes llevas la contabilidad de una empresa simulada durante un mes: <b>20 operaciones</b> que registras en el Libro Diario y luego pasas a Compras, Ventas, Caja y Bancos, Kárdex, Mayor y Balance, hasta el <b>PDT 621 y los estados financieros</b>. Al terminar el ciclo, llega otra empresa.</p>
+    <label class="fld">Régimen de tus empresas<select id="obR"><option value="MYPE">Régimen MYPE Tributario</option><option value="GEN">Régimen General</option><option value="RER">Régimen Especial (RER)</option></select></label>
+    <label class="fld">Código de tu grupo o salón (opcional)<input id="obG" placeholder="Ej. VIE-4821" autocomplete="off"></label>
+    <button class="btn" id="obGo">Empezar mi primera empresa</button></div>`, 'narrow');
   $('#obGo').onclick = async () => {
-    const lv = +$('#obL').value;
-    A.P = {level: lv, startLevel: lv, regime: $('#obR').value, destino: true, lastSlot: null, created: Date.now(), ts: Date.now()};
+    const code = $('#obG').value.trim().toUpperCase();
+    let group = '';
+    if (code) { const g = await Store.get('groups/' + code).catch(() => null); if (!g) { toast('Ese código de grupo no existe. Revísalo o déjalo vacío.'); return; } group = code; }
+    A.P = {name: A.user.name, email: A.user.email, photo: A.user.photo, regime: $('#obR').value, destino: true, group, cycleN: 0, created: Date.now(), ts: Date.now()};
     closeModal();
-    $('#view').innerHTML = `<div class="loading">${LOGO(56)}<p>Generando tu primer lote…</p></div>`;
+    $('#view').innerHTML = `<div class="loading">${LOGO(56)}<p>Creando tu primera empresa…</p></div>`;
     await saveProfile();
     await afterProfile();
   };
 }
 async function saveProfile() { A.P.ts = Date.now(); await Store.set(PATH.prof(), A.P); }
 
-/* ===================== Lotes ===================== */
-async function getMonth(M) {
-  if (A.months[M]) return A.months[M];
-  let mo = await Store.get(PATH.m(M));
-  if (!mo) { mo = newMonth(M, A.P.regime); await Store.set(PATH.m(M), mo); }
-  A.months[M] = mo; return mo;
-}
+/* ===================== Empresas (ciclos) ===================== */
 function newIndex(b) {
-  return {id: b.id, kind: b.kind, ts: b.ts, month: b.month, date: b.date, hour: b.hour || '', level: b.level, n: b.cases.length,
-    summ: b.cases.map(c => ({f: c.fmt, o: c.op, t: c.title, d: c.date, g: c.glosa || '', doc: c.cp ? (c.cp.serie + '-' + c.cp.num) : '', rs: c.reg ? c.reg.rs : ''})), ans: {}, done: 0, okc: 0};
+  return {id: b.id, kind: b.kind, ts: b.ts, month: b.month, date: b.date, hour: b.hour || '', n: b.cases.length, cycleNo: b.cycleNo || 0,
+    emp: b.emp, summ: b.cases.map(c => ({f: c.fmt, o: c.op, t: c.title, d: c.date, st: c.stage || 0, g: c.glosa || '', doc: c.cp ? (c.cp.serie + '-' + c.cp.num) : '', rs: c.reg ? c.reg.rs : ''})), ans: {}, done: 0, okc: 0};
 }
-async function ensureBatches() {
+function empOf(mo) { return {id: mo.id, regime: mo.regime, co: mo.co, open: mo.open, c621: null}; }
+function activeCycle() { return A.idx.filter(x => x.kind === 'ciclo').sort((a, b) => b.ts - a.ts).find(x => !x.fin) || null; }
+async function ensureCycle(force) {
   if (A.busy) return; A.busy = true;
   try {
-    const now = slotNow();
-    const from = A.P.lastSlot == null ? now : Math.max(A.P.lastSlot + 1, now - 11);
-    let made = 0;
-    for (let s = from; s <= now; s++) {
-      const id = slotKey(s);
-      if (await Store.get(PATH.i(id))) continue;
-      const M = slotISO(s).slice(0, 7);
-      const mo = await getMonth(M);
-      const plan = planFormats(rngFrom('plan:' + s), A.P.level, 50);
-      const cases = genCases('lote:' + s + ':' + mo.co.ruc, mo, plan, slotISO(s));
-      const b = {id, kind: 'lote', ts: slotTs(s), slot: s, month: M, date: slotISO(s), hour: slotHour(s), level: A.P.level, cases};
-      await Store.set(PATH.b(id), b);
-      await Store.set(PATH.i(id), newIndex(b));
-      await Store.set(PATH.m(M), mo);
-      A.lotes[id] = b; made++;
-    }
-    if (A.P.lastSlot !== now) { A.P.lastSlot = now; await saveProfile(); }
-    return made;
+    if (activeCycle() && !force) return;
+    const n = (A.P.cycleN || 0) + 1, id = 'C' + String(n).padStart(4, '0');
+    if (await Store.get(PATH.i(id))) { A.P.cycleN = n; await saveProfile(); await loadIdx(); return; }
+    const M = limaISO().slice(0, 7);
+    const {mo, cases} = newCycleData(A.user.uid + '|' + n, A.P.regime || 'MYPE', M);
+    const b = {id, kind: 'ciclo', ts: Date.now(), month: M, date: limaISO(), cycleNo: n, emp: empOf(mo), cases};
+    await Store.set(PATH.b(id), b);
+    const li = newIndex(b);
+    await Store.set(PATH.i(id), li);
+    A.lotes[id] = b; A.idx.unshift(li);
+    A.P.cycleN = n; await saveProfile();
   } finally { A.busy = false; }
 }
 async function loadIdx(n = A.histN) { A.idx = await Store.list(PATH.colI(), {limit: n}); }
 async function getLote(id) { if (!A.lotes[id]) A.lotes[id] = await Store.get(PATH.b(id)); return A.lotes[id]; }
 async function getIndex(id) { let li = A.idx.find(x => x.id === id); if (!li) { li = await Store.get(PATH.i(id)); if (li) A.idx.push(li); } return li; }
-async function tick() {
-  if (slotNow() > (A.P.lastSlot ?? -1)) {
-    const made = await ensureBatches();
-    await loadIdx();
-    if (made) toast('Llegó un lote nuevo de 50 operaciones');
-    if (A.view === 'home') renderHome();
-  } else if (A.view === 'home') { const el = $('#cd'); if (el) el.textContent = countdown(); }
+function stageOf(li, n) { return (li.summ[n - 1] || {}).st || 0; }
+function stageInfo(li) {
+  const per = {}; li.summ.forEach((s, i) => { const st = s.st || 0; const o = per[st] || (per[st] = {n: 0, done: 0, ok: 0}); o.n++; const a = li.ans[i + 1]; if (a && !a.draft) { o.done++; if (a.ok) o.ok++; } });
+  let cur = 7; for (let s = 1; s <= 7; s++) if (per[s] && per[s].done < per[s].n) { cur = s; break; }
+  return {per, cur};
 }
-function countdown() {
-  const next = slotTs(slotNow() + 1), ms = next - Date.now();
-  const h = Math.floor(ms / 3600e3), m = Math.floor(ms % 3600e3 / 60e3);
-  return `${h ? h + ' h ' : ''}${m} min (a las ${slotHour(slotNow() + 1)})`;
+/* Ranking: resumen público de cada estudiante */
+let rankT = null;
+function pushRank() {
+  clearTimeout(rankT);
+  rankT = setTimeout(async () => {
+    if (!A.user) return;
+    const ans = allAnswers(), ok = ans.filter(x => x.a.ok).length;
+    const cyc = activeCycle(), si = cyc ? stageInfo(cyc) : null;
+    const r = {name: A.user.name, photo: A.user.photo, group: A.P.group || '', casos: ans.length, ok, pct: ans.length ? Math.round(ok / ans.length * 100) : 0,
+      empresas: A.idx.filter(x => x.kind === 'ciclo' && x.fin).length, etapa: si ? si.cur : 0, racha: streak().n, ts: Date.now()};
+    try { await Store.set('rank/' + A.user.uid, r, true); } catch (e) { console.warn(e); }
+  }, 1500);
 }
 
 /* ===================== Navegación ===================== */
-const NAV = [['home', 'Inicio', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['practicar', 'Practicar', 'M4 4h16v16H4zM4 9h16M9 9v11'], ['mes', 'Mi mes', 'M4 5h16v15H4zM4 10h16M8 3v4M16 3v4'], ['historial', 'Historial', 'M12 7v5l3 2M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4'], ['mas', 'Más', 'M5 12h.01M12 12h.01M19 12h.01']];
+const NAV = [['home', 'Inicio', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['practicar', 'Practicar', 'M4 4h16v16H4zM4 9h16M9 9v11'], ['mes', 'Mi empresa', 'M3 21h18M5 21V7l7-4 7 4v14M9 10h1M14 10h1M9 14h1M14 14h1'], ['ranking', 'Ranking', 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3'], ['historial', 'Historial', 'M12 7v5l3 2M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4'], ['mas', 'Más', 'M5 12h.01M12 12h.01M19 12h.01']];
+const ADMIN_NAV = ['admin', 'Administrar', 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'];
 function renderNav() {
+  const items = A.user ? NAV.concat(A.isAdmin ? [ADMIN_NAV] : []) : [];
   $('#nav').innerHTML = `<div class="brand">${LOGO(36)}<div><b>Viernes</b><small>Práctica contable SUNAT</small></div></div>` +
-    NAV.map(([k, t, d]) => `<button class="nv" data-go="${k}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${t}</span></button>`).join('') +
-    `<div class="nvsp"></div><button class="nv nvtheme" data-act="theme"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-1.2-1-1.5-1-2.6 0-.9.7-1.4 1.6-1.4H16a5 5 0 0 0 5-5C21 6.4 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7.5" r="1.3" fill="currentColor"/></svg><span>Tema y colores</span></button>`;
+    items.map(([k, t, d]) => `<button class="nv ${k === 'admin' ? 'nvadm' : ''}" data-go="${k}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ll">${t}</span><span class="ls">${{mes: 'Empresa', admin: 'Admin', historial: 'Historial'}[k] || t}</span></button>`).join('') +
+    `<div class="nvsp"></div>` + (A.user ? `<div class="nvuser">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<span>${esc(A.user.name)}${A.isAdmin ? '<small>Administrador</small>' : ''}</span></div>` : '') +
+    `<button class="nv nvtheme" data-act="theme"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-1.2-1-1.5-1-2.6 0-.9.7-1.4 1.6-1.4H16a5 5 0 0 0 5-5C21 6.4 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7.5" r="1.3" fill="currentColor"/></svg><span>Tema y colores</span></button>`;
 }
 function go(v) {
-  if (v === 'practicar') { const li = currentLote(); if (li) return openLote(li.id); v = 'home'; }
+  if (!A.user) return;
+  if (v === 'practicar') { const li = activeCycle(); if (li) return openLote(li.id); v = 'home'; }
   if (v.startsWith('lote:')) return openLote(v.slice(5));
-  if (!['home', 'mes', 'historial', 'mas'].includes(v)) v = 'home';
+  if (!['home', 'mes', 'ranking', 'historial', 'mas', 'admin'].includes(v) || (v === 'admin' && !A.isAdmin)) v = 'home';
   A.view = v; clearInterval(A.timer);
   history.replaceState(null, '', '#' + v);
   $$('.nv').forEach(b => b.classList.toggle('on', b.dataset.go === v));
   window.scrollTo(0, 0);
-  ({home: renderHome, mes: renderMes, historial: renderHist, mas: renderMas})[v]();
+  ({home: renderHome, mes: renderMes, ranking: renderRanking, historial: renderHist, mas: renderMas, admin: renderAdmin})[v]();
 }
 function setNavOn(k) { $$('.nv').forEach(b => b.classList.toggle('on', b.dataset.go === k)); }
-function currentLote() {
-  const lotes = A.idx.filter(x => x.kind === 'lote').sort((a, b) => b.ts - a.ts);
-  return lotes.find(x => x.done < x.n) || lotes[0];
-}
 
 /* ===================== Estadísticas ===================== */
 function allAnswers(idx = A.idx) { const out = []; idx.forEach(li => Object.entries(li.ans || {}).forEach(([n, a]) => { if (a && a.at && !a.draft) out.push({li, n: +n, a, s: li.summ[+n - 1] || {}}); })); return out; }
-function streak() {
-  const days = new Set(allAnswers().map(x => limaISO(x.a.at)));
+function streak(idx) {
+  const days = new Set(allAnswers(idx).map(x => limaISO(x.a.at)));
   let d = new Date(Date.now() - OFF), n = 0;
   const iso = x => `${x.getUTCFullYear()}-${p2(x.getUTCMonth() + 1)}-${p2(x.getUTCDate())}`;
   if (!days.has(iso(d))) d = new Date(d.getTime() - 864e5);
@@ -1669,60 +3724,52 @@ function streak() {
 const KIND_LBL = {cuenta: 'Cuenta mal elegida', igv: 'Cálculo o cuenta del IGV', 'debe-haber': 'Debe y Haber invertidos', monto: 'Montos', 'falta-linea': 'Líneas que faltan', 'linea-sobrante': 'Líneas que sobran', destino: 'Asientos de destino', descuadre: 'Asientos que no cuadran', fecha: 'Fechas', tabla: 'Códigos de tablas SUNAT', comprobante: 'Datos del comprobante', saldo: 'Saldos', 'costo-promedio': 'Costo promedio', kardex: 'Movimientos de kárdex', naturaleza: 'Naturaleza del saldo', calculo: 'Cálculos', pdt: 'Casillas del 621', renta: 'Impuesto a la renta', tasa: 'Tasas de depreciación', sire: 'SIRE', dato: 'Otros datos'};
 
 /* ===================== Inicio ===================== */
+function stepsHtml(si) { return `<ol class="steps">${STAGES.map(s => `<li class="${s.n < si.cur ? 'done' : s.n === si.cur ? 'now' : ''}" title="${esc(s.t)}"><span>${s.n}</span></li>`).join('')}</ol>`; }
 function renderHome() {
   A.view = 'home'; setNavOn('home');
-  const lv = LEVELS[A.P.level - 1], li = currentLote();
-  const pend = A.idx.filter(x => x.done < x.n && (!li || x.id !== li.id) && x.kind !== 'examen').sort((a, b) => b.ts - a.ts);
+  const li = activeCycle(), si = li ? stageInfo(li) : null, stg = si ? STAGES[si.cur - 1] : null;
   const ans = allAnswers(), okA = ans.filter(x => x.a.ok).length, st = streak();
   const fails = ans.filter(x => !x.a.ok).length;
   const hr = +new Date(Date.now() - OFF).getUTCHours();
   const hola = hr < 12 ? 'Buenos días' : hr < 19 ? 'Buenas tardes' : 'Buenas noches';
   const exam = A.idx.find(x => x.kind === 'examen' && x.exam && !x.exam.fin);
+  const done = A.idx.filter(x => x.kind === 'ciclo' && x.fin).sort((a, b) => b.ts - a.ts);
   $('#view').innerHTML = `
+  ${A.aviso ? `<div class="aviso"><b>Aviso:</b> ${esc(A.aviso.text)}</div>` : ''}
   <header class="hero">
-    <div><p class="eyebrow">${hola}</p><h1>Tu práctica de libros contables</h1><p class="sub">Formatos de la R.S. 234-2006/SUNAT · casos que nunca se repiten</p></div>
+    <div><p class="eyebrow">${hola}, ${esc(A.user.name.split(' ')[0])}</p><h1>Tu práctica de libros contables</h1><p class="sub">Una empresa por ciclo: del Libro Diario a los estados financieros</p></div>
     <div class="streak" title="Días seguidos practicando"><b>${st.n}</b><span>día${st.n === 1 ? '' : 's'} de racha${st.today ? '' : ' · practica hoy'}</span></div>
   </header>
-  <section class="card lvl">
-    <div class="lvl-h"><div><p class="eyebrow">Nivel ${lv.n} de 7</p><h2>${lv.t}</h2><p class="sub">${lv.d}</p></div><button class="ghost sm" data-act="levels">Ver niveles</button></div>
-    <ol class="steps">${LEVELS.map(l => `<li class="${l.n < A.P.level ? 'done' : l.n === A.P.level ? 'now' : ''}" title="${esc(l.t)}"><span>${l.n}</span></li>`).join('')}</ol>
-    <p class="mini">Subes de nivel cuando aciertas 40 de 50 casos en un lote de tu nivel actual.</p>
-  </section>
-  ${li ? loteCard(li, true) : `<section class="card"><p>Aún no hay lotes.</p></section>`}
-  <p class="next">Próximo lote en <b id="cd">${countdown()}</b></p>
+  ${li ? `<section class="card lote big" data-open="${li.id}">
+    <div class="lote-h"><div><p class="eyebrow">Empresa ${li.cycleNo} · ${mesLbl(li.emp.id)}</p><h2>${esc(li.emp.co.name)}</h2><p class="sub2">RUC ${li.emp.co.ruc} · ${esc(li.emp.co.giro)}</p></div>
+    <div class="nums"><b>${li.done}/${li.n}</b><span>${li.okc} correctos</span></div></div>
+    ${stepsHtml(si)}
+    <p class="sub2">Etapa ${si.cur} de 7: <b>${esc(stg.t)}</b> · ${esc(stg.d)}</p>
+    <button class="btn">${li.done ? 'Continuar' : 'Empezar'}</button>
+  </section>` : `<section class="card"><p>Preparando tu empresa…</p></section>`}
   <div class="grid3">
     <button class="tile" data-act="repaso"><b>Repaso de errores</b><span>${fails ? `${fails} caso${fails > 1 ? 's' : ''} fallado${fails > 1 ? 's' : ''}: te armo 10 nuevos parecidos` : 'Aún no tienes errores registrados'}</span></button>
     <button class="tile" data-act="examen"><b>${exam ? 'Continuar examen' : 'Modo examen'}</b><span>${exam ? 'Tienes un examen en curso' : '20 casos · 30 minutos · sin pistas'}</span></button>
-    <div class="tile stat"><b>${ans.length ? Math.round(okA / ans.length * 100) : 0}%</b><span>de acierto en ${ans.length} caso${ans.length === 1 ? '' : 's'} resuelto${ans.length === 1 ? '' : 's'}</span></div>
+    <div class="tile stat"><b>${ans.length ? Math.round(okA / ans.length * 100) : 0}%</b><span>de acierto en ${ans.length} caso${ans.length === 1 ? '' : 's'} · ${done.length} empresa${done.length === 1 ? '' : 's'} terminada${done.length === 1 ? '' : 's'}</span></div>
   </div>
-  ${pend.length ? `<h3 class="sec">Lotes acumulados</h3><div class="list">${pend.slice(0, 12).map(x => loteCard(x)).join('')}</div>` : ''}`;
-}
-function loteCard(li, big) {
-  const kindT = li.kind === 'repaso' ? 'Repaso de errores' : li.kind === 'examen' ? 'Examen' : `Lote del ${fmtD(li.date)} · ${li.hour}`;
-  const pct = li.n ? Math.round(li.done / li.n * 100) : 0;
-  return `<section class="card lote ${big ? 'big' : ''}" data-open="${li.id}">
-    <div class="lote-h"><div><p class="eyebrow">${li.kind === 'lote' ? 'Nivel ' + li.level : ''}</p><h${big ? 2 : 3}>${kindT}</h${big ? 2 : 3}></div>
-    <div class="nums"><b>${li.done}/${li.n}</b><span>${li.okc} correctos</span></div></div>
-    <div class="bar"><i style="width:${pct}%"></i></div>
-    ${big ? `<button class="btn">${li.done ? (li.done < li.n ? 'Continuar' : 'Ver lote') : 'Empezar'}</button>` : ''}
-  </section>`;
+  ${done.length ? `<h3 class="sec">Empresas terminadas</h3><div class="list">${done.slice(0, 8).map(x => `<section class="card lote" data-open="${x.id}"><div class="lote-h"><div><p class="eyebrow">Empresa ${x.cycleNo} · ${mesLbl(x.emp.id)}</p><h3>${esc(x.emp.co.name)}</h3></div><div class="nums"><b>${Math.round(x.okc / x.n * 20)}/20</b><span>${x.okc} de ${x.n} correctos</span></div></div></section>`).join('')}</div>` : ''}`;
 }
 function showLevels() {
-  modal(`<h3 class="mh">Avance por niveles <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3>
-  <ol class="levels">${LEVELS.map(l => `<li class="${l.n < A.P.level ? 'done' : l.n === A.P.level ? 'now' : ''}"><span>${l.n}</span><div><b>${l.t}</b><small>${l.d}</small></div></li>`).join('')}</ol>
-  <p class="mini">El 60% de cada lote es de tu nivel y el 40% repasa los anteriores. Puedes cambiar de nivel en Más → Ajustes.</p>`, 'narrow');
+  const li = activeCycle(), si = li ? stageInfo(li) : {cur: 1, per: {}};
+  modal(`<h3 class="mh">Etapas del ciclo contable <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3>
+  <ol class="levels">${STAGES.map(s => `<li class="${s.n < si.cur ? 'done' : s.n === si.cur ? 'now' : ''}"><span>${s.n}</span><div><b>${s.t}</b><small>${s.d}</small></div></li>`).join('')}</ol>
+  <p class="mini">Cada etapa se abre al terminar la anterior. Al completar la etapa 7, llega una empresa nueva.</p>`, 'narrow');
 }
 
 /* ===================== Práctica ===================== */
-function empresaCard(mo, b) {
+function empresaCard(mo, li) {
   if (!mo) return '';
   const M = mo.id, fin = lastDay(M);
   return `<section class="card empresa">
-    <div class="emp-main"><p class="eyebrow">Empresa de práctica</p><h2>${esc(mo.co.name)}</h2><p class="sub">Razón social ficticia · ${esc(mo.co.giro)}</p></div>
+    <div class="emp-main"><p class="eyebrow">${li && li.kind === 'ciclo' ? 'Empresa ' + li.cycleNo : 'Empresa de práctica'}</p><h2>${esc(mo.co.name)}</h2><p class="sub">Razón social ficticia · ${esc(mo.co.giro)}</p></div>
     <dl class="emp-dl">
       <div><dt>RUC</dt><dd class="mono">${mo.co.ruc}</dd></div>
       <div><dt>Período</dt><dd>${mesLbl(M)}<small>01/${M.slice(5)}/${M.slice(0, 4)} al ${fin}/${M.slice(5)}/${M.slice(0, 4)}</small></dd></div>
-      <div><dt>Operaciones de este lote</dt><dd>${fmtD(b.date)}</dd></div>
       <div><dt>Régimen</dt><dd>${esc(REGIMEN[mo.regime || 'MYPE'].n)}</dd></div>
       <div><dt>Cuenta corriente</dt><dd>${esc(mo.co.banco)}<small class="mono">${esc(mo.co.cta)}</small></dd></div>
     </dl>
@@ -1730,42 +3777,46 @@ function empresaCard(mo, b) {
 }
 async function openLote(id, n) {
   const li = await getIndex(id), b = await getLote(id);
-  if (!li || !b) { toast('No se encontró ese lote'); return go('home'); }
+  if (!li || !b) { toast('No se encontró esa empresa'); return go('home'); }
   A.li = li; A.lote = b; A.view = 'lote'; setNavOn('practicar');
-  try { A.loteMo = await getMonth(b.month); } catch { A.loteMo = null; }
+  A.loteMo = li.emp || null;
   history.replaceState(null, '', '#lote:' + id);
-  if (n) A.cur = n; else { const first = b.cases.find(c => !li.ans[c.n] || li.ans[c.n].draft); A.cur = first ? first.n : 1; }
+  const si = li.kind === 'ciclo' ? stageInfo(li) : null;
+  if (n) A.cur = n;
+  else { const first = b.cases.find(c => (!li.ans[c.n] || li.ans[c.n].draft) && (!si || (c.stage || 0) <= si.cur)); A.cur = first ? first.n : 1; }
   if (li.kind === 'examen' && li.exam && !li.exam.fin) startTimer();
   renderLote();
   window.scrollTo(0, 0);
 }
 function isExamOpen() { return A.li && A.li.kind === 'examen' && A.li.exam && !A.li.exam.fin; }
+function unlocked(st) { if (!A.li || A.li.kind !== 'ciclo') return true; return st <= stageInfo(A.li).cur || A.li.fin; }
 function renderLote() {
-  const li = A.li, b = A.lote, blk = Math.floor((A.cur - 1) / 10);
-  const nb = Math.ceil(b.cases.length / 10);
-  const title = li.kind === 'repaso' ? 'Repaso de errores' : li.kind === 'examen' ? 'Examen' : `Lote del ${fmtD(li.date)} · ${li.hour}`;
+  const li = A.li, b = A.lote, cyc = li.kind === 'ciclo';
+  const si = cyc ? stageInfo(li) : null;
+  const curSt = cyc ? (caseByN(A.cur).stage || 1) : 0;
+  const title = li.kind === 'repaso' ? 'Repaso de errores' : li.kind === 'examen' ? 'Examen' : esc(li.emp.co.name);
   const st = n => { const a = li.ans[n]; if (!a) return ''; if (a.draft) return 'dr'; return a.ok ? 'ok' : 'bad'; };
+  const shown = cyc ? b.cases.filter(c => (c.stage || 1) === curSt) : b.cases;
   $('#view').innerHTML = `
   <div class="lote-top">
     <button class="ghost sm" data-go="home">← Inicio</button>
-    <div class="lt"><h1>${title}</h1><p class="sub">${li.kind === 'lote' ? 'Nivel ' + li.level + ' · ' : ''}${li.done}/${li.n} resueltos · ${li.okc} correctos</p></div>
+    <div class="lt"><h1>${title}</h1><p class="sub">${cyc ? `Empresa ${li.cycleNo} · ` : ''}${li.done}/${li.n} resueltos · ${li.okc} correctos</p></div>
     ${isExamOpen() ? `<div class="timer" id="timer">--:--</div>` : ''}
   </div>
-  <div class="blocks" role="tablist">${Array.from({length: nb}, (_, i) => { const cs = b.cases.slice(i * 10, i * 10 + 10); const d = cs.filter(c => li.ans[c.n] && !li.ans[c.n].draft).length; return `<button role="tab" class="blk ${i === blk ? 'on' : ''}" data-blk="${i}"><b data-s="B${i + 1}">Bloque ${i + 1}</b><span>${d}/${cs.length}</span></button>`; }).join('')}</div>
-  <div class="chips">${b.cases.slice(blk * 10, blk * 10 + 10).map(c => `<button class="chip ${st(c.n)} ${c.n === A.cur ? 'cur' : ''}" data-case="${c.n}" aria-label="Caso ${c.n}">${c.n}</button>`).join('')}</div>
-  ${empresaCard(A.loteMo, b)}
-  ${blockSummary(blk)}
+  ${cyc ? `<div class="stages" role="tablist">${STAGES.map(s => { const p = si.per[s.n] || {n: 0, done: 0}; const lock = !unlocked(s.n); return `<button role="tab" class="stg ${s.n === curSt ? 'on' : ''} ${lock ? 'lock' : ''} ${p.n && p.done === p.n ? 'fin' : ''}" data-stg="${s.n}" ${lock ? 'aria-disabled="true"' : ''}><b><span class="sn">${s.n}</span>${lock ? '🔒 ' : ''}${esc(s.t)}</b><span>${p.done}/${p.n}</span></button>`; }).join('')}</div>` : ''}
+  <div class="chips">${shown.map(c => `<button class="chip ${st(c.n)} ${c.n === A.cur ? 'cur' : ''}" data-case="${c.n}" aria-label="Caso ${c.n}">${cyc ? shown.indexOf(c) + 1 : c.n}</button>`).join('')}</div>
+  ${empresaCard(A.loteMo, li)}
+  ${cyc ? stageSummary(curSt) : ''}
   <div id="casebox"></div>
   ${isExamOpen() ? `<div class="examfoot"><button class="btn warn" data-act="finexam">Terminar examen y corregir</button></div>` : ''}`;
   renderCase();
   if (isExamOpen()) updTimer();
 }
-function blockSummary(blk) {
-  const li = A.li, cs = A.lote.cases.slice(blk * 10, blk * 10 + 10);
-  const d = cs.filter(c => li.ans[c.n] && !li.ans[c.n].draft);
-  if (d.length < cs.length || isExamOpen()) return '';
-  const ok = d.filter(c => li.ans[c.n].ok).length;
-  return `<div class="bsum ${ok >= cs.length * 0.8 ? 'good' : ''}">Bloque ${blk + 1} terminado: <b>${ok} de ${cs.length}</b> correctos.</div>`;
+function stageSummary(stn) {
+  const li = A.li, p = stageInfo(li).per[stn]; const s = STAGES[stn - 1];
+  if (!p) return '';
+  if (p.done < p.n) return `<div class="bsum"><b>Etapa ${stn}: ${esc(s.t)}.</b> ${esc(s.d)}.</div>`;
+  return `<div class="bsum good">Etapa ${stn} terminada: <b>${p.ok} de ${p.n}</b> correctos.${stn < 7 ? ' Ya puedes pasar a la etapa ' + (stn + 1) + '.' : ''}</div>`;
 }
 function caseByN(n) { return A.lote.cases.find(c => c.n === n); }
 
@@ -1792,7 +3843,7 @@ function renderCase(target = '#casebox', ro = null) {
   const hintOn = A.hint[key] || (a && a.h);
   const solOn = A.showSol[key];
   const html = `<article class="card case">
-    <div class="case-h"><span class="badge">${esc(LIBRO[c.fmt])}</span><b>#${c.n} · ${esc(c.title)}</b><span class="mini">${fmtD(c.date)}</span></div>
+    <div class="case-h"><span class="badge">${esc(LIBRO[c.fmt])}</span><b>${li.kind === 'ciclo' ? `Etapa ${c.stage} · caso ${(() => { const L = (ro ? [] : A.lote.cases).filter(x => x.stage === c.stage); const i = L.indexOf(c); return i >= 0 ? (i + 1) + ' de ' + L.length : c.n; })()}` : '#' + c.n} · ${esc(c.title)}</b><span class="mini">${fmtD(c.date)}</span></div>
     ${!ro && A.loteMo ? `<p class="mini empl">Empresa: <b>${esc(A.loteMo.co.name)}</b> · RUC ${A.loteMo.co.ruc} · período ${mesLbl(A.loteMo.id)}</p>` : ''}
     <p class="txt">${esc(c.text)}</p>
     ${renderCP(c.cp)}
@@ -1813,7 +3864,17 @@ function renderCase(target = '#casebox', ro = null) {
   </article>`;
   $(target).innerHTML = html;
 }
-function nextN() { const li = A.li; const rest = A.lote.cases.filter(c => c.n > A.cur && (!li.ans[c.n] || li.ans[c.n].draft)); if (rest.length) return rest[0].n; const any = A.lote.cases.find(c => !li.ans[c.n] || li.ans[c.n].draft); return any ? any.n : (A.cur < A.lote.cases.length ? A.cur + 1 : 0); }
+function nextN() {
+  const li = A.li, pend = c => !li.ans[c.n] || li.ans[c.n].draft;
+  if (li.kind === 'ciclo') {
+    const st = caseByN(A.cur).stage || 1;
+    const same = A.lote.cases.filter(c => (c.stage || 1) === st && pend(c));
+    const after = same.find(c => c.n > A.cur) || same[0]; if (after) return after.n;
+    const nx = A.lote.cases.find(c => pend(c) && unlocked(c.stage || 1)); return nx ? nx.n : 0;
+  }
+  const rest = A.lote.cases.filter(c => c.n > A.cur && pend(c)); if (rest.length) return rest[0].n;
+  const any = A.lote.cases.find(pend); return any ? any.n : (A.cur < A.lote.cases.length ? A.cur + 1 : 0);
+}
 
 function inp(k, f, val, cls, ro) {
   const v = val ?? '';
@@ -1841,9 +3902,9 @@ function diarioForm(c, draft, g, answered) {
   const ro = answered || A.roMode;
   const sD = r2(lines.reduce((a, l) => a + (parseNum(l.d) || 0), 0)), sH = r2(lines.reduce((a, l) => a + (parseNum(l.h) || 0), 0));
   return `<div class="glosa"><span>Asiento Nº ${c.n}</span><span>Fecha ${fmtD(c.date)}</span><span>Glosa: ${esc(c.glosa)}</span></div>
-  <div class="tw"><table class="book diario"><thead><tr><th style="width:7.5em">Cuenta</th><th>Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th>${ro ? '' : '<th style="width:2.4em"></th>'}</tr></thead>
-  <tbody id="dlines">${lines.map((l, i) => { const st = g ? (g.lineOk[i] ? 'ok' : 'bad') : ''; return `<tr class="${st}" data-i="${i}"><td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}</td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}</tr>`; }).join('')}</tbody>
-  <tfoot><tr><td colspan="2" class="b">Totales ${Math.abs(sD - sH) > 0.005 && (sD || sH) ? '<span class="warnc">· no cuadra</span>' : ''}</td><td class="num b" id="sD">${nf(sD)}</td><td class="num b" id="sH">${nf(sH)}</td>${ro ? '' : '<td></td>'}</tr></tfoot></table></div>
+  <div class="tw"><table class="book diario"><thead><tr><th style="width:7.5em">Cuenta</th><th class="dh">Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th>${ro ? '' : '<th style="width:2.4em"></th>'}</tr></thead>
+  <tbody id="dlines">${lines.map((l, i) => { const st = g ? (g.lineOk[i] ? 'ok' : 'bad') : ''; return `<tr class="${st}" data-i="${i}"><td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}<div class="den-m">${esc(acctName(l.c))}</div></td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}</tr>`; }).join('')}</tbody>
+  <tfoot><tr><td class="b">Totales</td><td class="den b"> ${Math.abs(sD - sH) > 0.005 && (sD || sH) ? '<span class="warnc">· no cuadra</span>' : ''}</td><td class="num b" id="sD">${nf(sD)}</td><td class="num b" id="sH">${nf(sH)}</td>${ro ? '' : '<td></td>'}</tr></tfoot></table></div>
   ${ro ? '' : `<button class="ghost sm addl" data-act="addline">+ Agregar línea</button>`}`;
 }
 function collect() {
@@ -1879,30 +3940,30 @@ async function checkCase() {
   delete A.drafts[key];
   await saveIndex(li);
   renderLote();
-  await checkLevelUp(li);
+  pushRank();
+  await checkCycle(li, c.stage);
 }
 async function saveIndex(li) {
   const real = Object.values(li.ans).filter(a => !a.draft);
   li.done = real.length; li.okc = real.filter(a => a.ok).length;
   try { await Store.set(PATH.i(li.id), li); } catch (e) { console.error(e); toast('No se pudo guardar. Revisa tu conexión.'); }
 }
-async function checkLevelUp(li) {
-  if (li.kind !== 'lote' || li.done < li.n || li.lv) return;
-  li.lv = true;
-  const need = Math.ceil(li.n * 0.8);
-  if (li.level === A.P.level && li.okc >= need && A.P.level < 7) {
-    A.P.level++; await saveProfile();
-    const L = LEVELS[A.P.level - 1];
-    modal(`<div class="ob">${LOGO(56)}<h2>¡Subiste al nivel ${L.n}!</h2><p>Acertaste <b>${li.okc} de ${li.n}</b>. Desde el próximo lote practicarás <b>${esc(L.t)}</b> (${esc(L.d)}), con repaso de lo anterior.</p><button class="btn" data-act="close">Seguir</button></div>`, 'narrow');
-  } else if (li.level === A.P.level) {
-    toast(`Lote terminado: ${li.okc}/${li.n}. Necesitas ${need} para subir de nivel.`, 5000);
+async function checkCycle(li, stn) {
+  if (li.kind !== 'ciclo') return;
+  const si = stageInfo(li), p = si.per[stn];
+  if (li.done >= li.n && !li.fin) {
+    li.fin = true; li.finAt = Date.now(); await saveIndex(li); pushRank();
+    const nota = Math.round(li.okc / li.n * 20);
+    modal(`<div class="ob">${LOGO(56)}<h2>¡Terminaste el ciclo contable!</h2><p>Completaste la contabilidad de <b>${esc(li.emp.co.name)}</b> del Diario a los estados financieros.</p><p class="big">${nota}/20</p><p>${li.okc} de ${li.n} casos correctos.</p><div class="row"><button class="btn" data-act="newcycle">Empezar la siguiente empresa</button><button class="ghost" data-act="close">Revisar esta empresa</button></div></div>`, 'narrow');
+  } else if (p && p.done === p.n && stn < 7) {
+    toast(`Etapa ${stn} terminada (${p.ok}/${p.n}). Se abrió la etapa ${stn + 1}: ${STAGES[stn].t}.`, 5000);
   }
-  await saveIndex(li);
 }
 
 /* ===================== Repaso y examen ===================== */
 async function makeExtra(kind) {
-  const M = limaISO().slice(0, 7), mo = await getMonth(M);
+  const M = limaISO().slice(0, 7), ts0 = Date.now();
+  const mo = newMonth(M, A.P.regime || 'MYPE', '|x' + A.user.uid + ts0);
   let plan;
   if (kind === 'repaso') {
     const fails = allAnswers().filter(x => !x.a.ok).sort((a, b) => b.a.at - a.a.at).slice(0, 40);
@@ -1913,15 +3974,16 @@ async function makeExtra(kind) {
     const ex = A.idx.find(x => x.kind === 'examen' && x.exam && !x.exam.fin);
     if (ex) return openLote(ex.id);
     const R = rngFrom('ex' + Date.now());
-    const fm = LEVELS.slice(0, A.P.level).flatMap(l => l.f);
+    const maxSt = A.idx.some(x => x.kind === 'ciclo' && x.fin) ? 7 : (activeCycle() ? stageInfo(activeCycle()).cur : 1);
+    const fm = LEVELS.slice(0, maxSt).flatMap(l => l.f);
     plan = Array.from({length: 20}, () => R.pick(fm));
   }
   const ts = Date.now(), id = (kind === 'repaso' ? 'R' : 'X') + ts;
   const cases = genCases(kind + ':' + ts, mo, plan, limaISO(), false);
-  const b = {id, kind, ts, month: M, date: limaISO(), hour: new Date(ts - OFF).toISOString().slice(11, 16), level: A.P.level, cases};
+  const b = {id, kind, ts, month: M, date: limaISO(), hour: new Date(ts - OFF).toISOString().slice(11, 16), emp: empOf(mo), cases};
   const li = newIndex(b);
   if (kind === 'examen') li.exam = {t0: ts, end: ts + 30 * 60e3, fin: false};
-  await Store.set(PATH.b(id), b); await Store.set(PATH.i(id), li); await Store.set(PATH.m(M), mo);
+  await Store.set(PATH.b(id), b); await Store.set(PATH.i(id), li);
   A.lotes[id] = b; A.idx.unshift(li);
   openLote(id);
 }
@@ -2008,31 +4070,31 @@ function renderMas() {
   <div class="grid3">
     <button class="tile" data-act="pcge"><b>Buscador del PCGE</b><span>Cuentas, subcuentas y divisionarias</span></button>
     <button class="tile" data-act="calc"><b>Calculadora tributaria</b><span>IGV, detracción, percepción y retención</span></button>
-    <button class="tile" data-go="mes"><b>Exportar mis libros</b><span>Excel o PDF, desde Mi mes</span></button>
+    <button class="tile" data-go="mes"><b>Exportar mis libros</b><span>Excel o PDF, desde Mi empresa</span></button>
   </div>
   <section class="card"><h2>Tema y colores</h2>${themePicker()}</section>
-  <section class="card"><h2>Ajustes</h2>
-    <label class="fld">Nivel actual<select id="sLv">${LEVELS.map(l => `<option value="${l.n}" ${l.n === A.P.level ? 'selected' : ''}>Nivel ${l.n} · ${l.t}</option>`).join('')}</select></label>
-    <p class="mini">Cambiar de nivel afecta a los lotes que lleguen desde ahora.</p>
-    <label class="fld">Régimen por defecto de la empresa simulada<select id="sRg">${Object.entries(REGIMEN).map(([k, r]) => `<option value="${k}" ${A.P.regime === k ? 'selected' : ''}>${r.n}</option>`).join('')}</select></label>
-    <label class="chk"><input type="checkbox" id="sDe" ${A.P.destino ? 'checked' : ''}> Exigir asientos de destino (clase 9 / 79) en el Libro Diario</label>
-    <p class="mini">${Store.mode === 'db' ? 'Tu progreso se guarda en tu cuenta: lo ves igual en el celular y en la PC.' : 'Tu progreso se guarda en este dispositivo. Para pasarlo a otro (del celular a la PC, por ejemplo), descarga una copia aquí y restáurala allá.'}</p>
-    ${Store.mode === 'db' ? '' : `<div class="row"><button class="ghost sm" data-act="backup">Descargar copia de seguridad</button><label class="ghost sm filebtn">Restaurar copia<input type="file" id="sImp" accept=".json,application/json" hidden></label></div>`}
+  <section class="card"><h2>Mi cuenta</h2>
+    <div class="acct">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<div><b>${esc(A.user.name)}</b><small>${esc(A.user.email)}${A.isAdmin ? ' · Administrador' : ''}</small></div><button class="ghost sm" data-act="logout">Cerrar sesión</button></div>
+    <label class="fld">Código de grupo o salón<div class="row"><input id="sGr" value="${esc(A.P.group || '')}" placeholder="Ej. VIE-4821" autocomplete="off" style="flex:1"><button class="ghost sm" data-act="joingroup">Guardar</button></div></label>
+    <p class="mini">Con el código que te dé tu administrador apareces en el ranking de tu grupo.</p>
   </section>
-  <p class="foot">Viernes · casos y empresas ficticios con fines de práctica. Tasas de referencia: IGV 18%, UIT 2026 S/ ${ni(UIT)}. Verifica con la normativa vigente antes de aplicarlas en casos reales.</p>`;
-  $('#sLv').onchange = async e => { A.P.level = +e.target.value; await saveProfile(); toast('Nivel actualizado'); };
-  $('#sRg').onchange = async e => { A.P.regime = e.target.value; await saveProfile(); toast('Régimen por defecto actualizado'); };
-  const imp = $('#sImp'); if (imp) imp.onchange = e => restoreBackup(e.target.files[0]);
+  <section class="card"><h2>Ajustes</h2>
+    <label class="fld">Régimen de tus próximas empresas<select id="sRg">${Object.entries(REGIMEN).map(([k, r]) => `<option value="${k}" ${A.P.regime === k ? 'selected' : ''}>${r.n}</option>`).join('')}</select></label>
+    <label class="chk"><input type="checkbox" id="sDe" ${A.P.destino ? 'checked' : ''}> Exigir asientos de destino (clase 9 / 79) en el Libro Diario</label>
+    <p class="mini">Tu progreso se guarda en tu cuenta de Google: lo ves igual en el celular y en la computadora.</p>
+  </section>
+  <p class="foot">Viernes · casos y empresas ficticios con fines de práctica. PCGE 2019 completo (datos del proyecto abierto pcge-peru). Tasas de referencia: IGV 18%, UIT 2026 S/ ${ni(UIT)}. Verifica con la normativa vigente antes de aplicarlas en casos reales.</p>`;
+  $('#sRg').onchange = async e => { A.P.regime = e.target.value; await saveProfile(); toast('Régimen actualizado: se usará en tu próxima empresa'); };
   $('#sDe').onchange = async e => { A.P.destino = e.target.checked; await saveProfile(); toast(A.P.destino ? 'Asientos de destino activados' : 'Asientos de destino desactivados'); };
 }
 function openPCGE() {
   modal(`<h3 class="mh">Plan Contable General Empresarial <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3>
   <input id="pq" class="search" placeholder="Busca por código o nombre: 40111, IGV, alquiler…" autofocus autocomplete="off">
   <div id="pl" class="plist"></div>
-  <p class="mini">${A.lastCode && document.body.contains(A.lastCode) ? 'Toca una cuenta para ponerla en la línea donde estabas.' : 'Cuentas más usadas del PCGE 2019.'}</p>`, 'narrow');
+  <p class="mini">${A.lastCode && document.body.contains(A.lastCode) ? 'Toca una cuenta para ponerla en la línea donde estabas.' : `Plan Contable General Empresarial 2019 completo: ${PCGE.length} cuentas, subcuentas y divisionarias.`}</p>`, 'narrow');
   const draw = () => {
     const q = $('#pq').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    const L = PCGE.filter(a => !q || a.c.startsWith(q) || a.n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').includes(q)).slice(0, 120);
+    const L = PCGE.filter(a => !q || a.c.startsWith(q) || a.n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').includes(q));
     $('#pl').innerHTML = L.map(a => `<button class="pa lv${Math.min(a.c.length, 5)}" data-code="${a.c}"><span class="mono">${a.c}</span><span>${esc(a.n)}</span></button>`).join('') || '<p class="empty">Sin resultados</p>';
   };
   $('#pq').oninput = draw; draw();
@@ -2136,7 +4198,7 @@ function monthItems(idxs) {
   const out = [];
   idxs.slice().sort((a, b) => a.ts - b.ts).forEach(li => Object.keys(li.ans || {}).map(Number).sort((a, b) => a - b).forEach(n => {
     const a = li.ans[n]; if (!a || a.draft || !a.s) return;
-    out.push({li, n, a, s: li.summ[n - 1] || {}, tag: `#${n} · ${fmtD(li.date).slice(0, 5)} ${li.kind === 'lote' ? li.hour : li.kind === 'repaso' ? 'repaso' : 'examen'}`});
+    out.push({li, n, a, s: li.summ[n - 1] || {}, tag: li.kind === 'ciclo' ? `Etapa ${(li.summ[n - 1] || {}).st || ''} · caso ${n}` : `#${n} · ${li.kind === 'repaso' ? 'repaso' : 'examen'}`});
   }));
   return out;
 }
@@ -2202,31 +4264,29 @@ const C621 = [['c100', '100 Ventas netas gravadas (base imponible)'], ['c101', '
 
 async function renderMes() {
   A.view = 'mes'; setNavOn('mes');
-  const months = [...new Set([limaISO().slice(0, 7), ...A.idx.map(x => x.month)])].sort().reverse();
-  const M = A.mesM && months.includes(A.mesM) ? A.mesM : months[0];
-  A.mesM = M;
-  $('#view').innerHTML = `<div class="loading sm"><p>Armando tus libros de ${mesLbl(M)}…</p></div>`;
-  const mo = await getMonth(M);
-  const idxs = await Store.list(PATH.colI(), {field: 'month', val: M, limit: 400});
-  idxs.forEach(li => { const i = A.idx.findIndex(x => x.id === li.id); if (i >= 0) A.idx[i] = li; });
-  const items = monthItems(idxs);
-  A.mesData = {mo, items};
+  const cycles = A.idx.filter(x => x.kind === 'ciclo').sort((a, b) => b.ts - a.ts);
+  if (!cycles.length) { $('#view').innerHTML = '<p class="empty">Aún no tienes empresas.</p>'; return; }
+  const li = cycles.find(x => x.id === A.mesM) || cycles[0];
+  A.mesM = li.id;
+  const mo = li.emp, M = mo.id;
+  const items = monthItems([li]);
+  A.mesData = {mo, items, li};
   const dia = items.filter(it => it.s.f === 'diario');
   const cnt = f => items.filter(it => it.s.f === f).length;
   const tabs = [['resumen', 'Resumen'], ['compras', '8.1 Compras'], ['ventas', '14.1 Ventas'], ['diario', '5.1 Diario'], ['mayor', '6.1 Mayor'], ['hoja', 'Hoja de trabajo'], ['pdt', 'PDT 621'], ['eeff', 'EEFF']];
   const T = A.mesTab;
-  $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Mi mes</p><h1>${esc(mo.co.name)}</h1><p class="sub">RUC ${mo.co.ruc} · ${esc(mo.co.giro)} · empresa simulada de ${mesLbl(M)}</p></div>
-    <div class="hx"><select id="mSel" aria-label="Mes">${months.map(m => `<option value="${m}" ${m === M ? 'selected' : ''}>${mesLbl(m)}</option>`).join('')}</select>
+  $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Mi empresa ${li.cycleNo}${li.fin ? ' · ciclo terminado' : ''}</p><h1>${esc(mo.co.name)}</h1><p class="sub">RUC ${mo.co.ruc} · ${esc(mo.co.giro)} · período ${mesLbl(M)} (01/${M.slice(5)} al ${lastDay(M)}/${M.slice(5)}/${M.slice(0, 4)})</p></div>
+    <div class="hx"><select id="mSel" aria-label="Empresa">${cycles.map(c => `<option value="${c.id}" ${c.id === li.id ? 'selected' : ''}>Empresa ${c.cycleNo} · ${esc(c.emp.co.name)}</option>`).join('')}</select>
     <div class="row"><button class="ghost sm" data-act="xls">Excel</button><button class="ghost sm" data-act="pdf">PDF</button></div></div></header>
   <section class="card co">
-    <label class="fld">Régimen tributario de este mes<select id="mReg">${Object.entries(REGIMEN).map(([k, r]) => `<option value="${k}" ${mo.regime === k ? 'selected' : ''}>${r.n}</option>`).join('')}</select></label>
+    <label class="fld">Régimen tributario de la empresa<select id="mReg">${Object.entries(REGIMEN).map(([k, r]) => `<option value="${k}" ${mo.regime === k ? 'selected' : ''}>${r.n}</option>`).join('')}</select></label>
     <div><p class="eyebrow">Libros obligatorios en este régimen</p><ul class="libs">${REGIMEN[mo.regime || 'MYPE'].libros.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>
   </section>
-  <p class="mini">Estos libros se arman con <b>tus respuestas</b> del mes: ${dia.length} asiento${dia.length === 1 ? '' : 's'} del Diario, ${cnt('compras')} compra${cnt('compras') === 1 ? '' : 's'} y ${cnt('ventas')} venta${cnt('ventas') === 1 ? '' : 's'} registradas. Si te equivocaste en un caso, el error se arrastra hasta el balance y los EEFF, y Viernes te muestra en qué caso se originó.</p>
+  <p class="mini">Estos libros se arman con <b>tus respuestas</b>: ${dia.length} de 20 asientos del Diario, ${cnt('compras')} compra${cnt('compras') === 1 ? '' : 's'} y ${cnt('ventas')} venta${cnt('ventas') === 1 ? '' : 's'} registradas. Si te equivocaste en un caso, el error se arrastra hasta el balance y los EEFF, y Viernes te muestra en qué caso se originó.</p>
   <div class="tabs" role="tablist">${tabs.map(([k, t]) => `<button role="tab" class="tab ${k === T ? 'on' : ''}" data-mtab="${k}">${t}</button>`).join('')}</div>
   <div id="mbody"></div>`;
   $('#mSel').onchange = e => { A.mesM = e.target.value; renderMes(); };
-  $('#mReg').onchange = async e => { mo.regime = e.target.value; await Store.set(PATH.m(M), mo); renderMes(); };
+  $('#mReg').onchange = async e => { mo.regime = e.target.value; await saveIndex(li); renderMes(); };
   renderMesTab();
 }
 function och(list) { return list && list.length ? `<div class="och">Origen: ${list.slice(0, 8).map(it => `<button class="ochb" data-hist="${it.li.id}:${it.n}">${esc(it.tag)}</button>`).join('')}${list.length > 8 ? ` <span class="mini">y ${list.length - 8} más</span>` : ''}</div>` : ''; }
@@ -2305,7 +4365,7 @@ function linesTable(L) {
 async function rev621() {
   const {mo} = A.mesData; const dec = {_rev: true};
   $$('#mbody [data-c]').forEach(el => { dec[el.dataset.c] = el.value.trim(); });
-  mo.c621 = dec; await Store.set(PATH.m(mo.id), mo);
+  mo.c621 = dec; await saveIndex(A.mesData.li);
   renderMesTab();
   const q = calc621(A.mesData.items, 's', mo);
   const ok = C621.filter(([k]) => Math.abs((parseNum(dec[k]) || 0) - q[k]) < 1.01).length;
@@ -2362,7 +4422,7 @@ async function exportXLS() {
     XLSX.utils.book_append_sheet(wb, ws, name.slice(0, 31));
   });
   const out = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
-  await saveFile(`Viernes-libros-${A.mesData.mo.id}.xlsx`, new Blob([out], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  await saveFile(`Viernes-${A.mesData.mo.co.name.replace(/[^A-Za-z0-9]+/g, '-')}-${A.mesData.mo.id}.xlsx`, new Blob([out], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
 }
 async function exportPDF() {
   if (!A.mesData) return;
@@ -2380,16 +4440,18 @@ async function exportPDF() {
     doc.autoTable({startY: y + 8, head: [rows[0]], body: rows.slice(1).map(r => r.map(v => v == null ? '' : typeof v === 'number' ? nf(v) : String(v))), styles: {fontSize: 7.5, cellPadding: 3, overflow: 'linebreak'}, headStyles: {fillColor: [47, 42, 133]}, margin: {left: 40, right: 40}});
     y = doc.lastAutoTable.finalY + 28;
   });
-  await saveFile(`Viernes-libros-${mo.id}.pdf`, doc.output('blob'));
+  await saveFile(`Viernes-${mo.co.name.replace(/[^A-Za-z0-9]+/g, '-')}-${mo.id}.pdf`, doc.output('blob'));
 }
 
 /* ===================== Eventos ===================== */
 document.addEventListener('click', async e => {
-  const t = e.target.closest('[data-act],[data-go],[data-open],[data-blk],[data-case],[data-hist],[data-mtab],[data-code],[data-ct],[data-hoja]');
+  const t = e.target.closest('[data-act],[data-go],[data-open],[data-stg],[data-case],[data-hist],[data-mtab],[data-code],[data-ct],[data-hoja],[data-atab],[data-auser]');
   if (!t) { if (e.target.id === 'modal') closeModal(); return; }
   if (t.dataset.go) { if (A.view === 'lote') saveDraft(); closeModal(); return go(t.dataset.go); }
   if (t.dataset.open) return openLote(t.dataset.open);
-  if (t.dataset.blk) { saveDraft(); A.cur = +t.dataset.blk * 10 + 1; return renderLote(); }
+  if (t.dataset.stg) { const sn = +t.dataset.stg; if (!unlocked(sn)) { toast('Primero termina la etapa ' + stageInfo(A.li).cur + '.'); return; } saveDraft(); const c = A.lote.cases.find(c => (c.stage || 1) === sn && (!A.li.ans[c.n] || A.li.ans[c.n].draft)) || A.lote.cases.find(c => (c.stage || 1) === sn); if (c) A.cur = c.n; return renderLote(); }
+  if (t.dataset.atab) { A.admTab = t.dataset.atab; return renderAdmin(); }
+  if (t.dataset.auser) return adminUser(t.dataset.auser);
   if (t.dataset.case) { if (isExamOpen()) await saveExamDraft(); else saveDraft(); A.cur = +t.dataset.case; renderLote(); return document.getElementById('casebox').scrollIntoView({behavior: 'smooth', block: 'start'}); }
   if (t.dataset.hist) { const [id, n] = t.dataset.hist.split(':'); return openHist(id, +n); }
   if (t.dataset.mtab) { A.mesTab = t.dataset.mtab; $$('.tab').forEach(b => b.classList.toggle('on', b === t)); return renderMesTab(); }
@@ -2423,7 +4485,11 @@ document.addEventListener('click', async e => {
   if (act === 'rev621') return rev621();
   if (act === 'xls') return exportXLS();
   if (act === 'pdf') return exportPDF();
-  if (act === 'backup') return makeBackup();
+  if (act === 'login') return Store.login();
+  if (act === 'logout') return Store.logout();
+  if (act === 'newcycle') { closeModal(); $('#view').innerHTML = `<div class="loading">${LOGO(56)}<p>Creando tu siguiente empresa…</p></div>`; await ensureCycle(true); const nl = activeCycle(); return nl ? openLote(nl.id) : go('home'); }
+  if (act === 'joingroup') return joinGroup();
+  if (act && act.startsWith('adm')) return adminAct(act, t);
 });
 function confirmFin() {
   const pend = A.lote.cases.filter(c => !A.li.ans[c.n]).length;
@@ -2487,7 +4553,7 @@ document.addEventListener('input', e => {
   const el = e.target;
   if (el.matches('#dlines input')) {
     const tr = el.closest('tr');
-    if (el.dataset.l === 'c') tr.querySelector('.den').textContent = acctName(el.value);
+    if (el.dataset.l === 'c') { tr.querySelector('.den').textContent = acctName(el.value); const dm = tr.querySelector('.den-m'); if (dm) dm.textContent = acctName(el.value); }
     const L = $$('#dlines tr'); const sD = r2(L.reduce((a, r) => a + (parseNum(r.querySelector('[data-l=d]').value) || 0), 0)), sH = r2(L.reduce((a, r) => a + (parseNum(r.querySelector('[data-l=h]').value) || 0), 0));
     const a = $('#sD'), b = $('#sH'); if (a) { a.textContent = nf(sD); b.textContent = nf(sH); }
   }
@@ -2507,7 +4573,7 @@ const AC = {
     const q = inp.value.trim(); const qn = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     if (!q) { this.hide(); return; }
     const digits = /^\d+$/.test(q);
-    this.items = PCGE.filter(a => digits ? a.c.startsWith(q) : a.n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(qn)).slice(0, 8);
+    this.items = PCGE.filter(a => digits ? a.c.startsWith(q) : a.n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(qn)).slice(0, 80);
     if (!this.items.length || (this.items.length === 1 && this.items[0].c === q)) { this.hide(); return; }
     this.hi = -1;
     this.box.innerHTML = this.items.map((a, i) => `<div class="aci" data-ac="${i}" role="option"><span class="mono">${a.c}</span><span>${esc(a.n)}</span></div>`).join('');
@@ -2555,8 +4621,103 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && t.matches('input')) { e.preventDefault(); AC.hide(); nextCell(t, e.shiftKey); }
 });
 window.addEventListener('scroll', () => AC.hide(), {passive: true});
+/* ===================== Ranking ===================== */
+async function renderRanking() {
+  A.view = 'ranking'; setNavOn('ranking');
+  $('#view').innerHTML = `<div class="loading sm"><p>Cargando ranking…</p></div>`;
+  let all = [];
+  try { all = await Store.listPlain('rank', 1000); } catch (e) { $('#view').innerHTML = '<p class="empty">No se pudo cargar el ranking. Revisa tu conexión.</p>'; return; }
+  const tab = A.rkTab || (A.P.group ? 'grupo' : 'general');
+  const list = (tab === 'grupo' ? all.filter(r => r.group && r.group === A.P.group) : all)
+    .sort((a, b) => (b.ok || 0) - (a.ok || 0) || (b.pct || 0) - (a.pct || 0));
+  const me = list.findIndex(r => r.id === A.user.uid);
+  $('#view').innerHTML = `<header class="hero sm"><div><h1>Ranking</h1><p class="sub">Ordenado por casos correctos. ${me >= 0 ? `Vas en el puesto <b>${me + 1}</b> de ${list.length}.` : ''}</p></div></header>
+  <div class="seg rk">${[['general', 'General'], ['grupo', A.P.group ? 'Mi grupo · ' + esc(A.P.group) : 'Mi grupo']].map(([k, l]) => `<button class="${k === tab ? 'on' : ''}" data-act="rktab" data-k="${k}">${l}</button>`).join('')}</div>
+  ${tab === 'grupo' && !A.P.group ? '<p class="empty">Aún no estás en un grupo. Pide el código a tu administrador y guárdalo en Más → Mi cuenta.</p>' : `
+  <div class="tw"><table class="book rank"><thead><tr><th>#</th><th>Estudiante</th><th>Correctos</th><th>% acierto</th><th>Empresas</th><th>Etapa actual</th><th>Racha</th></tr></thead>
+  <tbody>${list.map((r, i) => `<tr class="${r.id === A.user.uid ? 'me' : ''}"><td class="num b">${i + 1}</td><td class="tx"><span class="who">${r.photo ? `<img src="${esc(r.photo)}" alt="" referrerpolicy="no-referrer">` : ''}${esc(r.name || 'Estudiante')}</span></td><td class="num">${r.ok || 0}</td><td class="num">${r.pct || 0}%</td><td class="num">${r.empresas || 0}</td><td>${r.etapa ? r.etapa + ' · ' + esc(STAGES[r.etapa - 1].t) : '—'}</td><td class="num">${r.racha || 0} d</td></tr>`).join('') || '<tr><td colspan="7" class="empty">Todavía no hay participantes.</td></tr>'}</tbody></table></div>`}`;
+}
+async function joinGroup() {
+  const code = ($('#sGr').value || '').trim().toUpperCase();
+  if (code) { const g = await Store.get('groups/' + code).catch(() => null); if (!g) { toast('Ese código de grupo no existe'); return; } }
+  A.P.group = code; await saveProfile(); pushRank(); toast(code ? 'Te uniste al grupo ' + code : 'Saliste del grupo');
+}
 
-if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }
+/* ===================== Panel de administrador ===================== */
+async function renderAdmin() {
+  if (!A.isAdmin) return go('home');
+  A.view = 'admin'; setNavOn('admin');
+  const tab = A.admTab || 'usuarios';
+  $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Solo administradores</p><h1>Administrar</h1><p class="sub">Usuarios, grupos, avisos y administradores de Viernes.</p></div></header>
+  <div class="tabs">${[['usuarios', 'Usuarios'], ['grupos', 'Grupos'], ['avisos', 'Avisos'], ['admins', 'Administradores']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-atab="${k}">${l}</button>`).join('')}</div>
+  <div id="abody"><div class="loading sm"><p>Cargando…</p></div></div>`;
+  const box = $('#abody');
+  try {
+    if (tab === 'usuarios') {
+      const [rk, bl] = await Promise.all([Store.listPlain('rank', 1000), Store.listPlain('blocked', 1000)]);
+      const blocked = new Set(bl.map(b => b.id));
+      rk.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const activos = rk.filter(r => Date.now() - (r.ts || 0) < 7 * 864e5).length;
+      box.innerHTML = `<div class="kpis"><div class="kpi"><span>Usuarios</span><b>${rk.length}</b><small>con progreso guardado</small></div><div class="kpi"><span>Activos esta semana</span><b>${activos}</b><small>practicaron en 7 días</small></div><div class="kpi"><span>Casos resueltos</span><b>${rk.reduce((s, r) => s + (r.casos || 0), 0)}</b><small>entre todos</small></div><div class="kpi"><span>Bloqueados</span><b>${blocked.size}</b><small>sin acceso</small></div></div>
+      <div class="tw"><table class="book"><thead><tr><th>Estudiante</th><th>Grupo</th><th>Casos</th><th>% acierto</th><th>Empresas</th><th>Etapa</th><th>Última actividad</th><th>Estado</th></tr></thead>
+      <tbody>${rk.map(r => `<tr class="click" data-auser="${r.id}"><td class="tx"><span class="who">${r.photo ? `<img src="${esc(r.photo)}" alt="" referrerpolicy="no-referrer">` : ''}${esc(r.name || 'Estudiante')}</span></td><td>${esc(r.group || '—')}</td><td class="num">${r.casos || 0}</td><td class="num">${r.pct || 0}%</td><td class="num">${r.empresas || 0}</td><td>${r.etapa || '—'}</td><td>${r.ts ? fmtD(limaISO(r.ts)) : '—'}</td><td>${blocked.has(r.id) ? '<span class="pill bad">Bloqueado</span>' : '<span class="pill ok">Activo</span>'}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">Aún no hay usuarios.</td></tr>'}</tbody></table></div>
+      <p class="mini">Toca un estudiante para ver su detalle, bloquearlo o eliminar sus datos.</p>`;
+    } else if (tab === 'grupos') {
+      const [gr, rk] = await Promise.all([Store.listPlain('groups', 500), Store.listPlain('rank', 1000)]);
+      box.innerHTML = `<section class="card"><h2>Crear grupo</h2><div class="row"><input id="agName" placeholder="Nombre, p. ej. Contabilidad Integral – Sección A" style="flex:1;min-width:200px"><button class="btn" data-act="admgroupadd">Crear y generar código</button></div></section>
+      <div class="tw"><table class="book"><thead><tr><th>Código</th><th>Nombre</th><th>Integrantes</th><th>Creado</th><th></th></tr></thead><tbody>${gr.sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(g => `<tr><td class="mono b">${esc(g.id)}</td><td class="tx">${esc(g.name || '')}</td><td class="num">${rk.filter(r => r.group === g.id).length}</td><td>${g.ts ? fmtD(limaISO(g.ts)) : ''}</td><td><button class="ghost sm" data-act="admgroupdel" data-id="${esc(g.id)}">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="5" class="empty">Aún no hay grupos.</td></tr>'}</tbody></table></div>
+      <p class="mini">Comparte el código con tu salón. Cada estudiante lo pega en Más → Mi cuenta y aparece en el ranking del grupo.</p>`;
+    } else if (tab === 'avisos') {
+      const av = await Store.get('config/aviso') || {};
+      box.innerHTML = `<section class="card"><h2>Aviso para todos</h2><label class="fld">Mensaje<textarea id="avTx" rows="3" placeholder="Ej. El examen de práctica es el viernes a las 8 p. m.">${esc(av.text || '')}</textarea></label>
+      <label class="chk"><input type="checkbox" id="avOn" ${av.on ? 'checked' : ''}> Mostrar el aviso en el inicio de todos los usuarios</label>
+      <button class="btn" data-act="admaviso">Guardar aviso</button></section>`;
+    } else if (tab === 'admins') {
+      const ad = await Store.listPlain('admins', 100);
+      box.innerHTML = `<section class="card"><h2>Administradores</h2><p class="mini">Tienen acceso a este panel. <b>${SUPER_ADMIN}</b> es el administrador principal y no se puede quitar.</p>
+      <ul class="adl"><li><b>${SUPER_ADMIN}</b><span class="pill ok">Principal</span></li>${ad.map(a => `<li><b>${esc(a.id)}</b><button class="ghost sm" data-act="admadmindel" data-id="${esc(a.id)}">Quitar</button></li>`).join('')}</ul>
+      <div class="row"><input id="adEm" type="email" placeholder="correo@gmail.com" style="flex:1;min-width:200px"><button class="btn" data-act="admadminadd">Agregar administrador</button></div></section>`;
+    }
+  } catch (e) { console.error(e); box.innerHTML = `<p class="empty">No se pudo cargar: ${esc(e.message || e)}</p>`; }
+}
+async function adminUser(uid) {
+  modal(`<h3 class="mh">Detalle del estudiante <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3><div id="aud"><div class="loading sm"><p>Cargando…</p></div></div>`, 'wide');
+  try {
+    const [prof, idx, rk, bl] = await Promise.all([Store.get('users/' + uid), Store.list('users/' + uid + '/i', {limit: 300}), Store.get('rank/' + uid), Store.get('blocked/' + uid)]);
+    const ans = allAnswers(idx), ok = ans.filter(x => x.a.ok).length;
+    const byF = {}; ans.forEach(x => { const o = byF[x.s.f] || (byF[x.s.f] = {ok: 0, n: 0}); o.n++; if (x.a.ok) o.ok++; });
+    const cyc = idx.filter(x => x.kind === 'ciclo').sort((a, b) => b.ts - a.ts);
+    $('#aud').innerHTML = `<div class="acct">${prof && prof.photo ? `<img src="${esc(prof.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<div><b>${esc((prof && prof.name) || (rk && rk.name) || 'Estudiante')}</b><small>${esc((prof && prof.email) || '')} · grupo ${esc((prof && prof.group) || '—')}</small></div></div>
+    <div class="kpis"><div class="kpi"><span>Casos</span><b>${ans.length}</b></div><div class="kpi"><span>Acierto</span><b>${ans.length ? Math.round(ok / ans.length * 100) : 0}%</b></div><div class="kpi"><span>Empresas terminadas</span><b>${cyc.filter(x => x.fin).length}</b></div><div class="kpi"><span>Racha</span><b>${streak(idx).n} d</b></div></div>
+    <h3 class="sec">Empresas</h3><div class="tw"><table class="book"><thead><tr><th>Nº</th><th>Empresa</th><th>Período</th><th>Avance</th><th>Correctos</th><th>Nota</th></tr></thead><tbody>${cyc.map(c => `<tr><td class="num">${c.cycleNo}</td><td class="tx">${esc(c.emp.co.name)}</td><td>${mesLbl(c.emp.id)}</td><td>${c.fin ? 'Terminada' : 'Etapa ' + stageInfo(c).cur + ' de 7'} · ${c.done}/${c.n}</td><td class="num">${c.okc}</td><td class="num">${c.done ? Math.round(c.okc / c.done * 20) : 0}/20</td></tr>`).join('') || '<tr><td colspan="6" class="empty">Sin empresas.</td></tr>'}</tbody></table></div>
+    <h3 class="sec">Acierto por libro</h3>${Object.entries(byF).map(([f, o]) => { const p = Math.round(o.ok / o.n * 100); return `<div class="srow"><div class="sl"><span>${esc(LIBRO[f] || f)}</span><span class="num">${p}% · ${o.ok}/${o.n}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('') || '<p class="empty">Sin casos resueltos.</p>'}
+    <div class="actions"><button class="ghost" data-act="${bl ? 'admunblock' : 'admblock'}" data-id="${uid}">${bl ? 'Desbloquear' : 'Bloquear acceso'}</button><span class="sp"></span><button class="btn warn" data-act="admwipe" data-id="${uid}">Eliminar sus datos</button></div>`;
+  } catch (e) { $('#aud').innerHTML = `<p class="empty">No se pudo cargar: ${esc(e.message || e)}</p>`; }
+}
+async function adminAct(act, t) {
+  try {
+    if (act === 'admgroupadd') {
+      const name = $('#agName').value.trim(); if (!name) return toast('Escribe el nombre del grupo');
+      let code; for (let i = 0; i < 10; i++) { code = 'VIE-' + String(Math.floor(1000 + Math.random() * 9000)); if (!(await Store.get('groups/' + code))) break; }
+      await Store.set('groups/' + code, {name, ts: Date.now(), by: A.user.email}, true); toast('Grupo creado: ' + code); return renderAdmin();
+    }
+    if (act === 'admgroupdel') { if (!confirmTwice('g' + t.dataset.id, '¿Eliminar el grupo ' + t.dataset.id + '? Toca otra vez para confirmar.')) return; await Store.del('groups/' + t.dataset.id); toast('Grupo eliminado'); return renderAdmin(); }
+    if (act === 'admaviso') { await Store.set('config/aviso', {text: $('#avTx').value.trim(), on: $('#avOn').checked, ts: Date.now()}, true); A.aviso = $('#avOn').checked && $('#avTx').value.trim() ? {text: $('#avTx').value.trim(), on: true} : null; return toast('Aviso guardado'); }
+    if (act === 'admadminadd') { const em = $('#adEm').value.trim().toLowerCase(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast('Escribe un correo válido'); await Store.set('admins/' + em, {ts: Date.now(), by: A.user.email}, true); toast('Administrador agregado'); return renderAdmin(); }
+    if (act === 'admadmindel') { await Store.del('admins/' + t.dataset.id); toast('Administrador quitado'); return renderAdmin(); }
+    if (act === 'admblock') { await Store.set('blocked/' + t.dataset.id, {ts: Date.now(), by: A.user.email}, true); toast('Usuario bloqueado'); closeModal(); return renderAdmin(); }
+    if (act === 'admunblock') { await Store.del('blocked/' + t.dataset.id); toast('Usuario desbloqueado'); closeModal(); return renderAdmin(); }
+    if (act === 'admwipe') {
+      const uid = t.dataset.id; if (!confirmTwice('w' + uid, 'Se borrará todo su progreso. Toca otra vez para confirmar.')) return;
+      const idx = await Store.list('users/' + uid + '/i', {limit: 1000});
+      for (const li of idx) { await Store.del('users/' + uid + '/i/' + li.id).catch(() => {}); await Store.del('users/' + uid + '/b/' + li.id).catch(() => {}); }
+      await Store.del('users/' + uid).catch(() => {}); await Store.del('rank/' + uid).catch(() => {});
+      toast('Datos eliminados'); closeModal(); return renderAdmin();
+    }
+  } catch (e) { console.error(e); toast('No se pudo completar: ' + (e.message || e)); }
+}
+function confirmTwice(key, msg) { if (A._cf === key && Date.now() - A._cfT < 5000) { A._cf = null; return true; } A._cf = key; A._cfT = Date.now(); toast(msg, 5000); return false; }
+document.addEventListener('click', e => { const b = e.target.closest('[data-act=rktab]'); if (b) { A.rkTab = b.dataset.k; renderRanking(); } });
 </script>
 
 </body>
