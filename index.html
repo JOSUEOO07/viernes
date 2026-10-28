@@ -262,7 +262,7 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .filebtn{cursor:pointer;display:inline-flex;align-items:center}
 #kfab{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:15;width:54px;height:54px;border-radius:16px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 8px 22px rgba(0,0,0,.22)}
 #kfab:hover{filter:brightness(1.06)}
-#kcalc{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:16;width:300px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;display:grid;gap:8px;box-shadow:0 18px 50px rgba(10,11,25,.28)}
+#kcalc{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:16;width:300px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;display:grid;gap:8px;box-shadow:0 18px 50px rgba(10,11,25,.28)}
 .kc-h{display:flex;justify-content:space-between;align-items:center;cursor:default}
 .kc-d{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:grid;justify-items:end;min-width:0}
 .kc-d small{color:var(--muted);font-family:var(--mono);font-size:.78rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -276,6 +276,19 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .kc-g .eq{background:var(--brand);color:var(--brand-ink);border-color:transparent} .kc-g .w2{grid-column:span 2}
 .kc-f{display:flex;gap:6px} .kc-f button{flex:1}
 .kc-f .btn:disabled{opacity:.45;cursor:default}
+.nvsp{flex:1}
+.empresa{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:12px 24px;align-items:center;background:var(--paper);border-left:4px solid var(--brand)}
+.emp-dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 16px}
+.emp-dl dt{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.emp-dl dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.emp-dl dd small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+.empl{margin:-4px 0 0}
+.notes{margin:0 0 6px;padding-left:18px;color:var(--ok);font-size:.88rem}
+.fb.badf .notes{color:var(--ok)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin:6px 0 12px}
+.sw{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px;display:grid;gap:6px;justify-items:center;font-size:.8rem;font-weight:600}
+.sw i{width:38px;height:38px;border-radius:50%;display:block}
+.sw.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
 .foot{color:var(--muted);font-size:.78rem;text-align:center}
 
 /* Ventanas */
@@ -306,6 +319,8 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
   .app{grid-template-columns:minmax(0,1fr)}
   #nav{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--line);z-index:10;gap:0}
   .brand{display:none}
+  .nvtheme,.nvsp{display:none}
+  .empresa{grid-template-columns:minmax(0,1fr)}
   .nv{flex-direction:column;gap:2px;font-size:.68rem;padding:6px 4px;flex:1;align-items:center;border-radius:10px}
   #view{padding:16px 16px 110px}
   .grid3,.grid2{grid-template-columns:minmax(0,1fr)}
@@ -314,7 +329,7 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
   .co{grid-template-columns:minmax(0,1fr)}
   #toast{bottom:84px}
   #kfab{bottom:calc(76px + env(safe-area-inset-bottom,0px));right:calc(14px + env(safe-area-inset-right,0px));width:50px;height:50px}
-  #kcalc{bottom:calc(134px + env(safe-area-inset-bottom,0px));right:calc(14px + env(safe-area-inset-right,0px))}
+  #kcalc{bottom:calc(76px + env(safe-area-inset-bottom,0px));right:calc(14px + env(safe-area-inset-right,0px))}
   #view{padding-bottom:150px}
   .hx{justify-items:start}
   .swipe{display:block}
@@ -339,6 +354,18 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
   </main>
 </div>
 <div id="modal" hidden></div>
+<section id="kcalc" hidden aria-label="Calculadora">
+  <div class="kc-h"><b>Calculadora</b><button type="button" class="x sm" id="kclose" aria-label="Cerrar calculadora">✕</button></div>
+  <div class="kc-d"><small id="kexp">&nbsp;</small><output id="kout">0</output></div>
+  <div class="kc-g">
+    <button data-k2="C" class="fn">C</button><button data-k2="back" class="fn" aria-label="Borrar">⌫</button><button data-k2="%" class="fn">%</button><button data-k2="/" class="op">÷</button>
+    <button data-k2="7">7</button><button data-k2="8">8</button><button data-k2="9">9</button><button data-k2="*" class="op">×</button>
+    <button data-k2="4">4</button><button data-k2="5">5</button><button data-k2="6">6</button><button data-k2="-" class="op">−</button>
+    <button data-k2="1">1</button><button data-k2="2">2</button><button data-k2="3">3</button><button data-k2="+" class="op">+</button>
+    <button data-k2="0" class="w2">0</button><button data-k2=".">.</button><button data-k2="=" class="eq">=</button>
+  </div>
+  <div class="kc-f"><button data-k2="put" class="btn sm" id="kput">Poner en la celda</button></div>
+</section>
 <div id="toast" hidden role="status"></div>
 <datalist id="pcgeList"></datalist>
 <script>
@@ -1410,12 +1437,13 @@ function showSol(f) {
   return String(f.v);
 }
 function gradeGrid(c, vals) {
-  const cells = {}, msgs = [], kinds = []; let okn = 0, tot = 0;
+  const cells = {}, msgs = [], kinds = [], notes = []; let okn = 0, tot = 0;
   for (const [k, f] of Object.entries(c.fields)) {
     tot++; const good = checkField(f, vals[k]); cells[k] = good;
+    if (good && f.t === 'c') { const u = String(vals[k] || '').replace(/\D/g, ''); if (u !== String(f.v)) notes.push(`Usaste ${u} ${acctName(u)} y es válido: es la misma cuenta que ${f.v} ${acctName(f.v)}, a otro nivel de detalle.`); }
     if (good) okn++; else { kinds.push(f.k || 'dato'); msgs.push({l: f.l, exp: showSol(f), why: f.why, got: vals[k]}); }
   }
-  return {cells, ok: okn === tot, sc: tot ? okn / tot : 0, msgs, kinds};
+  return {cells, notes, ok: okn === tot, sc: tot ? okn / tot : 0, msgs, kinds};
 }
 function gradeDiario(c, lines, destino) {
   const sol = c.lines.filter(l => destino || !l.dest);
@@ -1425,8 +1453,9 @@ function gradeDiario(c, lines, destino) {
   const amt = l => l.d || l.h, side = l => l.d ? 'D' : 'H';
   const eq = (a, b) => Math.abs(a - b) <= 0.011;
   sol.forEach((s, si) => { const u = user.find(u => !used.has(u.i) && side(u) === side(s) && eq(amt(u), amt(s)) && acctCompat(u.c, s.c)); if (u) { used.add(u.i); solMatch[si] = u.i; } });
-  const msgs = [], kinds = [], lineOk = {};
+  const msgs = [], kinds = [], lineOk = {}, notes = [];
   user.forEach(u => { lineOk[u.i] = used.has(u.i); });
+  sol.forEach((s, si) => { if (solMatch[si] < 0) return; const u = user.find(x => x.i === solMatch[si]); if (u && u.c !== s.c) notes.push(u.c.length < s.c.length ? `Pusiste ${u.c} (${acctName(u.c)}) y se acepta, porque es la cuenta que contiene a ${s.c} ${acctName(s.c)}, que es la que usa la solución con más detalle.` : `Pusiste ${u.c} (${acctName(u.c) || 'subdivisión'}) y se acepta: es una subdivisión de ${s.c} ${acctName(s.c)}.`); });
   sol.forEach((s, si) => {
     if (solMatch[si] >= 0) return;
     const sname = `${s.c} ${acctName(s.c)}`, sv = `${s.d ? 'Debe' : 'Haber'} ${nf(amt(s))}`;
@@ -1448,7 +1477,7 @@ function gradeDiario(c, lines, destino) {
   const matched = solMatch.filter(x => x >= 0).length;
   const extra = user.filter(u => !lineOk[u.i]).length;
   const sc = sol.length ? Math.max(0, matched / Math.max(sol.length, matched + extra)) : 0;
-  return {lineOk, ok: matched === sol.length && extra === 0 && !(user.length && Math.abs(sD - sH) > 0.01), sc, msgs, kinds, sol};
+  return {lineOk, notes, ok: matched === sol.length && extra === 0 && !(user.length && Math.abs(sD - sH) > 0.01), sc, msgs, kinds, sol};
 }
 function grade(c, ans, destino) { return c.kind === 'diario' ? gradeDiario(c, ans.lines || [], destino) : gradeGrid(c, ans.vals || {}); }
 /* Versión compacta de la solución (para el mes, el historial y la exportación) */
@@ -1604,7 +1633,8 @@ function countdown() {
 const NAV = [['home', 'Inicio', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['practicar', 'Practicar', 'M4 4h16v16H4zM4 9h16M9 9v11'], ['mes', 'Mi mes', 'M4 5h16v15H4zM4 10h16M8 3v4M16 3v4'], ['historial', 'Historial', 'M12 7v5l3 2M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4'], ['mas', 'Más', 'M5 12h.01M12 12h.01M19 12h.01']];
 function renderNav() {
   $('#nav').innerHTML = `<div class="brand">${LOGO(36)}<div><b>Viernes</b><small>Práctica contable SUNAT</small></div></div>` +
-    NAV.map(([k, t, d]) => `<button class="nv" data-go="${k}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${t}</span></button>`).join('');
+    NAV.map(([k, t, d]) => `<button class="nv" data-go="${k}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${t}</span></button>`).join('') +
+    `<div class="nvsp"></div><button class="nv nvtheme" data-act="theme"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-1.2-1-1.5-1-2.6 0-.9.7-1.4 1.6-1.4H16a5 5 0 0 0 5-5C21 6.4 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7.5" r="1.3" fill="currentColor"/></svg><span>Tema y colores</span></button>`;
 }
 function go(v) {
   if (v === 'practicar') { const li = currentLote(); if (li) return openLote(li.id); v = 'home'; }
@@ -1680,10 +1710,25 @@ function showLevels() {
 }
 
 /* ===================== Práctica ===================== */
+function empresaCard(mo, b) {
+  if (!mo) return '';
+  const M = mo.id, fin = lastDay(M);
+  return `<section class="card empresa">
+    <div class="emp-main"><p class="eyebrow">Empresa de práctica</p><h2>${esc(mo.co.name)}</h2><p class="sub">Razón social ficticia · ${esc(mo.co.giro)}</p></div>
+    <dl class="emp-dl">
+      <div><dt>RUC</dt><dd class="mono">${mo.co.ruc}</dd></div>
+      <div><dt>Período</dt><dd>${mesLbl(M)}<small>01/${M.slice(5)}/${M.slice(0, 4)} al ${fin}/${M.slice(5)}/${M.slice(0, 4)}</small></dd></div>
+      <div><dt>Operaciones de este lote</dt><dd>${fmtD(b.date)}</dd></div>
+      <div><dt>Régimen</dt><dd>${esc(REGIMEN[mo.regime || 'MYPE'].n)}</dd></div>
+      <div><dt>Cuenta corriente</dt><dd>${esc(mo.co.banco)}<small class="mono">${esc(mo.co.cta)}</small></dd></div>
+    </dl>
+  </section>`;
+}
 async function openLote(id, n) {
   const li = await getIndex(id), b = await getLote(id);
   if (!li || !b) { toast('No se encontró ese lote'); return go('home'); }
   A.li = li; A.lote = b; A.view = 'lote'; setNavOn('practicar');
+  try { A.loteMo = await getMonth(b.month); } catch { A.loteMo = null; }
   history.replaceState(null, '', '#lote:' + id);
   if (n) A.cur = n; else { const first = b.cases.find(c => !li.ans[c.n] || li.ans[c.n].draft); A.cur = first ? first.n : 1; }
   if (li.kind === 'examen' && li.exam && !li.exam.fin) startTimer();
@@ -1704,6 +1749,7 @@ function renderLote() {
   </div>
   <div class="blocks" role="tablist">${Array.from({length: nb}, (_, i) => { const cs = b.cases.slice(i * 10, i * 10 + 10); const d = cs.filter(c => li.ans[c.n] && !li.ans[c.n].draft).length; return `<button role="tab" class="blk ${i === blk ? 'on' : ''}" data-blk="${i}"><b data-s="B${i + 1}">Bloque ${i + 1}</b><span>${d}/${cs.length}</span></button>`; }).join('')}</div>
   <div class="chips">${b.cases.slice(blk * 10, blk * 10 + 10).map(c => `<button class="chip ${st(c.n)} ${c.n === A.cur ? 'cur' : ''}" data-case="${c.n}" aria-label="Caso ${c.n}">${c.n}</button>`).join('')}</div>
+  ${empresaCard(A.loteMo, b)}
   ${blockSummary(blk)}
   <div id="casebox"></div>
   ${isExamOpen() ? `<div class="examfoot"><button class="btn warn" data-act="finexam">Terminar examen y corregir</button></div>` : ''}`;
@@ -1743,6 +1789,7 @@ function renderCase(target = '#casebox', ro = null) {
   const solOn = A.showSol[key];
   const html = `<article class="card case">
     <div class="case-h"><span class="badge">${esc(LIBRO[c.fmt])}</span><b>#${c.n} · ${esc(c.title)}</b><span class="mini">${fmtD(c.date)}</span></div>
+    ${!ro && A.loteMo ? `<p class="mini empl">Empresa: <b>${esc(A.loteMo.co.name)}</b> · RUC ${A.loteMo.co.ruc} · período ${mesLbl(A.loteMo.id)}</p>` : ''}
     <p class="txt">${esc(c.text)}</p>
     ${renderCP(c.cp)}
     <p class="instr">${esc(c.instr)}${c.kind === 'diario' ? (destino ? ' Incluye los asientos de destino (clase 9 / 79) cuando correspondan.' : ' Los asientos de destino están desactivados en tus ajustes.') : ''}</p>
@@ -1754,7 +1801,7 @@ function renderCase(target = '#casebox', ro = null) {
     <div class="actions">
       ${!answered && !exam ? `<button class="ghost" data-act="hint" ${hintOn ? 'disabled' : ''}>Pista</button>` : ''}
       ${c.kind === 'diario' && !answered && !ro ? `<button class="ghost" data-act="pcge">Buscar cuenta</button>` : ''}
-      <button class="ghost" data-act="calc">Calculadora</button>
+      <button class="ghost" data-act="kcalc">Calculadora</button>
       ${answered && !ro ? `<button class="ghost" data-act="sol">${solOn ? 'Ocultar solución' : 'Ver solución'}</button>` : ''}
       <span class="sp"></span>
       ${ro ? '' : !answered ? (exam ? `<button class="btn" data-act="savenext">Guardar y seguir</button>` : `<button class="btn" data-act="check">Revisar</button>`) : (nextN() ? `<button class="btn" data-act="next">Siguiente →</button>` : `<button class="btn" data-go="home">Volver al inicio</button>`)}
@@ -1804,6 +1851,7 @@ function saveDraft() { if (A.view !== 'lote' || !A.lote) return; const c = caseB
 function feedback(c, g, a) {
   const pct = Math.round(g.sc * 100);
   return `<div class="fb ${g.ok ? 'good' : 'badf'}"><p class="fbh">${g.ok ? '✔ ¡Correcto!' : `✘ ${g.msgs.length} ${g.msgs.length > 1 ? 'observaciones' : 'observación'} · ${pct}% de celdas bien`}${a.h ? ' · usaste pista' : ''}</p>
+  ${g.notes && g.notes.length ? `<ul class="notes">${g.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
   ${g.msgs.length ? `<ul>${g.msgs.map(m => `<li><b>${esc(m.l)}</b>${m.exp ? ` — correcto: <span class="mono">${esc(m.exp)}</span>` : ''}${m.got !== undefined && m.got !== '' ? ` · pusiste: <span class="mono">${esc(m.got)}</span>` : ''}<br><span class="why">${esc(m.why)}</span></li>`).join('')}</ul>` : ''}</div>`;
 }
 function solution(c, a) {
@@ -1958,6 +2006,7 @@ function renderMas() {
     <button class="tile" data-act="calc"><b>Calculadora tributaria</b><span>IGV, detracción, percepción y retención</span></button>
     <button class="tile" data-go="mes"><b>Exportar mis libros</b><span>Excel o PDF, desde Mi mes</span></button>
   </div>
+  <section class="card"><h2>Tema y colores</h2>${themePicker()}</section>
   <section class="card"><h2>Ajustes</h2>
     <label class="fld">Nivel actual<select id="sLv">${LEVELS.map(l => `<option value="${l.n}" ${l.n === A.P.level ? 'selected' : ''}>Nivel ${l.n} · ${l.t}</option>`).join('')}</select></label>
     <p class="mini">Cambiar de nivel afecta a los lotes que lleguen desde ahora.</p>
@@ -2035,6 +2084,49 @@ async function restoreBackup(file) {
     toast('Copia restaurada'); setTimeout(() => location.reload(), 800);
   } catch (e) { toast('Ese archivo no es una copia de Viernes'); }
 }
+
+/* ===================== Temas de color ===================== */
+const THEMES = [
+  ['indigo', 'Índigo', '#2f2a85', '#4740c9', '#e2553d', '#5a53e6', '#8a84ff'],
+  ['esmeralda', 'Esmeralda', '#0e6a4e', '#17956d', '#e89a1c', '#1fa57a', '#5fd3a8'],
+  ['oceano', 'Océano', '#0b5a86', '#1580c2', '#ff7a45', '#1f8fd6', '#6cc0f5'],
+  ['vino', 'Vino', '#7a1f3d', '#a7315a', '#e5a23a', '#c0446f', '#f08ab0'],
+  ['grafito', 'Grafito', '#2a2e36', '#4b5262', '#e2553d', '#7b8496', '#b3bccc'],
+  ['naranja', 'Naranja', '#a8420c', '#d9611b', '#2f6fd6', '#e8762f', '#ffad73'],
+  ['rosa', 'Rosa', '#9e235c', '#cf3d84', '#239f95', '#e0559a', '#ff9cc9'],
+  ['violeta', 'Violeta', '#5a2a9b', '#7b45d0', '#f2b200', '#9466f0', '#c4a6ff'],
+  ['bosque', 'Bosque', '#2f5a1e', '#4b8a2e', '#d9822b', '#5fa43c', '#a6dc84'],
+  ['turquesa', 'Turquesa', '#0b6b6b', '#139b9b', '#ef6f5e', '#1ab3b3', '#6fe0db'],
+];
+const UI_KEY = 'viernesui:tema';
+function uiGet() { try { return JSON.parse(localStorage.getItem(UI_KEY) || '{}'); } catch { return {}; } }
+function uiSet(o) { try { localStorage.setItem(UI_KEY, JSON.stringify(o)); } catch {} }
+function applyTheme() {
+  const u = uiGet(), t = THEMES.find(x => x[0] === u.c) || THEMES[0];
+  const [, , b, b2, ac, db, db2] = t;
+  let st = document.getElementById('themeVars');
+  if (!st) { st = document.createElement('style'); st.id = 'themeVars'; document.head.appendChild(st); }
+  const L = `--brand:${b};--brand-2:${b2};--accent:${ac};--brand-soft:color-mix(in srgb, ${b2} 11%, #ffffff);`;
+  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--brand-soft:color-mix(in srgb, ${db} 22%, #181a2e);`;
+  st.textContent = `:root:root{${L}}@media (prefers-color-scheme: dark){:root:root:not([data-theme="light"]){${D}}}:root:root[data-theme="dark"]{${D}}`;
+  const r = document.documentElement;
+  if (u.m === 'light' || u.m === 'dark') r.setAttribute('data-theme', u.m); else r.removeAttribute('data-theme');
+  const mt = document.querySelector('meta[name=theme-color]'); if (mt) mt.content = b;
+}
+function themePicker() {
+  const u = uiGet(), cur = u.c || 'indigo', m = u.m || 'auto';
+  return `<div class="swatches">${THEMES.map(t => `<button class="sw ${t[0] === cur ? 'on' : ''}" data-theme-c="${t[0]}" aria-label="Tema ${t[1]}" title="${t[1]}"><i style="background:linear-gradient(135deg,${t[2]} 0 55%,${t[4]} 55% 100%)"></i><span>${t[1]}</span></button>`).join('')}</div>
+  <div class="seg modes">${[['auto', 'Automático'], ['light', 'Claro'], ['dark', 'Oscuro']].map(([k, l]) => `<button class="${k === m ? 'on' : ''}" data-theme-m="${k}">${l}</button>`).join('')}</div>`;
+}
+function openTheme() { modal(`<h3 class="mh">Tema y colores <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3>${themePicker()}<p class="mini">Se guarda en este dispositivo.</p>`, 'narrow'); }
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-theme-c]'), m = e.target.closest('[data-theme-m]');
+  if (!c && !m) return;
+  const u = uiGet(); if (c) u.c = c.dataset.themeC; if (m) u.m = m.dataset.themeM; uiSet(u); applyTheme();
+  $$('[data-theme-c]').forEach(b => b.classList.toggle('on', b.dataset.themeC === (u.c || 'indigo')));
+  $$('[data-theme-m]').forEach(b => b.classList.toggle('on', b.dataset.themeM === (u.m || 'auto')));
+});
+applyTheme();
 /* ===================== Mi mes: libros armados con TUS respuestas (los errores se arrastran) ===================== */
 function monthItems(idxs) {
   const out = [];
@@ -2317,6 +2409,8 @@ document.addEventListener('click', async e => {
   if (act === 'rmline') { saveDraft(); const k = A.li.id + ':' + A.cur; A.drafts[k].lines.splice(+t.dataset.i, 1); return renderCase(); }
   if (act === 'pcge') return openPCGE();
   if (act === 'calc') return openCalc();
+  if (act === 'kcalc') return Kc.open(Kc.el().hidden);
+  if (act === 'theme') return openTheme();
   if (act === 'repaso') return makeExtra('repaso');
   if (act === 'examen') return makeExtra('examen');
   if (act === 'finexam') { if (confirmFin()) return finishExam(false); return; }
@@ -2339,7 +2433,7 @@ document.addEventListener('focusin', e => { if (e.target.matches('[data-l=c], [d
 const Kc = {
   exp: '', last: null,
   el: () => $('#kcalc'),
-  open(v) { this.el().hidden = !v; $('#kfab').setAttribute('aria-expanded', String(v)); if (v) { const x = A.lastInput && document.body.contains(A.lastInput) ? parseNum(A.lastInput.value) : NaN; if (!this.exp && !isNaN(x)) this.exp = String(x); this.upd(); } },
+  open(v) { this.el().hidden = !v; if (v) { const x = A.lastInput && document.body.contains(A.lastInput) ? parseNum(A.lastInput.value) : NaN; if (!this.exp && !isNaN(x)) this.exp = String(x); this.upd(); } },
   val() { try { const s = this.exp.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-'); if (!s) return 0; if (!/^[\d+\-*/().\s]+$/.test(s)) return NaN; const v = Function('return (' + s.replace(/[+\-*/.]$/, '') + ')')(); return isFinite(v) ? v : NaN; } catch { return NaN; } },
   fmt(v) { if (isNaN(v)) return 'Error'; const r = Math.round(v * 1e8) / 1e8; return r.toLocaleString('en-US', {maximumFractionDigits: 8}); },
   set(v) { this.exp = isNaN(v) ? '' : String(Math.round(v * 1e8) / 1e8); },
@@ -2373,8 +2467,7 @@ const Kc = {
     $('#kput').disabled = !ok;
   }
 };
-if ($('#kfab')) {
-$('#kfab').onclick = () => Kc.open(Kc.el().hidden);
+if ($('#kcalc')) {
 $('#kclose').onclick = () => Kc.open(false);
 $('#kcalc').addEventListener('mousedown', e => { if (e.target.closest('button')) e.preventDefault(); });
 $('#kcalc').addEventListener('click', e => { const b = e.target.closest('[data-k2]'); if (b) Kc.press(b.dataset.k2); });
