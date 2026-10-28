@@ -194,6 +194,12 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .book tfoot td{border-top:1.5px solid var(--ink);border-bottom:0}
 .book td.in{padding:3px 4px;min-width:6.2em}
 .book td.in input,.book td.in select{padding:6px 8px;border-radius:8px;font-size:15px}
+.book td.in select.tsel{width:100%;min-width:8.5em;font-size:14px;padding:6px 4px;text-overflow:ellipsis}
+.dwrap{position:relative;display:flex;align-items:center;min-width:0;width:100%}
+.dwrap .dtxt{width:100%;min-width:7.6em;padding-right:30px!important}
+.dcal{position:absolute;right:3px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);padding:4px;display:grid;place-items:center;border-radius:6px;cursor:pointer}
+.dcal:hover{color:var(--brand);background:var(--brand-soft)}
+.dpick{position:absolute;right:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
 .book td.in input.num{text-align:right;font-family:var(--mono)}
 .book td.in.ok input,.book td.in.ok select,.book tr.ok td.in input{background:var(--ok-bg);color:var(--ok);-webkit-text-fill-color:var(--ok);border-color:transparent}
 .book td.in.bad input,.book td.in.bad select,.book tr.bad td.in input{background:var(--bad-bg);color:var(--bad);-webkit-text-fill-color:var(--bad);border-color:transparent}
@@ -2300,7 +2306,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '13';
+const APP_V = '14';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -2559,10 +2565,13 @@ function acctCompat(u, s) {
 }
 
 /* Tablas SUNAT (anexo 3 de la R.S. 234-2006/SUNAT) */
-const T10 = {'01': 'Factura', '02': 'Recibo por honorarios', '03': 'Boleta de venta', '07': 'Nota de crédito', '08': 'Nota de débito', '12': 'Ticket', '14': 'Recibo por servicios públicos'};
+const T10 = {'00': 'Otros', '01': 'Factura', '02': 'Recibo por honorarios', '03': 'Boleta de venta', '04': 'Liquidación de compra', '07': 'Nota de crédito', '08': 'Nota de débito', '12': 'Ticket', '14': 'Recibo por servicios públicos'};
 const T2 = {'0': 'Doc. trib. no domiciliado sin RUC', '1': 'DNI', '4': 'Carné de extranjería', '6': 'RUC', '7': 'Pasaporte'};
-const T12 = {'01': 'Venta', '02': 'Compra', '05': 'Devolución recibida', '06': 'Devolución entregada', '16': 'Saldo inicial'};
+const T12 = {'01': 'Venta', '02': 'Compra', '03': 'Consignación recibida', '04': 'Consignación entregada', '05': 'Devolución recibida', '06': 'Devolución entregada', '07': 'Promoción', '08': 'Premio', '09': 'Donación', '10': 'Salida a producción', '11': 'Transferencia entre almacenes', '12': 'Retiro', '13': 'Mermas', '14': 'Desmedros', '15': 'Destrucción', '16': 'Saldo inicial', '99': 'Otros'};
 const T1 = {'001': 'Depósito en cuenta', '002': 'Giro', '003': 'Transferencia de fondos', '004': 'Orden de pago', '005': 'Tarjeta de débito', '006': 'Tarjeta de crédito', '007': 'Cheque «no negociable»', '008': 'Efectivo (sin obligación de medio de pago)', '009': 'Efectivo (demás casos)', '999': 'Otros medios de pago'};
+
+// tabla SUNAT de cada campo con código (para mostrar la lista de opciones)
+const TAB_OF = {tcp: T10, rtcp: T10, td: T2, mp: T1, top: T12};
 
 /* ===================== Datos ficticios para los casos ===================== */
 const GIROS = [
@@ -3399,7 +3408,7 @@ function gradeGrid(c, vals) {
   for (const [k, f] of Object.entries(c.fields)) {
     tot++; const good = checkField(f, vals[k]); cells[k] = good;
     if (good && f.t === 'c') { const u = String(vals[k] || '').replace(/\D/g, ''); if (u !== String(f.v)) notes.push(`Usaste ${u} ${acctName(u)} y es válido: es la misma cuenta que ${f.v} ${acctName(f.v)}, a otro nivel de detalle.`); }
-    if (good) okn++; else { kinds.push(f.k || 'dato'); msgs.push({l: f.l, exp: showSol(f), why: f.why, got: vals[k]}); }
+    if (good) okn++; else { kinds.push(f.k || 'dato'); msgs.push({l: f.l, exp: showSol(f), why: f.why, got: f.t === 'd' && parseDate(vals[k]) ? fmtD(parseDate(vals[k])) : vals[k]}); }
   }
   return {cells, notes, ok: okn === tot, sc: tot ? okn / tot : 0, msgs, kinds};
 }
@@ -4057,6 +4066,8 @@ function nextN() {
 function inp(k, f, val, cls, ro) {
   const v = val ?? '';
   if (f && f.t === 'sel') return `<select data-k="${k}" class="${cls}" ${ro ? 'disabled' : ''}><option value="">Elige…</option>${f.opts.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  if (f && f.t === 'k' && TAB_OF[k]) { const tb = TAB_OF[k], cur = normK(v); return `<select data-k="${k}" class="${cls} tsel" ${ro ? 'disabled' : ''}><option value="">Elige…</option>${Object.entries(tb).map(([c, t]) => `<option value="${c}" ${v !== '' && normK(c) === cur ? 'selected' : ''}>${c} · ${esc(t)}</option>`).join('')}</select>`; }
+  if (f && f.t === 'd') { const iso = parseDate(v); return `<span class="dwrap"><input data-k="${k}" class="${cls} dtxt" inputmode="numeric" autocomplete="off" placeholder="dd/mm/aaaa" maxlength="10" value="${iso ? fmtD(iso) : esc(v)}" ${ro ? 'disabled' : ''}>${ro ? '' : `<button type="button" class="dcal" tabindex="-1" aria-label="Elegir fecha en el calendario"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><input type="date" class="dpick" tabindex="-1" aria-hidden="true" value="${iso}">`}</span>`; }
   const im = f && (f.t === 'n' || f.t === 'doc' || f.t === 'i') ? 'decimal' : 'text';
   const ph = f ? ({d: 'dd/mm/aaaa', k: 'cód.', c: 'cuenta', s: 'serie', n: '0.00'}[f.t] || '') : '';
   return `<input data-k="${k}" class="${cls}" inputmode="${im}" autocomplete="off" placeholder="${ph}" value="${esc(v)}" ${ro ? 'disabled' : ''} ${f && f.t === 'c' ? 'data-acc="1"' : ''}>`;
@@ -4516,7 +4527,7 @@ function renderMesTab() {
     const same = (it, k) => { const u = it.a.v[k], s = it.a.s[k]; if (isN(k)) return Math.abs((parseNum(u) || 0) - (s || 0)) < 0.011; if (k === 'fe') return parseDate(u) === s; return normK(String(u ?? '').replace(k === 'nu' || k === 'nd' ? /\D/g : /^$/, '')) === normK(s); };
     const tot = (w, k) => r2(L.reduce((a, it) => a + (w === 'u' ? (parseNum(it.a.v[k]) || 0) : (it.a.s[k] || 0)), 0));
     box.innerHTML = L.length ? `<section class="card"><h2>${T === 'compras' ? 'Registro de Compras – Formato 8.1' : 'Registro de Ventas e Ingresos – Formato 14.1'}</h2><p class="mini">Celdas en rojo: no coinciden con el comprobante. Toca la fila para ver el caso.</p>
-      <div class="tw"><table class="book"><thead><tr><th>Caso</th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${L.map(it => `<tr class="click" data-hist="${it.li.id}:${it.n}"><td class="mini">${esc(it.tag)}</td>${cols.map(([k]) => `<td class="${isN(k) ? 'num' : ''} ${same(it, k) ? '' : 'badc'}">${esc(isN(k) ? (it.a.v[k] === '' || it.a.v[k] == null ? '' : nf(parseNum(it.a.v[k]) || 0)) : it.a.v[k])}</td>`).join('')}</tr>`).join('')}</tbody>
+      <div class="tw"><table class="book"><thead><tr><th>Caso</th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${L.map(it => `<tr class="click" data-hist="${it.li.id}:${it.n}"><td class="mini">${esc(it.tag)}</td>${cols.map(([k]) => `<td class="${isN(k) ? 'num' : ''} ${same(it, k) ? '' : 'badc'}">${esc(isN(k) ? (it.a.v[k] === '' || it.a.v[k] == null ? '' : nf(parseNum(it.a.v[k]) || 0)) : k === 'fe' && parseDate(it.a.v[k]) ? fmtD(parseDate(it.a.v[k])) : it.a.v[k])}</td>`).join('')}</tr>`).join('')}</tbody>
       <tfoot><tr><td colspan="7" class="b">Totales (tus registros)</td><td class="num b">${nf(tot('u', 'bi'))}</td><td class="num b">${nf(tot('u', 'igv'))}</td><td class="num b">${nf(tot('u', 'ng'))}</td><td class="num b">${nf(tot('u', 'tot'))}</td></tr>
       <tr><td colspan="7" class="b">Totales correctos</td><td class="num">${nf(tot('s', 'bi'))}</td><td class="num">${nf(tot('s', 'igv'))}</td><td class="num">${nf(tot('s', 'ng'))}</td><td class="num">${nf(tot('s', 'tot'))}</td></tr></tfoot></table></div></section>`
       : `<p class="empty">Aún no registraste ${T === 'compras' ? 'compras' : 'ventas'} este mes. Se llenan en la etapa ${T === 'compras' ? 2 : 3} de la empresa.</p>`;
@@ -4802,12 +4813,12 @@ const AC = {
 };
 function nextCell(inp, back) {
   const td = inp.closest('td'), tr = inp.closest('tr');
-  if (!td || !tr) { const all = $$('#casebox input:not([disabled]), #casebox select:not([disabled])'); const i = all.indexOf(inp); const nx = all[i + (back ? -1 : 1)]; if (nx) { nx.focus(); nx.select && nx.select(); } else if (!back) { const b = $('#casebox [data-act=check], #casebox [data-act=savenext]'); if (b) b.focus(); } return; }
+  if (!td || !tr) { const all = $$('#casebox input:not([disabled]):not(.dpick), #casebox select:not([disabled])'); const i = all.indexOf(inp); const nx = all[i + (back ? -1 : 1)]; if (nx) { nx.focus(); nx.select && nx.select(); } else if (!back) { const b = $('#casebox [data-act=check], #casebox [data-act=savenext]'); if (b) b.focus(); } return; }
   const col = [...tr.children].indexOf(td);
   const rows = [...tr.parentElement.children];
   const ri = rows.indexOf(tr);
   for (let r = ri + (back ? -1 : 1); r >= 0 && r < rows.length; r += back ? -1 : 1) {
-    const cell = rows[r].children[col]; const x = cell && cell.querySelector('input:not([disabled]),select:not([disabled])');
+    const cell = rows[r].children[col]; const x = cell && cell.querySelector('input:not([disabled]):not(.dpick),select:not([disabled])');
     if (x) { x.focus(); x.select && x.select(); return; }
   }
   if (back) return;
@@ -4815,7 +4826,7 @@ function nextCell(inp, back) {
     const key = inp.dataset.l; saveDraft(); A.drafts[A.li.id + ':' + A.cur].lines.push({c: '', d: '', h: ''}); renderCase();
     const last = $('#dlines tr:last-child [data-l="' + key + '"]'); if (last) last.focus(); return;
   }
-  const all = $$('#casebox input:not([disabled]), #casebox select:not([disabled])');
+  const all = $$('#casebox input:not([disabled]):not(.dpick), #casebox select:not([disabled])');
   const i = all.indexOf(inp);
   if (all[i + 1]) { all[i + 1].focus(); all[i + 1].select && all[i + 1].select(); }
   else { const b = $('#casebox [data-act=check], #casebox [data-act=savenext]'); if (b) b.focus(); }
@@ -4867,14 +4878,19 @@ function fitTables() {
     t.classList.remove('fitcards');
     const w = t.closest('.tw') || t.parentElement;
     let bad = w.scrollWidth > w.clientWidth + 2 || t.offsetWidth > w.clientWidth + 2;
-    if (!bad) bad = [...t.querySelectorAll('input')].some(i => i.offsetParent && i.clientWidth < 72 && !i.classList.contains('ok') && i.type !== 'checkbox');
-    if (!bad) bad = [...t.querySelectorAll('input')].some(i => i.value && i.scrollWidth > i.clientWidth + 2);
+    if (!bad) bad = [...t.querySelectorAll('input:not(.dpick)')].some(i => i.offsetParent && i.clientWidth < 72 && !i.classList.contains('ok') && i.type !== 'checkbox');
+    if (!bad) bad = [...t.querySelectorAll('input:not(.dpick)')].some(i => i.value && i.scrollWidth > i.clientWidth + 2);
     if (bad) t.classList.add('fitcards');
   });
 }
 addEventListener('resize', () => { clearTimeout(fitTables.t); fitTables.t = setTimeout(fitTables, 80); });
 document.addEventListener('input', e => { const t = e.target.closest && e.target.closest('table.book.stackm:not(.fitcards)'); if (t && e.target.scrollWidth > e.target.clientWidth + 2) t.classList.add('fitcards'); });
 new MutationObserver(() => { stackify(); fitTables(); }).observe(document.body, {childList: true, subtree: true});
+
+/* Fechas: dd/mm/aaaa con barras automáticas + calendario */
+document.addEventListener('click', e => { const b = e.target.closest('.dcal'); if (!b) return; const pk = b.parentElement.querySelector('.dpick'), tx = b.parentElement.querySelector('.dtxt'); pk.value = parseDate(tx.value) || (A.loteMo ? A.loteMo.id + '-01' : ''); try { pk.showPicker(); } catch (er) { pk.focus(); pk.click(); } });
+document.addEventListener('change', e => { if (!e.target.classList.contains('dpick')) return; const tx = e.target.parentElement.querySelector('.dtxt'); if (e.target.value) { tx.value = fmtD(e.target.value); tx.dispatchEvent(new Event('input', {bubbles: true})); } });
+document.addEventListener('input', e => { const t = e.target; if (!t.classList || !t.classList.contains('dtxt') || e.inputType === 'deleteContentBackward') return; const d = t.value.replace(/\D/g, '').slice(0, 8); let o = d.slice(0, 2); if (d.length > 2) o += '/' + d.slice(2, 4); if (d.length > 4) o += '/' + d.slice(4); if (d.length >= 2 && t.value.replace(/\D/g, '').length === d.length) t.value = o; });
 /* ===================== Ranking ===================== */
 async function renderRanking() {
   A.view = 'ranking'; setNavOn('ranking');
