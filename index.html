@@ -2297,6 +2297,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
+const APP_V = '10';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -4185,7 +4186,7 @@ function renderMas() {
   const kinds = {}; ans.forEach(x => (x.a.k || []).forEach(k => { kinds[k] = (kinds[k] || 0) + 1; }));
   const kl = Object.entries(kinds).sort((a, b) => b[1] - a[1]).slice(0, 8), kmax = kl[0] ? kl[0][1] : 1;
   const st = streak();
-  $('#view').innerHTML = `<header class="hero sm"><div><h1>Más</h1><p class="sub">Estadísticas, herramientas y ajustes</p></div></header>
+  $('#view').innerHTML = `<header class="hero sm"><div><h1>Más</h1><p class="sub">Estadísticas, herramientas y ajustes · versión ${APP_V}</p></div></header>
   <div class="grid2">
   <section class="card"><h2>Acierto por libro</h2>${Object.keys(byF).length ? Object.entries(byF).sort((a, b) => b[1].n - a[1].n).map(([f, o]) => { const p = Math.round(o.ok / o.n * 100); return `<div class="srow"><div class="sl"><span>${esc(LIBRO[f])}</span><span class="num">${p}% · ${o.ok}/${o.n}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('') : '<p class="empty">Resuelve casos para ver tus estadísticas.</p>'}
     <p class="mini">Racha actual: <b>${st.n} día${st.n === 1 ? '' : 's'}</b> · casos resueltos: <b>${ans.length}</b></p></section>
@@ -4886,6 +4887,8 @@ async function adminAct(act, t) {
 }
 function confirmTwice(key, msg) { if (A._cf === key && Date.now() - A._cfT < 5000) { A._cf = null; return true; } A._cf = key; A._cfT = Date.now(); toast(msg, 5000); return false; }
 document.addEventListener('click', e => { const b = e.target.closest('[data-act=rktab]'); if (b) { A.rkTab = b.dataset.k; renderRanking(); } });
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(r => { r.update(); setInterval(() => r.update(), 30 * 60 * 1000); }).catch(() => {}); let rl = !navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (rl) return; rl = true; location.reload(); })); }
 </script>
 
 </body>
