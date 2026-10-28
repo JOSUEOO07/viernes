@@ -2300,7 +2300,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '12';
+const APP_V = '13';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -3866,7 +3866,7 @@ function pushRank() {
 }
 
 /* ===================== Navegación ===================== */
-const NAV = [['home', 'Inicio', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['practicar', 'Practicar', 'M4 4h16v16H4zM4 9h16M9 9v11'], ['mes', 'Mi empresa', 'M3 21h18M5 21V7l7-4 7 4v14M9 10h1M14 10h1M9 14h1M14 14h1'], ['ranking', 'Ranking', 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3'], ['historial', 'Historial', 'M12 7v5l3 2M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4'], ['mas', 'Más', 'M5 12h.01M12 12h.01M19 12h.01']];
+const NAV = [['home', 'Inicio', 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'], ['practicar', 'Practicar', 'M4 4h16v16H4zM4 9h16M9 9v11'], ['mes', 'Mi empresa', 'M3 21h18M5 21V7l7-4 7 4v14M9 10h1M14 10h1M9 14h1M14 14h1'], ['historial', 'Historial', 'M12 7v5l3 2M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4'], ['mas', 'Más', 'M5 12h.01M12 12h.01M19 12h.01']];
 const ADMIN_NAV = ['admin', 'Administrar', 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'];
 function renderNav() {
   const items = A.user ? NAV.concat(A.isAdmin ? [ADMIN_NAV] : []) : [];
@@ -3879,7 +3879,7 @@ function go(v) {
   if (!A.user) return;
   if (v === 'practicar') { const li = activeCycle(); if (li) return openLote(li.id); v = 'home'; }
   if (v.startsWith('lote:')) return openLote(v.slice(5));
-  if (!['home', 'mes', 'ranking', 'historial', 'mas', 'admin'].includes(v) || (v === 'admin' && !A.isAdmin)) v = 'home';
+  if (!['home', 'mes', 'historial', 'mas', 'admin'].includes(v) || (v === 'admin' && !A.isAdmin)) v = 'home';
   A.view = v; clearInterval(A.timer);
   history.replaceState(null, '', '#' + v);
   $$('.nv').forEach(b => b.classList.toggle('on', b.dataset.go === v));
@@ -4277,7 +4277,7 @@ function renderMas() {
   <section class="card"><h2>Mi cuenta</h2>
     <div class="acct">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<div><b>${esc(A.user.name)}</b><small>${esc(A.user.email)}${A.isAdmin ? ' · Administrador' : ''}</small></div><button class="ghost sm" data-act="logout">Cerrar sesión</button></div>
     <label class="fld">Código de grupo o salón<div class="row"><input id="sGr" value="${esc(A.P.group || '')}" placeholder="Ej. VIE-4821" autocomplete="off" style="flex:1"><button class="ghost sm" data-act="joingroup">Guardar</button></div></label>
-    <p class="mini">Con el código que te dé tu administrador apareces en el ranking de tu grupo.</p>
+    <p class="mini">Con el código que te dé tu administrador quedas registrado en tu grupo.</p>
   </section>
   <section class="card"><h2>Ajustes</h2>
     <label class="fld">Régimen de tus próximas empresas<select id="sRg">${Object.entries(REGIMEN).map(([k, r]) => `<option value="${k}" ${A.P.regime === k ? 'selected' : ''}>${r.n}</option>`).join('')}</select></label>
@@ -4920,7 +4920,7 @@ async function renderAdmin() {
       const [gr, rk] = await Promise.all([Store.listPlain('groups', 500), Store.listPlain('rank', 1000)]);
       box.innerHTML = `<section class="card"><h2>Crear grupo</h2><div class="row"><input id="agName" placeholder="Nombre, p. ej. Contabilidad Integral – Sección A" style="flex:1;min-width:200px"><button class="btn" data-act="admgroupadd">Crear y generar código</button></div></section>
       <div class="tw"><table class="book resp"><thead><tr><th>Código</th><th>Nombre</th><th>Integrantes</th><th>Creado</th><th></th></tr></thead><tbody>${gr.sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(g => `<tr><td class="mono b lead" data-l="Código">${esc(g.id)}</td><td class="tx" data-l="Nombre">${esc(g.name || '')}</td><td class="num" data-l="Integrantes">${rk.filter(r => r.group === g.id).length}</td><td data-l="Creado">${g.ts ? fmtD(limaISO(g.ts)) : ''}</td><td data-l=""><button class="ghost sm" data-act="admgroupdel" data-id="${esc(g.id)}">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="5" class="empty">Aún no hay grupos.</td></tr>'}</tbody></table></div>
-      <p class="mini">Comparte el código con tu salón. Cada estudiante lo pega en Más → Mi cuenta y aparece en el ranking del grupo.</p>`;
+      <p class="mini">Comparte el código con tu salón. Cada estudiante lo pega en Más → Mi cuenta y queda registrado en el grupo.</p>`;
     } else if (tab === 'avisos') {
       const av = await Store.get('config/aviso') || {};
       box.innerHTML = `<section class="card"><h2>Aviso para todos</h2><label class="fld">Mensaje<textarea id="avTx" rows="3" placeholder="Ej. El examen de práctica es el viernes a las 8 p. m.">${esc(av.text || '')}</textarea></label>
