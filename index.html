@@ -289,6 +289,10 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .sw{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px;display:grid;gap:6px;justify-items:center;font-size:.8rem;font-weight:600}
 .sw i{width:38px;height:38px;border-radius:50%;display:block}
 .sw.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+#acbox{position:fixed;z-index:25;width:290px;max-width:calc(100vw - 16px);max-height:260px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(10,11,25,.22);padding:4px}
+.aci{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:.86rem}
+.aci span:last-child{overflow-wrap:anywhere}
+.aci:hover,.aci.on{background:var(--brand-soft)}
 .foot{color:var(--muted);font-size:.78rem;text-align:center}
 
 /* Ventanas */
@@ -1816,7 +1820,7 @@ function inp(k, f, val, cls, ro) {
   if (f && f.t === 'sel') return `<select data-k="${k}" class="${cls}" ${ro ? 'disabled' : ''}><option value="">Elige…</option>${f.opts.map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
   const im = f && (f.t === 'n' || f.t === 'doc' || f.t === 'i') ? 'decimal' : 'text';
   const ph = f ? ({d: 'dd/mm/aaaa', k: 'cód.', c: 'cuenta', s: 'serie', n: '0.00'}[f.t] || '') : '';
-  return `<input data-k="${k}" class="${cls}" inputmode="${im}" autocomplete="off" placeholder="${ph}" value="${esc(v)}" ${ro ? 'disabled' : ''} ${f && f.t === 'c' ? 'list="pcgeList"' : ''}>`;
+  return `<input data-k="${k}" class="${cls}" inputmode="${im}" autocomplete="off" placeholder="${ph}" value="${esc(v)}" ${ro ? 'disabled' : ''} ${f && f.t === 'c' ? 'data-acc="1"' : ''}>`;
 }
 function gridForm(c, draft, g, answered) {
   const vals = (draft && draft.vals) || {};
@@ -1838,7 +1842,7 @@ function diarioForm(c, draft, g, answered) {
   const sD = r2(lines.reduce((a, l) => a + (parseNum(l.d) || 0), 0)), sH = r2(lines.reduce((a, l) => a + (parseNum(l.h) || 0), 0));
   return `<div class="glosa"><span>Asiento Nº ${c.n}</span><span>Fecha ${fmtD(c.date)}</span><span>Glosa: ${esc(c.glosa)}</span></div>
   <div class="tw"><table class="book diario"><thead><tr><th style="width:7.5em">Cuenta</th><th>Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th>${ro ? '' : '<th style="width:2.4em"></th>'}</tr></thead>
-  <tbody id="dlines">${lines.map((l, i) => { const st = g ? (g.lineOk[i] ? 'ok' : 'bad') : ''; return `<tr class="${st}" data-i="${i}"><td class="in">${`<input data-l="c" inputmode="numeric" list="pcgeList" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}</td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}</tr>`; }).join('')}</tbody>
+  <tbody id="dlines">${lines.map((l, i) => { const st = g ? (g.lineOk[i] ? 'ok' : 'bad') : ''; return `<tr class="${st}" data-i="${i}"><td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}</td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}</tr>`; }).join('')}</tbody>
   <tfoot><tr><td colspan="2" class="b">Totales ${Math.abs(sD - sH) > 0.005 && (sD || sH) ? '<span class="warnc">· no cuadra</span>' : ''}</td><td class="num b" id="sD">${nf(sD)}</td><td class="num b" id="sH">${nf(sH)}</td>${ro ? '' : '<td></td>'}</tr></tfoot></table></div>
   ${ro ? '' : `<button class="ghost sm addl" data-act="addline">+ Agregar línea</button>`}`;
 }
@@ -2427,7 +2431,7 @@ function confirmFin() {
   if (A._finAsk && Date.now() - A._finAsk < 4000) return true;
   A._finAsk = Date.now(); toast(`Te faltan ${pend} caso${pend > 1 ? 's' : ''}. Toca otra vez para terminar igual.`, 4000); return false;
 }
-document.addEventListener('focusin', e => { if (e.target.matches('[data-l=c], [data-k][list]')) A.lastCode = e.target; if (e.target.matches('#view input:not([type=checkbox]):not([type=date]):not([type=file]), #modal input.num')) { A.lastInput = e.target; Kc.upd(); } });
+document.addEventListener('focusin', e => { if (e.target.matches('[data-acc]')) A.lastCode = e.target; if (e.target.matches('#view input:not([type=checkbox]):not([type=date]):not([type=file]), #modal input.num')) { A.lastInput = e.target; Kc.upd(); } });
 
 /* ===================== Calculadora flotante (siempre a la mano) ===================== */
 const Kc = {
@@ -2493,6 +2497,64 @@ window.addEventListener('hashchange', () => { const h = location.hash.slice(1); 
 document.addEventListener('DOMContentLoaded', () => {});
 (function () { const dl = document.getElementById('pcgeList'); if (dl) dl.innerHTML = PCGE.map(a => `<option value="${a.c}">${esc(a.n)}</option>`).join(''); })();
 boot();
+
+/* ===================== Autocompletado de cuentas + Enter para bajar de celda ===================== */
+const AC = {
+  box: null, inp: null, items: [], hi: -1,
+  ensure() { if (!this.box) { this.box = document.createElement('div'); this.box.id = 'acbox'; this.box.hidden = true; this.box.setAttribute('role', 'listbox'); document.body.appendChild(this.box); this.box.addEventListener('mousedown', e => { const it = e.target.closest('[data-ac]'); if (!it) return; e.preventDefault(); this.pick(+it.dataset.ac); }); } },
+  show(inp) {
+    this.ensure(); this.inp = inp;
+    const q = inp.value.trim(); const qn = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!q) { this.hide(); return; }
+    const digits = /^\d+$/.test(q);
+    this.items = PCGE.filter(a => digits ? a.c.startsWith(q) : a.n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(qn)).slice(0, 8);
+    if (!this.items.length || (this.items.length === 1 && this.items[0].c === q)) { this.hide(); return; }
+    this.hi = -1;
+    this.box.innerHTML = this.items.map((a, i) => `<div class="aci" data-ac="${i}" role="option"><span class="mono">${a.c}</span><span>${esc(a.n)}</span></div>`).join('');
+    const r = inp.getBoundingClientRect();
+    this.box.style.left = Math.max(8, Math.min(r.left, innerWidth - 300)) + 'px';
+    this.box.style.top = (r.bottom + 4) + 'px';
+    this.box.hidden = false;
+  },
+  hide() { if (this.box) this.box.hidden = true; this.hi = -1; },
+  open() { return this.box && !this.box.hidden; },
+  move(d) { if (!this.open()) return; this.hi = (this.hi + d + this.items.length) % this.items.length; [...this.box.children].forEach((el, i) => el.classList.toggle('on', i === this.hi)); },
+  pick(i) { const a = this.items[i]; if (!a || !this.inp) return; this.inp.value = a.c; this.inp.dispatchEvent(new Event('input', {bubbles: true})); this.hide(); this.inp.focus(); }
+};
+function nextCell(inp, back) {
+  const td = inp.closest('td'), tr = inp.closest('tr');
+  if (!td || !tr) return;
+  const col = [...tr.children].indexOf(td);
+  const rows = [...tr.parentElement.children];
+  const ri = rows.indexOf(tr);
+  for (let r = ri + (back ? -1 : 1); r >= 0 && r < rows.length; r += back ? -1 : 1) {
+    const cell = rows[r].children[col]; const x = cell && cell.querySelector('input:not([disabled]),select:not([disabled])');
+    if (x) { x.focus(); x.select && x.select(); return; }
+  }
+  if (back) return;
+  if (inp.closest('#dlines')) { // última fila del Diario: agrega una línea y baja
+    const key = inp.dataset.l; saveDraft(); A.drafts[A.li.id + ':' + A.cur].lines.push({c: '', d: '', h: ''}); renderCase();
+    const last = $('#dlines tr:last-child [data-l="' + key + '"]'); if (last) last.focus(); return;
+  }
+  const all = $$('#casebox input:not([disabled]), #casebox select:not([disabled])');
+  const i = all.indexOf(inp);
+  if (all[i + 1]) { all[i + 1].focus(); all[i + 1].select && all[i + 1].select(); }
+  else { const b = $('#casebox [data-act=check], #casebox [data-act=savenext]'); if (b) b.focus(); }
+}
+document.addEventListener('input', e => { if (e.target.matches('[data-acc]')) AC.show(e.target); });
+document.addEventListener('focusout', e => { if (e.target.matches('[data-acc]')) setTimeout(() => { if (document.activeElement !== AC.inp) AC.hide(); }, 120); });
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (!t || !t.closest || !t.closest('#casebox')) return;
+  if (t.matches('[data-acc]') && AC.open()) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); return AC.move(1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); return AC.move(-1); }
+    if (e.key === 'Escape') { e.preventDefault(); return AC.hide(); }
+    if (e.key === 'Enter' && AC.hi >= 0) { e.preventDefault(); AC.pick(AC.hi); return nextCell(t); }
+  }
+  if (e.key === 'Enter' && t.matches('input')) { e.preventDefault(); AC.hide(); nextCell(t, e.shiftKey); }
+});
+window.addEventListener('scroll', () => AC.hide(), {passive: true});
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {})); }
 </script>
