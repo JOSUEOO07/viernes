@@ -169,6 +169,7 @@ button.tile:hover{border-color:var(--brand-2)}
 .cpt th{text-align:left;font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--line);padding:4px 6px}
 .cpt td{padding:5px 6px;border-bottom:1px dashed var(--line);vertical-align:top;overflow-wrap:break-word}
 .cpt td.num,.cpt th{white-space:nowrap}
+.cpt th:nth-child(1),.cpt th:nth-child(3),.cpt th:nth-child(4){text-align:right}
 .cpt td.num{text-align:right}
 .cp-t{justify-self:end;display:grid;gap:2px;min-width:240px}
 .cp-t div{display:flex;justify-content:space-between;gap:16px}
@@ -185,6 +186,10 @@ table.book{width:100%;border-collapse:separate;border-spacing:0;font-size:.88rem
 .book td.t-d{min-width:8.6em}.book td.t-doc{min-width:9.8em}.book td.t-n{min-width:7.4em}.book td.t-k,.book td.t-s,.book td.t-i{min-width:5em}.book td.t-c{min-width:6.5em}.book td.t-sel{min-width:15em}
 input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{color:transparent}
 .book td.num{white-space:nowrap}
+.book th.num{text-align:right;font-family:var(--body)}
+#abody,#mbody{display:grid;gap:14px;min-width:0}
+.co{align-items:start}
+.book td{vertical-align:middle}
 .book tr:last-child td{border-bottom:0}
 .book tfoot td{border-top:1.5px solid var(--ink);border-bottom:0}
 .book td.in{padding:3px 4px;min-width:6.2em}
@@ -195,10 +200,17 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .book td.in.mid input{background:var(--warn-bg);color:var(--warn);-webkit-text-fill-color:var(--warn)}
 .book .den{color:var(--muted);font-size:.82rem;min-width:10em}
 .book.diario{min-width:560px}
+.book.diario th:nth-child(3),.book.diario th:nth-child(4){text-align:right}
 .den-m{display:none;font-size:.72rem;color:var(--muted);line-height:1.2;margin-top:3px;overflow-wrap:anywhere}
-.book.compras,.book.ventas{min-width:1320px}
-.book.banco{min-width:960px}
-.book.kardex{min-width:1320px}
+.book.compras,.book.ventas{min-width:0}
+.book.banco{min-width:0}
+.book.kardex{min-width:0}
+.book.compras td.in,.book.ventas td.in,.book.kardex td.in,.book.banco td.in{min-width:0}
+.book.compras td.in input,.book.ventas td.in input,.book.kardex td.in input,.book.banco td.in input{padding:6px 5px;font-size:14px}
+.book.compras,.book.ventas,.book.kardex,.book.banco{font-size:.8rem}
+.book.compras th,.book.ventas th,.book.kardex th,.book.banco th{min-width:0;font-size:.68rem;padding:6px 5px}
+.book.compras td,.book.ventas td,.book.kardex td,.book.banco td{padding:5px 4px}
+.book td.t-d input{min-width:6.6em}.book td.t-doc input{min-width:7.4em}
 .book.kardexu{min-width:760px}
 .book.caja{min-width:640px}
 .book.activo{min-width:980px}
@@ -425,11 +437,29 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);bo
   .tab{padding:6px 11px;font-size:.82rem}
   .swipe{display:block}
 }
+
+@media (min-width:641px){.book.resp td:nth-child(n+3),.book.resp th:nth-child(n+3),.book.rank td:first-child,.book.rank th:first-child{text-align:center}.book.resp td:nth-child(n+3) .pill{margin:0 auto}.book.resp td,.book.resp th{vertical-align:middle}}
+/* nada dentro de una tarjeta puede ensancharla */
+.card,.case{grid-template-columns:minmax(0,1fr)}
+.card>*,.solbox,.solbox>*,.cp>*{min-width:0}
+.tw{max-width:100%}
+/* tablas anchas en pantallas medianas/grandes: filas como fichas en cuadrícula */
+table.book.fitcards{min-width:0!important;border:0;background:transparent;width:100%}
+.book.fitcards thead{display:none}
+.book.fitcards,.book.fitcards tbody,.book.fitcards tfoot{display:block;width:100%}
+.book.fitcards tr{box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.book.fitcards tfoot tr{background:var(--brand-soft)}
+.book.fitcards td{display:flex;flex-direction:column;gap:3px;border:0!important;padding:0;min-width:0!important;text-align:left;white-space:normal}
+.book.fitcards td::before{content:attr(data-l);font-family:var(--body);font-size:.7rem;font-weight:600;color:var(--muted);line-height:1.2}
+.book.fitcards td[data-l=""]::before{display:none}
+.book.fitcards td.e{display:none}
+.book.fitcards td.num{font-variant-numeric:tabular-nums}
+.book.fitcards td.in input,.book.fitcards td.in select{width:100%;min-width:0}
 @media (max-width:640px){
   .tw{overflow:visible}
   table.book.stackm{min-width:0!important;border:0;background:transparent}
   .book.stackm thead{display:none}
-  .book.stackm,.book.stackm tbody,.book.stackm tfoot,.book.stackm tr{display:block;width:100%}
+  .book.stackm,.book.stackm tbody,.book.stackm tfoot,.book.stackm tr{display:block;width:100%;box-sizing:border-box}
   .book.stackm tr{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin-bottom:8px}
   .book.stackm tfoot tr{background:var(--brand-soft)}
   .book.stackm td{display:grid;grid-template-columns:minmax(0,44%) minmax(0,1fr);gap:10px;align-items:center;border:0!important;padding:5px 0;min-width:0!important;text-align:left;white-space:normal}
@@ -439,6 +469,8 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);bo
   .book.stackm td[data-l=""]{grid-template-columns:minmax(0,1fr)}
   .book.stackm td[data-l=""]::before{display:none}
   .book.stackm td.e{display:none}
+  .book.stackm td{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
+  .book.stackm td.num{overflow-wrap:normal}
   .book.stackm td.num{text-align:left}
   .book.stackm td.in input,.book.stackm td.in select{width:100%}
   .book.stackm tr.click{cursor:pointer}
@@ -457,10 +489,19 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);bo
   .book.diario{min-width:0;table-layout:fixed}
   .book.diario .den,.book.diario th.dh{display:none}
   .book.diario .den-m{display:block}
-  .book.diario th:first-child{width:38%!important}
-  .book.diario td.in input{padding:6px 6px;font-size:15px}
-  .cpt{font-size:.8rem}
-  .cpt th,.cpt td{padding:4px 4px}
+  .book.diario th:nth-child(1){width:36%!important}
+  .book.diario th:nth-child(3),.book.diario th:nth-child(4){width:auto!important}
+  .book.diario th:nth-child(5){width:30px!important}
+  .book.diario td,.book.diario th{padding:4px 3px}
+  .book.diario td:nth-child(5){padding:4px 0;text-align:center}
+  .book.diario td:nth-child(5) .x{width:26px;height:26px;min-width:0;padding:0}
+  .book.diario td.in input{padding:6px 5px;font-size:14px;min-width:0;width:100%}
+  .book.diario .den-m{overflow-wrap:break-word;word-break:normal;hyphens:auto}
+  .book.diario tfoot td{font-size:.78rem;white-space:nowrap}
+  .cpt{font-size:.74rem}
+  .cpt th{white-space:normal;vertical-align:bottom}
+  .cpt td.num{font-size:.72rem}
+  .cpt th,.cpt td{padding:4px 3px}
 }
 </style>
 </head>
@@ -4401,7 +4442,7 @@ function renderMesTab() {
       <div class="tw"><table class="book"><thead><tr><th>Caso</th>${cols.map(c => `<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${L.map(it => `<tr class="click" data-hist="${it.li.id}:${it.n}"><td class="mini">${esc(it.tag)}</td>${cols.map(([k]) => `<td class="${isN(k) ? 'num' : ''} ${same(it, k) ? '' : 'badc'}">${esc(isN(k) ? (it.a.v[k] === '' || it.a.v[k] == null ? '' : nf(parseNum(it.a.v[k]) || 0)) : it.a.v[k])}</td>`).join('')}</tr>`).join('')}</tbody>
       <tfoot><tr><td colspan="7" class="b">Totales (tus registros)</td><td class="num b">${nf(tot('u', 'bi'))}</td><td class="num b">${nf(tot('u', 'igv'))}</td><td class="num b">${nf(tot('u', 'ng'))}</td><td class="num b">${nf(tot('u', 'tot'))}</td></tr>
       <tr><td colspan="7" class="b">Totales correctos</td><td class="num">${nf(tot('s', 'bi'))}</td><td class="num">${nf(tot('s', 'igv'))}</td><td class="num">${nf(tot('s', 'ng'))}</td><td class="num">${nf(tot('s', 'tot'))}</td></tr></tfoot></table></div></section>`
-      : `<p class="empty">Aún no registraste ${T === 'compras' ? 'compras' : 'ventas'} este mes. Llegan desde el nivel 2.</p>`;
+      : `<p class="empty">Aún no registraste ${T === 'compras' ? 'compras' : 'ventas'} este mes. Se llenan en la etapa 2 de la empresa.</p>`;
   } else if (T === 'diario') {
     box.innerHTML = dia.length ? dia.map(it => `<section class="card asi"><div class="asi-h"><span class="st ${it.a.ok ? 'ok' : 'bad'}">${it.a.ok ? '✔' : '✘'}</span><b>${esc(it.s.g || it.s.t)}</b><button class="link" data-hist="${it.li.id}:${it.n}">${esc(it.tag)}</button></div>${linesTable(uLines(it))}</section>`).join('') : '<p class="empty">Aún no hay asientos de este mes.</p>';
   } else if (T === 'mayor') {
@@ -4714,6 +4755,10 @@ function stackify(root = document) {
     t.dataset.stk = '1'; t.classList.add('stackm');
     const hr = [...t.querySelectorAll('thead tr')];
     const last = hr[hr.length - 1]; if (!last) return;
+    // encabezados alineados igual que su columna (números a la derecha)
+    const cnt = {}, tot = {};
+    t.querySelectorAll('tbody tr').forEach(tr => { let ci = 0; [...tr.children].forEach(td => { if ((td.colSpan || 1) === 1 && (td.textContent.trim() || td.querySelector('input,select'))) { tot[ci] = (tot[ci] || 0) + 1; if (td.classList.contains('num') || td.querySelector('input.num')) cnt[ci] = (cnt[ci] || 0) + 1; } ci += td.colSpan || 1; }); });
+    { let ci = 0; [...last.children].forEach(th => { if ((th.colSpan || 1) === 1 && tot[ci] && (cnt[ci] || 0) / tot[ci] >= 0.5) th.classList.add('num'); ci += th.colSpan || 1; }); }
     const labels = [];
     [...last.children].forEach(th => { for (let i = 0; i < (th.colSpan || 1); i++) labels.push(th.textContent.trim()); });
     if (hr.length > 1) { let ci = 0; [...hr[0].children].forEach(th => { const g = th.textContent.trim(); for (let i = 0; i < (th.colSpan || 1); i++, ci++) if (g && labels[ci] !== undefined && g !== labels[ci]) labels[ci] = g + ' · ' + labels[ci]; }); }
@@ -4728,7 +4773,22 @@ function stackify(root = document) {
     });
   });
 }
-new MutationObserver(() => { clearTimeout(stackify.t); stackify.t = setTimeout(() => stackify(), 30); }).observe(document.body, {childList: true, subtree: true});
+function fitTables() {
+  const mob = matchMedia('(max-width:640px)').matches;
+  document.querySelectorAll('table.book.stackm').forEach(t => {
+    if (mob) { t.classList.remove('fitcards'); return; }
+    if (!t.offsetParent) return;
+    t.classList.remove('fitcards');
+    const w = t.closest('.tw') || t.parentElement;
+    let bad = w.scrollWidth > w.clientWidth + 2 || t.offsetWidth > w.clientWidth + 2;
+    if (!bad) bad = [...t.querySelectorAll('input')].some(i => i.offsetParent && i.clientWidth < 72 && !i.classList.contains('ok') && i.type !== 'checkbox');
+    if (!bad) bad = [...t.querySelectorAll('input')].some(i => i.value && i.scrollWidth > i.clientWidth + 2);
+    if (bad) t.classList.add('fitcards');
+  });
+}
+addEventListener('resize', () => { clearTimeout(fitTables.t); fitTables.t = setTimeout(fitTables, 80); });
+document.addEventListener('input', e => { const t = e.target.closest && e.target.closest('table.book.stackm:not(.fitcards)'); if (t && e.target.scrollWidth > e.target.clientWidth + 2) t.classList.add('fitcards'); });
+new MutationObserver(() => { stackify(); fitTables(); }).observe(document.body, {childList: true, subtree: true});
 /* ===================== Ranking ===================== */
 async function renderRanking() {
   A.view = 'ranking'; setNavOn('ranking');
