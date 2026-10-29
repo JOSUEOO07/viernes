@@ -2396,7 +2396,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '19';
+const APP_V = '20';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -3306,13 +3306,14 @@ function caseFromOp(op, fmt, co, k = {}) {
   } else if (fmt === 'kardex' || fmt === 'kardexu') {
     const kx = op.kx; if (!kx) return null;
     const val = fmt === 'kardex';
-    fl.top = F('k', kx.top, 'Tabla 12: 01 = venta, 02 = compra, 05 = devolución recibida.', {l: 'Tipo de operación (T12)', k: 'tabla'});
+    fl.top = F('k', kx.top, kx.top === '02' ? 'Es una compra: Tabla 12 código 02.' : kx.top === '01' ? 'Es una venta: Tabla 12 código 01.' : 'Tabla 12: ' + kx.top + ' ' + (T12[kx.top] || '') + '.', {l: 'Tipo de operación (T12)', k: 'tabla'});
     if (val) {
-      if (kx.ent) { fl.eq = F('n', kx.ent.q, 'Cantidad que ingresa.', {l: 'Entrada: cantidad', k: 'kardex', tol: 0}); fl.ecu = F('n', kx.ent.cu, 'En la compra, el costo unitario es el valor de compra sin IGV.', {l: 'Entrada: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.et = F('n', kx.ent.t, 'Costo total = cantidad × costo unitario.', {l: 'Entrada: costo total', k: 'kardex', tol: 0.05}); }
-      if (kx.sal) { fl.sq = F('n', kx.sal.q, 'Cantidad que sale.', {l: 'Salida: cantidad', k: 'kardex', tol: 0}); fl.scu = F('n', kx.sal.cu, 'En promedio ponderado, la salida se valoriza al costo unitario del saldo anterior.', {l: 'Salida: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.st = F('n', kx.sal.t, 'Costo total de la salida = cantidad × costo promedio.', {l: 'Salida: costo total', k: 'kardex', tol: 0.05}); }
-      fl.fq = F('n', kx.fin.q, 'Saldo en unidades = anterior + entradas − salidas.', {l: 'Saldo: cantidad', k: 'saldo', tol: 0});
-      fl.fcu = F('n', kx.fin.cu, 'Nuevo costo promedio = costo total del saldo ÷ cantidad del saldo.', {l: 'Saldo: costo unitario', k: 'costo-promedio', tol: 0.011});
-      fl.ft = F('n', kx.fin.t, 'Costo total del saldo = anterior + entrada − salida.', {l: 'Saldo: costo total', k: 'saldo', tol: 0.05});
+      const pv = kx.prev, en = kx.ent, sa = kx.sal, fi = kx.fin;
+      if (en) { fl.eq = F('n', en.q, `Cantidad que ingresa según el comprobante: ${ni(en.q)} ${kx.u}${en.q > 1 ? 's' : ''}.`, {l: 'Entrada: cantidad', k: 'kardex', tol: 0}); fl.ecu = F('n', en.cu, `En la compra, el costo unitario es el valor de compra SIN IGV: S/ ${nf(en.cu)} (el IGV va a la 40111, no al inventario).`, {l: 'Entrada: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.et = F('n', en.t, `Costo total de la entrada = ${ni(en.q)} × ${nf(en.cu)} = ${nf(en.t)}.`, {l: 'Entrada: costo total', k: 'kardex', tol: 0.05}); }
+      if (sa) { fl.sq = F('n', sa.q, `Cantidad que sale (vendida): ${ni(sa.q)} ${kx.u}${sa.q > 1 ? 's' : ''}.`, {l: 'Salida: cantidad', k: 'kardex', tol: 0}); fl.scu = F('n', sa.cu, `Con promedio ponderado, la salida se valoriza al costo promedio del saldo anterior: ${nf(pv.t)} ÷ ${ni(pv.q)} = ${nf(sa.cu)} (nunca al precio de venta).`, {l: 'Salida: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.st = F('n', sa.t, `Costo total de la salida = ${ni(sa.q)} × ${nf(sa.cu)} = ${nf(sa.t)}.`, {l: 'Salida: costo total', k: 'kardex', tol: 0.05}); }
+      fl.fq = F('n', fi.q, `Saldo en unidades = ${ni(pv.q)}${en ? ' + ' + ni(en.q) : ''}${sa ? ' − ' + ni(sa.q) : ''} = ${ni(fi.q)}.`, {l: 'Saldo: cantidad', k: 'saldo', tol: 0});
+      fl.fcu = F('n', fi.cu, fi.q ? `Costo promedio = costo total del saldo ÷ cantidad = ${nf(fi.t)} ÷ ${ni(fi.q)} = ${(fi.t / fi.q).toFixed(4)} → ${nf(fi.cu)} (redondeado a 2 decimales).` : 'Sin unidades en saldo, el costo unitario es 0.', {l: 'Saldo: costo unitario', k: 'costo-promedio', tol: 0.011});
+      fl.ft = F('n', fi.t, `Costo total del saldo = ${nf(pv.t)}${en ? ' + ' + nf(en.t) : ''}${sa ? ' − ' + nf(sa.t) : ''} = ${nf(fi.t)} (se suma y resta en soles, no se multiplica por el promedio redondeado).`, {l: 'Saldo: costo total', k: 'saldo', tol: 0.05});
       const E = kx.ent ? [{f: 'eq'}, {f: 'ecu'}, {f: 'et'}] : [BL, BL, BL], S = kx.sal ? [{f: 'sq'}, {f: 'scu'}, {f: 'st'}] : [BL, BL, BL];
       tbl = {sunat: true, fit: true, cw: [74, 40, 50, 60, 92, 56, 66, 86, 56, 66, 86, 56, 66, 86], groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 1], ['ENTRADAS', 3], ['SALIDAS', 3], ['SALDO FINAL', 3]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [
         [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, BL, BL, BL, BL, {s: ni(kx.prev.q), c: 'num'}, {s: nf(kx.prev.cu), c: 'num'}, {s: nf(kx.prev.t), c: 'num'}],
@@ -3615,7 +3616,7 @@ function checkField(f, u) {
   return false;
 }
 function showSol(f) {
-  if (f.t === 'n') return nf(f.v);
+  if (f.t === 'n') return f.tol === 0 && Number.isInteger(f.v) ? ni(f.v) : nf(f.v);
   if (f.t === 'd') return fmtD(f.v);
   if (f.t === 'c') return f.v + ' ' + acctName(f.v);
   return String(f.v);
@@ -4510,7 +4511,7 @@ function inp(k, f, val, cls, ro) {
   if (f && f.t === 'k' && TAB_OF[k]) { const tb = TAB_OF[k], cur = normK(v); return `<select data-k="${k}" class="${cls} tsel" ${ro ? 'disabled' : ''}><option value="">Elige…</option>${Object.entries(tb).map(([c, t]) => `<option value="${c}" ${v !== '' && normK(c) === cur ? 'selected' : ''}>${c} · ${esc(t)}</option>`).join('')}</select>`; }
   if (f && f.t === 'd') { const iso = parseDate(v); return `<span class="dwrap"><input data-k="${k}" class="${cls} dtxt" inputmode="numeric" autocomplete="off" placeholder="dd/mm/aaaa" maxlength="10" value="${iso ? fmtD(iso) : esc(v)}" ${ro ? 'disabled' : ''}>${ro ? '' : `<button type="button" class="dcal" tabindex="-1" aria-label="Elegir fecha en el calendario"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><input type="date" class="dpick" tabindex="-1" aria-hidden="true" value="${iso}">`}</span>`; }
   const im = f && (f.t === 'n' || f.t === 'doc' || f.t === 'i') ? 'decimal' : 'text';
-  const ph = f ? ({d: 'dd/mm/aaaa', k: 'cód.', c: 'cuenta', s: 'serie', n: '0.00'}[f.t] || '') : '';
+  const ph = f ? (f.t === 'n' && f.tol === 0 ? '0' : {d: 'dd/mm/aaaa', k: 'cód.', c: 'cuenta', s: 'serie', n: '0.00'}[f.t] || '') : '';
   return `<input data-k="${k}" class="${cls}" inputmode="${im}" autocomplete="off" placeholder="${ph}" value="${esc(f && f.t === 'n' ? fmtIn(v) : v)}" ${ro ? 'disabled' : ''} ${f && f.t === 'c' ? 'data-acc="1"' : ''}>`;
 }
 const isMobile = () => window.matchMedia('(max-width: 700px)').matches;
