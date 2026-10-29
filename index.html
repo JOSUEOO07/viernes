@@ -309,7 +309,11 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 #kfab{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:15;width:54px;height:54px;border-radius:16px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 8px 22px rgba(0,0,0,.22)}
 #kfab:hover{filter:brightness(1.06)}
 #kcalc{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:16;width:300px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;display:grid;gap:8px;box-shadow:0 18px 50px rgba(10,11,25,.28)}
-.kc-h{display:flex;justify-content:space-between;align-items:center;cursor:default}
+.kc-h{display:flex;justify-content:space-between;align-items:center;cursor:default;touch-action:none;user-select:none}
+@media (pointer:fine) and (min-width:701px){.kc-h{cursor:move}.kc-h b::after{content:' · arrástrala';font-weight:500;font-size:.72rem;color:var(--muted)}}
+#kcalc.drag{opacity:.92;box-shadow:0 24px 60px rgba(10,11,25,.38)}
+.kc-tip{font-size:.72rem;color:var(--muted);margin:0;text-align:center}
+.kc-flash{outline:2px solid var(--accent)!important;outline-offset:1px;background:var(--brand-soft)!important;transition:background .2s}
 .kc-d{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:grid;justify-items:end;min-width:0}
 .kc-d small{color:var(--muted);font-family:var(--mono);font-size:.78rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .kc-d output{font-family:var(--mono);font-size:1.6rem;font-weight:700;max-width:100%;overflow-x:auto;white-space:nowrap}
@@ -493,7 +497,7 @@ table.book.sunat{min-width:100%;width:auto;border-collapse:collapse}
 .book.d51 .c-cor{width:7em}.book.d51 .c-fe{width:9.5em}.book.d51 .c-glo{min-width:180px}.book.d51 .c-lib{width:10em}.book.d51 .c-rc{width:6.5em}.book.d51 .c-doc{width:9em}
 .book.d51 td.hc:nth-child(3){min-width:128px}.book.d51 td.hc:nth-child(4){min-width:112px}.book.d51 td.hc:nth-child(2){min-width:142px}
 .book.d51 textarea.glo,.dhead textarea.glo{width:100%;min-width:118px;resize:vertical;font:inherit;font-size:.86rem;line-height:1.3;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
-.book.sunat td.in input.num{min-width:100px}.book.sunat td.in .dwrap .dtxt{min-width:112px}
+.book.sunat td.in input.num{min-width:112px}.book.sunat td.in .dwrap .dtxt{min-width:112px}
 .book.d51 td.hc:nth-child(1){min-width:64px}.book.d51 td.hc:nth-child(6){min-width:134px}.book.d51 td.hc input,.book.d51 td.hc select{font-size:13.5px;padding:6px 6px}.book.d51 td.in input.num{min-width:96px}
 .hin.ok input,.hin.ok select{background:var(--ok-bg);color:var(--ok)}.hin.bad input,.hin.bad select{background:var(--bad-bg);color:var(--bad)}
 .dhead{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin:6px 0 10px}
@@ -563,7 +567,8 @@ table.book.fitcards{min-width:0!important;border:0;background:transparent;width:
   .book.diario{min-width:0;table-layout:fixed}
   .book.diario .den,.book.diario th.dh{display:none}
   .book.diario .den-m{display:block}
-  .book.diario th:nth-child(1){width:36%!important}
+  .book.diario th:nth-child(1){width:31%!important}
+  .book.diario td.in input.num{font-size:12.5px;padding:6px 3px;letter-spacing:-.02em}
   .book.diario th:nth-child(3),.book.diario th:nth-child(4){width:auto!important}
   .book.diario th:nth-child(5){width:30px!important}
   .book.diario td,.book.diario th{padding:4px 3px}
@@ -578,7 +583,7 @@ table.book.fitcards{min-width:0!important;border:0;background:transparent;width:
   .cpt th,.cpt td{padding:4px 3px}
 }
 @media (max-width:380px){
-  .book.diario td.in input{font-size:12.5px;padding:6px 3px}
+  .book.diario td.in input{font-size:12px;padding:6px 2px}
   .book.diario td:nth-child(5){width:26px}
 }
 </style>
@@ -603,6 +608,7 @@ table.book.fitcards{min-width:0!important;border:0;background:transparent;width:
     <button data-k2="0" class="w2">0</button><button data-k2=".">.</button><button data-k2="=" class="eq">=</button>
   </div>
   <div class="kc-f"><button data-k2="put" class="btn sm" id="kput">Poner en la celda</button></div>
+  <p class="kc-tip">Toca cualquier número de la pantalla para usarlo: celda, + − × ÷, otra celda, =.</p>
 </section>
 <div id="toast" hidden role="status"></div>
 <datalist id="pcgeList"></datalist>
@@ -2377,7 +2383,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '16';
+const APP_V = '18';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -2387,6 +2393,14 @@ const p2 = n => String(n).padStart(2, '0');
 const nf = n => (n < 0 ? '−' : '') + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const money = n => (n < 0 ? '−' : '') + 'S/ ' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const ni = n => Math.round(n).toLocaleString('en-US');
+// Número escrito por el usuario con separador de miles: 7269.6 → 7,269.60 · 1200 → 1,200
+function fmtIn(v) {
+  const t = String(v ?? '').trim(); if (!t) return t;
+  const n = parseNum(t); if (isNaN(n)) return t;
+  const dec = /[.]\d|,\d{1,2}$/.test(t.replace(/S\/|\s/gi, '')) || Math.round(n) !== n;
+  const a = Math.abs(n).toLocaleString('en-US', dec ? {minimumFractionDigits: 2, maximumFractionDigits: 2} : {maximumFractionDigits: 0});
+  return (n < 0 ? '-' : '') + a;
+}
 const fmtD = iso => iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4) : '';
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const mesLbl = M => MESES[+M.slice(5, 7) - 1] + ' ' + M.slice(0, 4);
@@ -3285,14 +3299,14 @@ function caseFromOp(op, fmt, co, k = {}) {
       fl.ft = F('n', kx.fin.t, 'Costo total del saldo = anterior + entrada − salida.', {l: 'Saldo: costo total', k: 'saldo', tol: 0.05});
       const E = kx.ent ? [{f: 'eq'}, {f: 'ecu'}, {f: 'et'}] : [BL, BL, BL], S = kx.sal ? [{f: 'sq'}, {f: 'scu'}, {f: 'st'}] : [BL, BL, BL];
       tbl = {sunat: true, groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 1], ['ENTRADAS', 3], ['SALIDAS', 3], ['SALDO FINAL', 3]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [
-        [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, BL, BL, BL, BL, {s: String(kx.prev.q), c: 'num'}, {s: nf(kx.prev.cu), c: 'num'}, {s: nf(kx.prev.t), c: 'num'}],
+        [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, BL, BL, BL, BL, {s: ni(kx.prev.q), c: 'num'}, {s: nf(kx.prev.cu), c: 'num'}, {s: nf(kx.prev.t), c: 'num'}],
         [{s: fmtD(op.date)}, kx.tcp, kx.serie, String(kx.num), {f: 'top'}, ...E, ...S, {f: 'fq'}, {f: 'fcu'}, {f: 'ft'}]]};
     } else {
       if (kx.ent) fl.eq = F('n', kx.ent.q, 'Unidades que ingresan.', {l: 'Entradas', k: 'kardex', tol: 0});
       if (kx.sal) fl.sq = F('n', kx.sal.q, 'Unidades que salen.', {l: 'Salidas', k: 'kardex', tol: 0});
       fl.fq = F('n', kx.fin.q, 'Saldo final = anterior + entradas − salidas.', {l: 'Saldo final', k: 'saldo', tol: 0});
       tbl = {sunat: true, groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 4]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Entradas', 'Salidas', 'Saldo final'], rows: [
-        [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, {s: String(kx.prev.q), c: 'num'}],
+        [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, {s: ni(kx.prev.q), c: 'num'}],
         [{s: fmtD(op.date)}, kx.tcp, kx.serie, String(kx.num), {f: 'top'}, kx.ent ? {f: 'eq'} : BL, kx.sal ? {f: 'sq'} : BL, {f: 'fq'}]]};
     }
     c.sh = [['ESTABLECIMIENTO (1)', 'Almacén principal'], ['CÓDIGO DE LA EXISTENCIA', kx.cod], ['TIPO (TABLA 5)', '01 – Mercaderías'], ['DESCRIPCIÓN', kx.prod], ['CÓDIGO DE LA UNIDAD DE MEDIDA (TABLA 6)', t6(kx.u)], ...(val ? [['MÉTODO DE VALUACIÓN', 'Promedio ponderado']] : [])];
@@ -3982,7 +3996,7 @@ function closeCases(mo, ops) {
     const rows = co.prods.map((p, i) => { const I = st.inv[p.id], cu = I.q ? r2(I.t / I.q) : 0; tot = r2(tot + I.t);
       fl['u' + i] = N2(cu, 'Costo unitario promedio final = costo total ÷ cantidad (según tu kárdex).', 'Costo unitario ' + p.n, 'costo-promedio');
       fl['t' + i] = N2(I.t, 'Costo total final del producto (último saldo de su kárdex).', 'Costo total ' + p.n, 'saldo', {tol: 0.05});
-      return [p.cod, '01', p.n, t6(p.u), {s: String(I.q), c: 'num'}, {f: 'u' + i}, {f: 't' + i}]; });
+      return [p.cod, '01', p.n, t6(p.u), {s: ni(I.q), c: 'num'}, {f: 'u' + i}, {f: 't' + i}]; });
     fl.tot = N2(tot, 'Total de mercaderías: debe ser igual al saldo de la cuenta 20.', 'Total cuenta 20', 'saldo', {tol: 0.05});
     c.instr = 'Completa el Formato 3.7: inventario de mercaderías valorizado al cierre (cuenta 20).';
     c.text = `Inventario físico de ${co.name} al cierre de ${mesLbl(mo.id)}. Las cantidades se contaron en el almacén; el costo sale de tu kárdex (promedio ponderado).`;
@@ -4478,7 +4492,7 @@ function inp(k, f, val, cls, ro) {
   if (f && f.t === 'd') { const iso = parseDate(v); return `<span class="dwrap"><input data-k="${k}" class="${cls} dtxt" inputmode="numeric" autocomplete="off" placeholder="dd/mm/aaaa" maxlength="10" value="${iso ? fmtD(iso) : esc(v)}" ${ro ? 'disabled' : ''}>${ro ? '' : `<button type="button" class="dcal" tabindex="-1" aria-label="Elegir fecha en el calendario"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><input type="date" class="dpick" tabindex="-1" aria-hidden="true" value="${iso}">`}</span>`; }
   const im = f && (f.t === 'n' || f.t === 'doc' || f.t === 'i') ? 'decimal' : 'text';
   const ph = f ? ({d: 'dd/mm/aaaa', k: 'cód.', c: 'cuenta', s: 'serie', n: '0.00'}[f.t] || '') : '';
-  return `<input data-k="${k}" class="${cls}" inputmode="${im}" autocomplete="off" placeholder="${ph}" value="${esc(v)}" ${ro ? 'disabled' : ''} ${f && f.t === 'c' ? 'data-acc="1"' : ''}>`;
+  return `<input data-k="${k}" class="${cls}" inputmode="${im}" autocomplete="off" placeholder="${ph}" value="${esc(f && f.t === 'n' ? fmtIn(v) : v)}" ${ro ? 'disabled' : ''} ${f && f.t === 'c' ? 'data-acc="1"' : ''}>`;
 }
 const isMobile = () => window.matchMedia('(max-width: 700px)').matches;
 /* En el celular, cada fila del libro se muestra como una ficha: etiqueta a la izquierda, dato o casilla a la derecha */
@@ -4561,7 +4575,7 @@ function diarioForm(c, draft, g, answered) {
   const ro = answered || A.roMode;
   const sD = r2(lines.reduce((a, l) => a + (parseNum(l.d) || 0), 0)), sH = r2(lines.reduce((a, l) => a + (parseNum(l.h) || 0), 0));
   const H = diarioHead(c, hv, g, ro);
-  const lineCells = (l, i) => `<td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}<div class="den-m">${esc(acctName(l.c))}</div></td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}`;
+  const lineCells = (l, i) => `<td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}<div class="den-m">${esc(acctName(l.c))}</div></td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(fmtIn(l.d))}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(fmtIn(l.h))}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}`;
   const tot = `<td class="den b"> ${Math.abs(sD - sH) > 0.005 && (sD || sH) ? '<span class="warnc">· no cuadra</span>' : ''}</td><td class="num b" id="sD">${nf(sD)}</td><td class="num b" id="sH">${nf(sH)}</td>${ro ? '' : '<td></td>'}`;
   if (isMobile()) {
     return `${sunatHead(c)}<div class="dhead">
@@ -4574,7 +4588,7 @@ function diarioForm(c, draft, g, answered) {
     ${ro ? '' : `<button class="ghost sm addl" data-act="addline">+ Agregar línea</button>`}`;
   }
   const first = i => i === 0;
-  return `${sunatHead(c)}<div class="tw"><table class="book diario d51 nostack sunat"><colgroup><col style="width:56px"><col style="width:132px"><col><col style="width:98px"><col style="width:58px"><col style="width:110px"><col style="width:118px"><col class="cden"><col style="width:100px"><col style="width:100px">${ro ? '' : '<col style="width:36px">'}</colgroup><thead>
+  return `${sunatHead(c)}<div class="tw"><table class="book diario d51 nostack sunat"><colgroup><col style="width:56px"><col style="width:132px"><col><col style="width:92px"><col style="width:54px"><col style="width:124px"><col style="width:112px"><col class="cden"><col style="width:112px"><col style="width:112px">${ro ? '' : '<col style="width:36px">'}</colgroup><thead>
     <tr><th rowspan="2" class="c-cor">Nº correlativo del asiento o código único de la operación</th><th rowspan="2" class="c-fe">Fecha de la operación</th><th rowspan="2" class="c-glo">Glosa o descripción de la operación</th><th colspan="3" class="grp">Referencia de la operación</th><th colspan="2" class="grp">Cuenta contable asociada a la operación</th><th colspan="2" class="grp">Movimiento</th>${ro ? '' : '<th rowspan="2"></th>'}</tr>
     <tr><th class="c-lib">Código del libro o registro (Tabla 8)</th><th class="c-rc">Número correlativo</th><th class="c-doc">Número del documento sustentatorio</th><th style="width:7.5em">Código</th><th class="dh">Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th></tr></thead>
   <tbody id="dlines">${lines.map((l, i) => `<tr class="${g ? (g.lineOk[i] ? 'ok' : 'bad') : ''}" data-i="${i}"><td class="hc">${first(i) ? H.cor : ''}</td><td class="hc">${first(i) ? H.fe : ''}</td><td class="hc">${first(i) ? H.glo : ''}</td><td class="hc">${first(i) ? H.lib : ''}</td><td class="hc">${first(i) ? H.rcor : ''}</td><td class="hc">${first(i) ? H.doc : ''}</td>${lineCells(l, i)}</tr>`).join('')}</tbody>
@@ -4804,20 +4818,20 @@ function calcTab(k) {
   const box = $('#cb');
   const out = rows => `<div class="cres">${rows.map(([l, v, b]) => `<div class="${b ? 'b' : ''}"><span>${l}</span><span class="num">${v}</span></div>`).join('')}</div>`;
   if (k === 'igv') {
-    box.innerHTML = `<label class="fld">Monto (S/)<input id="c1" inputmode="decimal" placeholder="0.00" autofocus></label><label class="chk"><input type="checkbox" id="c2"> El monto ya incluye IGV</label><div id="co"></div>`;
+    box.innerHTML = `<label class="fld">Monto (S/)<input id="c1" class="num" inputmode="decimal" placeholder="0.00" autofocus></label><label class="chk"><input type="checkbox" id="c2"> El monto ya incluye IGV</label><div id="co"></div>`;
     const f = () => { const m = parseNum($('#c1').value) || 0, inc = $('#c2').checked; const base = inc ? r2(m / 1.18) : m, igv = inc ? r2(m - base) : r2(m * 0.18); $('#co').innerHTML = out([['Base imponible', money(base)], ['IGV 18%', money(igv)], ['Total', money(r2(base + igv)), 1]]); };
     $('#c1').oninput = f; $('#c2').onchange = f; f();
   } else if (k === 'det') {
-    box.innerHTML = `<label class="fld">Importe total de la operación, con IGV (S/)<input id="c1" inputmode="decimal" placeholder="0.00" autofocus></label>
+    box.innerHTML = `<label class="fld">Importe total de la operación, con IGV (S/)<input id="c1" class="num" inputmode="decimal" placeholder="0.00" autofocus></label>
     <label class="fld">Tipo de operación<select id="c2"><option value="12">12% · Mantenimiento y reparación, intermediación laboral, otros servicios empresariales</option><option value="10">10% · Arrendamiento de bienes, fabricación por encargo</option><option value="4">4% · Contratos de construcción, transporte de bienes por carretera</option></select></label><div id="co"></div><p class="mini">Aplica cuando el importe supera S/ 700. El depósito se hace en la cuenta de detracciones del Banco de la Nación del proveedor. Las tasas pueden cambiar: verifica la tabla vigente.</p>`;
     const f = () => { const m = parseNum($('#c1').value) || 0, t = +$('#c2').value; const d = m > 700 ? Math.round(m * t / 100) : 0; $('#co').innerHTML = out([['Detracción (' + t + '%, redondeada)', money(d)], ['Pago neto al proveedor', money(r2(m - d)), 1]]) + (m && m <= 700 ? '<p class="mini">No supera S/ 700: no corresponde detracción.</p>' : ''); };
     $('#c1').oninput = f; $('#c2').onchange = f; f();
   } else if (k === 'per') {
-    box.innerHTML = `<label class="fld">Precio de venta con IGV (S/)<input id="c1" inputmode="decimal" placeholder="0.00" autofocus></label><label class="fld">Tasa<select id="c2"><option value="2">2% · tasa general</option><option value="1">1% · casos específicos</option><option value="0.5">0.5% · combustibles</option></select></label><div id="co"></div>`;
+    box.innerHTML = `<label class="fld">Precio de venta con IGV (S/)<input id="c1" class="num" inputmode="decimal" placeholder="0.00" autofocus></label><label class="fld">Tasa<select id="c2"><option value="2">2% · tasa general</option><option value="1">1% · casos específicos</option><option value="0.5">0.5% · combustibles</option></select></label><div id="co"></div>`;
     const f = () => { const m = parseNum($('#c1').value) || 0, t = +$('#c2').value; const p = r2(m * t / 100); $('#co').innerHTML = out([['Percepción', money(p)], ['Total a cobrar', money(r2(m + p)), 1]]); };
     $('#c1').oninput = f; $('#c2').onchange = f; f();
   } else {
-    box.innerHTML = `<label class="fld">Importe total del comprobante, con IGV (S/)<input id="c1" inputmode="decimal" placeholder="0.00" autofocus></label><div id="co"></div><p class="mini">El agente de retención retiene el 3% cuando el importe supera S/ 700.</p>`;
+    box.innerHTML = `<label class="fld">Importe total del comprobante, con IGV (S/)<input id="c1" class="num" inputmode="decimal" placeholder="0.00" autofocus></label><div id="co"></div><p class="mini">El agente de retención retiene el 3% cuando el importe supera S/ 700.</p>`;
     const f = () => { const m = parseNum($('#c1').value) || 0; const r = m > 700 ? r2(m * 0.03) : 0; $('#co').innerHTML = out([['Retención 3%', money(r)], ['Pago neto al proveedor', money(r2(m - r)), 1]]); };
     $('#c1').oninput = f; f();
   }
@@ -5072,7 +5086,7 @@ function renderMesTab() {
     const regItems = items.filter(it => it.s.f === 'compras' || it.s.f === 'ventas');
     const badReg = regItems.filter(it => !it.a.ok);
     box.innerHTML = `<section class="card"><h2>Formulario Virtual 621 · IGV-Renta mensual</h2><p class="mini">Llena tu declaración de ${mesLbl(mo.id)} (en soles enteros). Viernes la compara con lo que dicen <b>tus registros</b> de compras y ventas, y con lo <b>correcto</b>. Régimen: ${REGIMEN[mo.regime || 'MYPE'].n}.</p>
-    <div class="tw"><table class="book pdt"><thead><tr><th>Casilla</th><th>Tu declaración</th><th>Según tus registros</th><th>Correcto</th></tr></thead><tbody>${C621.map(([k, l]) => { const v = dec[k]; const has = v !== undefined && v !== ''; const x = parseNum(v); const st = !has ? '' : Math.abs(x - q[k]) < 1.01 ? 'ok' : Math.abs(x - p[k]) < 1.01 ? 'mid' : 'bad'; return `<tr><td>${l}</td><td class="in ${st}"><input data-c="${k}" class="num" inputmode="decimal" value="${esc(v ?? '')}" placeholder="0"></td><td class="num">${ni(p[k])}</td><td class="num">${dec._rev ? ni(q[k]) : '<span class="mini">al revisar</span>'}</td></tr>`; }).join('')}</tbody></table></div>
+    <div class="tw"><table class="book pdt"><thead><tr><th>Casilla</th><th>Tu declaración</th><th>Según tus registros</th><th>Correcto</th></tr></thead><tbody>${C621.map(([k, l]) => { const v = dec[k]; const has = v !== undefined && v !== ''; const x = parseNum(v); const st = !has ? '' : Math.abs(x - q[k]) < 1.01 ? 'ok' : Math.abs(x - p[k]) < 1.01 ? 'mid' : 'bad'; return `<tr><td>${l}</td><td class="in ${st}"><input data-c="${k}" class="num" inputmode="decimal" value="${esc(fmtIn(v ?? ''))}" placeholder="0"></td><td class="num">${ni(p[k])}</td><td class="num">${dec._rev ? ni(q[k]) : '<span class="mini">al revisar</span>'}</td></tr>`; }).join('')}</tbody></table></div>
     <div class="actions"><span class="mini">Verde: correcto · ámbar: coincide con tus registros, pero tus registros tienen errores · rojo: no coincide.</span><span class="sp"></span><button class="btn" data-act="rev621">Revisar mi declaración</button></div>
     ${badReg.length ? `<div class="fb badf"><p class="fbh">Registros con observaciones que afectan al 621</p>${och(badReg)}</div>` : ''}</section>`;
   } else if (T === 'eeff') {
@@ -5257,10 +5271,18 @@ const Kc = {
     else if (k === 'put') return this.put();
     this.last = k; this.upd();
   },
+  // Toma el número de una celda: si la operación espera un número (al inicio o después de + − × ÷) lo agrega; si no, empieza de nuevo con ese número
+  feed(v, el) {
+    if (isNaN(v)) return;
+    const n = String(Math.round(v * 1e8) / 1e8), t = v < 0 ? '(' + n + ')' : n;
+    if (!this.exp || this.last === '=' || !/[+\-*/]$/.test(this.exp)) this.exp = t; else this.exp += t;
+    this.last = 'cell'; this.upd();
+    if (el) { el.classList.remove('kc-flash'); void el.offsetWidth; el.classList.add('kc-flash'); setTimeout(() => el.classList.remove('kc-flash'), 700); }
+  },
   put() {
     const el = A.lastInput, v = this.val();
     if (!el || !document.body.contains(el) || el.disabled || isNaN(v)) { toast('Toca primero la celda donde quieres poner el resultado'); return; }
-    el.value = String(r2(v)); el.dispatchEvent(new Event('input', {bubbles: true})); el.focus(); toast('Resultado puesto en la celda');
+    el.value = el.classList.contains('num') ? fmtIn(r2(v).toFixed(2)) : String(r2(v)); el.dispatchEvent(new Event('input', {bubbles: true})); el.focus(); toast('Resultado puesto en la celda');
   },
   upd() {
     if (!this.el() || this.el().hidden) return;
@@ -5273,6 +5295,29 @@ const Kc = {
 };
 if ($('#kcalc')) {
 $('#kclose').onclick = () => Kc.open(false);
+/* Con la calculadora abierta: tocar una celda con número lo pasa a la calculadora */
+const NUMRX = /^\(?[-−]?\s*(S\/\s*)?[-−]?\d{1,3}(,\d{3})*(\.\d+)?\)?$|^\(?[-−]?\s*(S\/\s*)?\d+(\.\d+)?\)?$/;
+document.addEventListener('click', e => {
+  if (!Kc.el() || Kc.el().hidden || e.target.closest('#kcalc, #nav, button, select, a, .dcal')) return;
+  const inpEl = e.target.closest('input');
+  if (inpEl) { if (!inpEl.classList.contains('num') || !inpEl.value.trim()) return; const v = parseNum(inpEl.value); if (!isNaN(v)) Kc.feed(v, inpEl); return; }
+  const el = e.target.closest('td, .mv, .solc, b, span, output, dd, small') || e.target;
+  const t = (el.textContent || '').trim(); if (!t || t.length > 24 || !NUMRX.test(t) || /^\d{9,}$/.test(t)) return;
+  const v = parseNum(t.replace(/[()]/g, m => m)); if (!isNaN(v)) Kc.feed(v, el);
+}, true);
+/* En la computadora, la calculadora se mueve arrastrándola desde su barra superior */
+(function () {
+  const box = $('#kcalc'), bar = box.querySelector('.kc-h'); let d = null;
+  const fine = () => matchMedia('(pointer:fine) and (min-width:701px)').matches;
+  const place = (x, y) => { const w = box.offsetWidth, h = box.offsetHeight; x = Math.max(8, Math.min(innerWidth - w - 8, x)); y = Math.max(8, Math.min(innerHeight - h - 8, y)); box.style.left = x + 'px'; box.style.top = y + 'px'; box.style.right = 'auto'; box.style.bottom = 'auto'; return [x, y]; };
+  const restore = () => { if (!fine()) { box.style.left = box.style.top = box.style.right = box.style.bottom = ''; return; } const p = uiGet().kcPos; if (p) place(p[0], p[1]); };
+  bar.addEventListener('pointerdown', e => { if (!fine() || e.target.closest('button')) return; const r = box.getBoundingClientRect(); d = {dx: e.clientX - r.left, dy: e.clientY - r.top}; bar.setPointerCapture(e.pointerId); box.classList.add('drag'); e.preventDefault(); });
+  bar.addEventListener('pointermove', e => { if (d) place(e.clientX - d.dx, e.clientY - d.dy); });
+  const end = e => { if (!d) return; d = null; box.classList.remove('drag'); const r = box.getBoundingClientRect(); const o = uiGet(); o.kcPos = [Math.round(r.left), Math.round(r.top)]; uiSet(o); };
+  bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
+  new MutationObserver(() => { if (!box.hidden) restore(); }).observe(box, {attributes: true, attributeFilter: ['hidden']});
+  addEventListener('resize', () => { if (!box.hidden) restore(); });
+})();
 $('#kcalc').addEventListener('mousedown', e => { if (e.target.closest('button')) e.preventDefault(); });
 $('#kcalc').addEventListener('click', e => { const b = e.target.closest('[data-k2]'); if (b) Kc.press(b.dataset.k2); });
 }
@@ -5403,6 +5448,9 @@ new MutationObserver(() => { stackify(); fitTables(); }).observe(document.body, 
 document.addEventListener('click', e => { const b = e.target.closest('.dcal'); if (!b) return; const pk = b.parentElement.querySelector('.dpick'), tx = b.parentElement.querySelector('.dtxt'); pk.value = parseDate(tx.value) || (A.loteMo ? A.loteMo.id + '-01' : ''); try { pk.showPicker(); } catch (er) { pk.focus(); pk.click(); } });
 document.addEventListener('change', e => { if (!e.target.classList.contains('dpick')) return; const tx = e.target.parentElement.querySelector('.dtxt'); if (e.target.value) { tx.value = fmtD(e.target.value); tx.dispatchEvent(new Event('input', {bubbles: true})); } });
 document.addEventListener('input', e => { const t = e.target; if (!t.classList || !t.classList.contains('dtxt') || e.inputType === 'deleteContentBackward') return; const d = t.value.replace(/\D/g, '').slice(0, 8); let o = d.slice(0, 2); if (d.length > 2) o += '/' + d.slice(2, 4); if (d.length > 4) o += '/' + d.slice(4); if (d.length >= 2 && t.value.replace(/\D/g, '').length === d.length) t.value = o; });
+
+/* Separador de miles en todo número que escribe el estudiante (al salir de la casilla) */
+document.addEventListener('focusout', e => { const t = e.target; if (t && t.tagName === 'INPUT' && t.classList.contains('num') && !t.disabled) { const f = fmtIn(t.value); if (f !== t.value) { t.value = f; t.dispatchEvent(new Event('input', {bubbles: true})); } } });
 /* ===================== Ranking ===================== */
 async function renderRanking() {
   A.view = 'ranking'; setNavOn('ranking');
