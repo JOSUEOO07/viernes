@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon-v2.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}</style>
 <title>Viernes</title>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.12.5/firebase-app-compat.js"></script>
@@ -29,12 +29,12 @@
   --r:16px; --shadow:0 1px 2px rgba(27,29,54,.05),0 6px 18px rgba(27,29,54,.05);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f1020; --surface:#181a2e; --paper:#15172a; --ink:#e9eaf6; --muted:#a3a6c2; --line:#2b2e48; --rule:#25304e;
-  --brand:#5a53e6; --brand-2:#8a84ff; --brand-ink:#ffffff; --brand-soft:#23244a; --accent:#ff7a5f;
+  --bg:#0d4a39; --surface:#11392d; --paper:#0f3428; --ink:#eef7f2; --muted:#b3d6c6; --line:#2a6a55; --rule:#245c4a;
+  --brand:#2e9c77; --brand-2:#6fd3a8; --brand-ink:#ffffff; --brand-soft:#164a3b; --accent:#e0a36a;
   --ok:#4fd39a; --ok-bg:#133428; --bad:#ff8b7b; --bad-bg:#3c1e1b; --warn:#f2c35b; --warn-bg:#3a2f12; --shadow:none; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f1020; --surface:#181a2e; --paper:#15172a; --ink:#e9eaf6; --muted:#a3a6c2; --line:#2b2e48; --rule:#25304e;
-  --brand:#5a53e6; --brand-2:#8a84ff; --brand-ink:#ffffff; --brand-soft:#23244a; --accent:#ff7a5f;
+  --bg:#0d4a39; --surface:#11392d; --paper:#0f3428; --ink:#eef7f2; --muted:#b3d6c6; --line:#2a6a55; --rule:#245c4a;
+  --brand:#2e9c77; --brand-2:#6fd3a8; --brand-ink:#ffffff; --brand-soft:#164a3b; --accent:#e0a36a;
   --ok:#4fd39a; --ok-bg:#133428; --bad:#ff8b7b; --bad-bg:#3c1e1b; --warn:#f2c35b; --warn-bg:#3a2f12; --shadow:none; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -530,6 +530,8 @@ table.book.d51{table-layout:fixed;width:100%;min-width:900px}
 .metodo b{color:var(--brand)}
 .fpre{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 8px}.fpre label{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.8rem;font-weight:700;color:var(--muted)}.fpre select{min-width:240px;max-width:100%}
 .fpre .in.ok select{background:var(--ok-bg);color:var(--ok)}.fpre .in.bad select{background:var(--bad-bg);color:var(--bad)}
+.admlock{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;border:1px dashed var(--accent);border-radius:12px;padding:8px 12px;margin:0 0 8px;font-size:.86rem}
+.admlock small{display:block;color:var(--muted);font-size:.74rem}
 /* nada dentro de una tarjeta puede ensancharla */
 .card,.case{grid-template-columns:minmax(0,1fr)}
 .card>*,.solbox,.solbox>*,.cp>*{min-width:0}
@@ -2396,7 +2398,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '20';
+const APP_V = '21';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -4415,7 +4417,8 @@ async function openLote(id, n) {
   window.scrollTo(0, 0);
 }
 function isExamOpen() { return A.li && A.li.kind === 'examen' && A.li.exam && !A.li.exam.fin; }
-function unlocked(st) { if (!A.li || A.li.kind !== 'ciclo' || A.isAdmin) return true; return st <= stageInfo(A.li).cur || A.li.fin; }
+// Los alumnos siempre siguen el ciclo en orden; solo el administrador puede quitar los candados (interruptor propio)
+function unlocked(st) { if (!A.li || A.li.kind !== 'ciclo' || (A.isAdmin && A.P && A.P.adminUnlock)) return true; return st <= stageInfo(A.li).cur || A.li.fin; }
 function renderLote() {
   const li = A.li, b = A.lote, cyc = li.kind === 'ciclo';
   const si = cyc ? stageInfo(li) : null;
@@ -4429,6 +4432,7 @@ function renderLote() {
     <div class="lt"><h1>${title}</h1><p class="sub">${cyc ? `Empresa ${li.cycleNo} · ` : ''}${li.done}/${li.n} resueltos · ${li.okc} correctos</p></div>
     ${isExamOpen() ? `<div class="timer" id="timer">--:--</div>` : ''}
   </div>
+  ${cyc && A.isAdmin ? `<div class="admlock"><span>${A.P.adminUnlock ? '🔓 Candados desactivados: puedes entrar a cualquier etapa.' : '🔒 Candados activados: avanzas en orden, como un alumno.'} <small>Solo lo ves tú (administrador). Los alumnos siempre siguen el ciclo en orden.</small></span><button class="ghost sm" data-act="admlock">${A.P.adminUnlock ? 'Activar candados' : 'Quitar candados'}</button></div>` : ''}
   ${cyc ? `<div class="stages" role="tablist">${STAGES.filter(s => (si.per[s.n] || {}).n).map(s => { const p = si.per[s.n] || {n: 0, done: 0}; const lock = !unlocked(s.n); return `<button role="tab" class="stg ${s.n === curSt ? 'on' : ''} ${lock ? 'lock' : ''} ${p.n && p.done === p.n ? 'fin' : ''}" data-stg="${s.n}" ${lock ? 'aria-disabled="true"' : ''}><b><span class="sn">${s.n}</span>${lock ? '🔒 ' : ''}${esc(s.c || s.t)}</b><span>${p.done}/${p.n}</span></button>`; }).join('')}</div>` : ''}
   <div class="chips">${shown.map(c => `<button class="chip ${st(c.n)} ${c.n === A.cur ? 'cur' : ''}" data-case="${c.n}" aria-label="Caso ${c.n}">${cyc ? shown.indexOf(c) + 1 : c.n}</button>`).join('')}</div>
   ${empresaCard(A.loteMo, li)}
@@ -4923,7 +4927,7 @@ async function restoreBackup(file) {
 
 /* ===================== Temas de color ===================== */
 const THEMES = [
-  ['cbo', 'Verde CBO', '#0d5c46', '#14805f', '#b4532f', '#2e9c77', '#6fd3a8', {bg: '#dceae2', paper: '#f6faf7', line: '#cfe0d5', ink: '#10241c', muted: '#4a5f55'}, {bg: '#061f18', surface: '#0c2a21', paper: '#0a251d', line: '#1d4436', ink: '#e6f2ec', muted: '#9cc3b1'}],
+  ['cbo', 'Verde CBO', '#0d5c46', '#14805f', '#b4532f', '#2e9c77', '#6fd3a8', {bg: '#dceae2', paper: '#f6faf7', line: '#cfe0d5', ink: '#10241c', muted: '#4a5f55'}, {bg: '#0d4a39', surface: '#11392d', paper: '#0f3428', line: '#2a6a55', ink: '#eef7f2', muted: '#b3d6c6'}],
   ['indigo', 'Índigo', '#2f2a85', '#4740c9', '#e2553d', '#5a53e6', '#8a84ff'],
   ['esmeralda', 'Esmeralda', '#0e6a4e', '#17956d', '#e89a1c', '#1fa57a', '#5fd3a8'],
   ['oceano', 'Océano', '#0b5a86', '#1580c2', '#ff7a45', '#1f8fd6', '#6cc0f5'],
@@ -4946,7 +4950,7 @@ function applyTheme() {
   let st = document.getElementById('themeVars');
   if (!st) { st = document.createElement('style'); st.id = 'themeVars'; document.head.appendChild(st); }
   const L = `--brand:${b};--brand-2:${b2};--accent:${ac};--brand-soft:color-mix(in srgb, ${b2} 11%, #ffffff);${ex(lx)}`;
-  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--brand-soft:color-mix(in srgb, ${db} 22%, #181a2e);${ex(dx)}`;
+  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--brand-soft:color-mix(in srgb, ${db} 22%, #11392d);${ex(dx)}`;
   st.textContent = `:root:root{${L}}@media (prefers-color-scheme: dark){:root:root:not([data-theme="light"]){${D}}}:root:root[data-theme="dark"]{${D}}`;
   const r = document.documentElement;
   if (u.m === 'light' || u.m === 'dark') r.setAttribute('data-theme', u.m); else r.removeAttribute('data-theme');
@@ -5291,6 +5295,7 @@ document.addEventListener('click', async e => {
   if (act === 'repaso') return makeExtra('repaso');
   if (act === 'examen') return makeExtra('examen');
   if (act === 'gexam') return startGroupExam(t.dataset.id);
+  if (act === 'admlock') { if (!A.isAdmin) return; A.P.adminUnlock = !A.P.adminUnlock; await saveProfile(); toast(A.P.adminUnlock ? 'Candados desactivados para ti' : 'Candados activados'); return renderLote(); }
   if (act === 'constancia') return constanciaPDF(t.dataset.id);
   if (act === 'finexam') { if (confirmFin()) return finishExam(false); return; }
   if (act === 'histmore') { A.histN += 400; await loadIdx(); return renderHist(); }
