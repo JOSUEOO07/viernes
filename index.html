@@ -468,6 +468,51 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);bo
 .mli .mv{text-align:right;font-family:var(--mono);font-size:.86rem}
 .mli .mv input{width:100%;text-align:right}
 .mli.tot .ml{font-weight:700}
+
+/* Formatos oficiales SUNAT */
+.fhead{border:1.5px solid var(--ink);border-radius:4px;background:var(--paper);padding:10px 12px;margin:4px 0 8px;font-size:.8rem;line-height:1.45}
+.fhead .ft{font-weight:800;font-size:.86rem;letter-spacing:.02em;margin:0 0 4px}
+.fhead p{margin:0}.fhead span{color:var(--muted);font-weight:600;font-size:.72rem;letter-spacing:.02em}
+table.book.sunat{min-width:100%;width:auto;border-collapse:collapse}
+.book.sunat th{font-size:.6rem;line-height:1.2;text-transform:uppercase;letter-spacing:.01em;vertical-align:middle;text-align:center;min-width:64px;white-space:normal;padding:5px 5px;hyphens:auto}
+.book.sunat th.grp{background:var(--brand-soft);color:var(--ink);font-size:.6rem}
+.book.sunat th.grp{text-align:center;vertical-align:middle;border-bottom:1px solid var(--line)}
+.book.sunat td,.book.sunat th{border:1px solid var(--line)}
+.book.sunat tbody td:empty:not(.den):not(.hc){background:repeating-linear-gradient(135deg,transparent 0 6px,var(--line) 6px 7px);min-width:44px}
+.book.sunat td.in{min-width:96px}
+.book.sunat td.in.t-n{min-width:104px}.book.sunat td.in.t-d{min-width:122px}.book.sunat td.in.t-k{min-width:120px}.book.sunat td.in.t-c{min-width:92px}.book.sunat td.in.t-i,.book.sunat td.in.t-doc{min-width:116px}
+.book.sunat td.tx{min-width:120px;max-width:220px}
+.book.sunat td.dencell{min-width:150px;font-size:.8rem;color:var(--muted)}
+.sw2{display:block!important}
+.book.d51 td.hc{vertical-align:top;background:var(--paper)}
+.book.d51 td.hc:empty{background:transparent}
+.book.d51 tbody tr:not(:first-child) td.hc{background:transparent;border-top-color:transparent}
+.book.d51 td.hc .in{display:block}.book.d51 td.hc input,.book.d51 td.hc select{width:100%;min-width:0}
+.book.d51 td.hc select{max-width:118px}.book.d51 td.den{min-width:104px;max-width:160px;font-size:.78rem}
+.book.sunat td.in select.tsel{max-width:150px}
+.book.d51 .c-cor{width:7em}.book.d51 .c-fe{width:9.5em}.book.d51 .c-glo{min-width:180px}.book.d51 .c-lib{width:10em}.book.d51 .c-rc{width:6.5em}.book.d51 .c-doc{width:9em}
+.book.d51 td.hc:nth-child(3){min-width:128px}.book.d51 td.hc:nth-child(4){min-width:112px}.book.d51 td.hc:nth-child(2){min-width:142px}
+.book.d51 textarea.glo,.dhead textarea.glo{width:100%;min-width:118px;resize:vertical;font:inherit;font-size:.86rem;line-height:1.3;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.book.sunat td.in input.num{min-width:100px}.book.sunat td.in .dwrap .dtxt{min-width:112px}
+.book.d51 td.hc:nth-child(1){min-width:64px}.book.d51 td.hc:nth-child(6){min-width:134px}.book.d51 td.hc input,.book.d51 td.hc select{font-size:13.5px;padding:6px 6px}.book.d51 td.in input.num{min-width:96px}
+.hin.ok input,.hin.ok select{background:var(--ok-bg);color:var(--ok)}.hin.bad input,.hin.bad select{background:var(--bad-bg);color:var(--bad)}
+.dhead{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin:6px 0 10px}
+.dhead label{display:grid;gap:3px;font-size:.72rem;font-weight:600;color:var(--muted);min-width:0}
+.dhead label.w{grid-column:1/-1}
+.dhead input,.dhead select{width:100%;min-width:0}
+.dhead .dref{grid-column:1/-1;margin:4px 0 0;font-weight:700;font-size:.78rem;color:var(--ink)}
+.solh{margin:0 0 6px}
+
+.mgrp{font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin:8px 0 2px;padding-top:6px;border-top:1px solid var(--line)}
+
+/* Diario 5.1 en PC: que entre completo en la tarjeta */
+table.book.d51{table-layout:fixed;width:100%;min-width:900px}
+.book.d51 col.cden{width:0}.book.d51 td.den,.book.d51 th.dh{padding:0!important;border:0!important;font-size:0;overflow:hidden;width:0}.book.d51 .den-m{display:block;font-size:.72rem}
+.book.d51 thead tr:first-child th.grp:nth-of-type(5){}
+.book.d51 th{width:auto!important;min-width:0!important}
+.book.d51 td.hc,.book.d51 td.in,.book.d51 td.den{min-width:0!important}
+.book.d51 td.hc .dwrap .dtxt,.book.d51 td.in input.num,.book.d51 textarea.glo{min-width:0!important}
+.book.d51 td.hc select{max-width:none}
 /* nada dentro de una tarjeta puede ensancharla */
 .card,.case{grid-template-columns:minmax(0,1fr)}
 .card>*,.solbox,.solbox>*,.cp>*{min-width:0}
@@ -2332,7 +2377,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '15';
+const APP_V = '16';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -2765,7 +2810,7 @@ function genOp(R, mo, type, date, fmt) {
       const base = r2(q * cu), igv = r2(base * 0.18), total = r2(base + igv), perc = pc ? r2(total * 0.02) : 0;
       const I = st.inv[p.id], prev = {q: I.q, t: I.t, cu: r2(I.t / I.q)};
       I.q += q; I.t = r2(I.t + base);
-      st.cxp.push({doc: serie + '-' + num, total: r2(total + perc), sup});
+      st.cxp.push({doc: serie + '-' + num, total: r2(total + perc), sup, fe: date});
       op.text = `Compras al crédito (30 días) a ${sup.n} ${q} ${p.u}${q > 1 ? 's' : ''} de «${p.n}» a ${money(cu)} c/u más IGV. Recibes la factura ${serie}-${num}.` + (pc ? ` El proveedor es agente de percepción: te cobra además la percepción del IGV de 2% sobre el importe total (${money(perc)}), que luego descontarás de tu IGV a pagar.` : '');
       op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: sup.n, emRuc: sup.ruc, serie, num, rcLbl: 'Cliente', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [[q, p.u, p.n, cu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total], ...(pc ? [['Percepción 2%', perc], ['Total a pagar', r2(total + perc)]] : [])], note: 'Forma de pago: crédito a 30 días' + (pc ? ' · Operación sujeta a percepción del IGV' : '')};
       op.lines = [Dl('6011', base, 'La mercadería comprada se carga a la 60 Compras (6011) por el valor sin IGV.'), Dl('40111', igv, 'El IGV de la factura es crédito fiscal: 40111 al Debe.'), ...(pc ? [Dl('40113', perc, 'La percepción es un pago adelantado de IGV a tu favor: 40113 IGV – Régimen de percepciones al Debe.')] : []), Hl('4212', r2(total + perc), 'La deuda con el proveedor va a la 4212 al Haber por el importe total' + (pc ? ' más la percepción.' : '.')),
@@ -2806,7 +2851,7 @@ function genOp(R, mo, type, date, fmt) {
         op.hint = 'Venta al contado con boleta: 10 (total) contra 40111 (IGV) y 70 (valor de venta). Luego el costo: 69 a 20 al costo promedio.';
       } else {
         const cli = R.pick(co.clis), num = ++st.seqF, serie = 'F001';
-        st.cxc.push({doc: serie + '-' + num, base, igv, total, cli, pid: p.id, q, pu, cu: cuAvg});
+        st.cxc.push({doc: serie + '-' + num, base, igv, total, cli, pid: p.id, q, pu, cu: cuAvg, fe: date});
         op.text = `Vendes al crédito (15 días) a ${cli.n} ${q} ${p.u}${q > 1 ? 's' : ''} de «${p.n}» a ${money(pu)} c/u más IGV. Emites la factura ${serie}-${num}. El costo promedio es ${money(cuAvg)} por ${p.u}.`;
         op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: co.name, emRuc: co.ruc, serie, num, rcLbl: 'Cliente', rc: cli.n, rcDoc: 'RUC ' + cli.ruc, items: [[q, p.u, p.n, pu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: 'Forma de pago: crédito a 15 días'};
         op.lines = [Dl('1212', total, 'El cliente te debe el total: 1212 Emitidas en cartera al Debe.'), Hl('40111', igv, 'El IGV de la venta es débito fiscal: 40111 al Haber.'), Hl('7012', base, 'La venta se abona a la 70 Ventas (7012 venta local) por el valor de venta.'),
@@ -2823,7 +2868,7 @@ function genOp(R, mo, type, date, fmt) {
       const s = R.pick(SERV), base = R.amt(s.lo, s.hi), igv = r2(base * 0.18), total = r2(base + igv);
       const serie = s.tcp === '14' ? 'S0' + p2(R.int(1, 99)) : serieProv(R), num = R.int(1000, 999999);
       const area = s.a === 'ven' ? '95' : '94';
-      st.cxp.push({doc: serie + '-' + num, total, sup: {n: s.p, ruc: makeRuc(rngFrom(s.p))}});
+      st.cxp.push({doc: serie + '-' + num, total, sup: {n: s.p, ruc: makeRuc(rngFrom(s.p))}, fe: date});
       const ruc = makeRuc(rngFrom(s.p));
       const det = s.k === 'mant' && total > 700 ? ' Está sujeta a detracción del 12% (se paga aparte; no cambia este asiento).' : '';
       op.text = `Recibes el ${s.tcp === '14' ? 'recibo de servicio público' : 'comprobante'} ${serie}-${num} de ${s.p} por ${s.n}, ${money(base)} más IGV, a pagar más adelante. Es un gasto del área ${area === '95' ? 'de ventas' : 'administrativa'}.${det}`;
@@ -3039,7 +3084,7 @@ function genOp(R, mo, type, date, fmt) {
       op.lines = [Dl('7092', base, 'La devolución disminuye las ventas: 7092 Devoluciones sobre ventas – mercaderías venta local al Debe.'), Dl('40111', igv, 'Se revierte el débito fiscal: 40111 al Debe.'), Hl('1212', total, 'El cliente te debe menos: 1212 al Haber.'),
         Dl('2011', cost, 'La mercadería regresa al almacén: 20 al Debe al costo.'), Hl('6912', cost, '…y se reduce el costo de ventas: 69 al Haber.')];
       op.glosa = `Devolución s/ NC ${serie}-${num} (ref. F ${x.doc})`;
-      op.reg = {fe: date, tcp: '07', serie, num: String(num), td: '6', nd: x.cli.ruc, rs: x.cli.n, bi: -base, igv: -igv, ng: 0, tot: -total, rtcp: '01', rserie: rs, rnum: rn};
+      op.reg = {rfe: x.fe || '', fe: date, tcp: '07', serie, num: String(num), td: '6', nd: x.cli.ruc, rs: x.cli.n, bi: -base, igv: -igv, ng: 0, tot: -total, rtcp: '01', rserie: rs, rnum: rn};
       op.hint = 'Nota de crédito: 709 + 40111 contra 12; la mercadería vuelve: 20 contra 69. En el Registro de Ventas va con montos negativos y tipo 07.';
       op.fp = `nc|${x.doc}|${k}`;
       break;
@@ -3064,7 +3109,7 @@ function genOp(R, mo, type, date, fmt) {
       const prov = sv[3] + ' ' + R.pick(W2) + ' S.A.C.', ruc = makeRuc(R);
       const base = R.int(90, 380) * 10, igv = r2(base * 0.18), total = r2(base + igv), detr = Math.round(total * 0.12);
       const serie = serieProv(R), num = R.int(100, 99999);
-      st.cxp.push({doc: serie + '-' + num, total, sup: {n: prov, ruc}, detr});
+      st.cxp.push({doc: serie + '-' + num, total, sup: {n: prov, ruc}, detr, fe: date});
       op.text = `Recibes la factura ${serie}-${num} de ${prov} por ${sv[0]}: ${money(base)} más IGV, a pagar en 15 días. Es un servicio sujeto a detracción (SPOT) del 12% porque el importe total supera S/ 700. Gasto del área ${sv[2] === '95' ? 'de ventas' : 'administrativa'}.`;
       op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: prov, emRuc: ruc, serie, num, rcLbl: 'Cliente', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [[1, 'servicio', sv[0].charAt(0).toUpperCase() + sv[0].slice(1), base, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: `Operación sujeta al SPOT: detracción 12% = S/ ${nf(detr)} · Cta. Banco de la Nación del proveedor`};
       op.lines = [Dl(sv[1], base, `El servicio es un gasto: ${sv[1]} ${acctName(sv[1])} al Debe.`), Dl('40111', igv, 'El IGV es crédito fiscal: 40111 al Debe (podrás usarlo cuando deposites la detracción).'), Hl('4212', total, 'La deuda con el proveedor va a la 4212 por el total; la detracción se paga después, al cancelar.'),
@@ -3086,6 +3131,7 @@ function genOp(R, mo, type, date, fmt) {
       op.lines = [Dl('4212', x.total, 'Se cancela toda la deuda con el proveedor: 4212 al Debe por el total.'), Hl('101', x.detr, 'La detracción sale en efectivo de Caja: 101 al Haber.'), Hl('1041', neto, 'El saldo sale de la cuenta corriente: 1041 al Haber.')];
       op.cash = {caja: {desc: `Depósito de detracción F ${x.doc}`, cta: '4212', alts: ['42'], ing: 0, sal: x.detr, prev: pc}, banco: {desc: `Pago a proveedor (neto de detracción) ${x.doc}`, cta: '4212', alts: ['42'], ing: 0, sal: neto, prev: pb, medio: ['003'], gir: x.sup.n, nop}};
       op.glosa = `Pago de ${x.doc} con detracción`;
+      op.dt = {doc: x.doc, cons, fe: date};
       op.hint = 'Pago con detracción: 42 al Debe por el total; al Haber 101 (detracción depositada) y 104 (saldo).';
       op.fp = `pd|${x.doc}|${x.detr}`;
       break;
@@ -3145,11 +3191,35 @@ const INSTR = {
   planilla: 'Completa la línea del trabajador en la planilla de remuneraciones del mes.',
 };
 
-function caseFromOp(op, fmt, co) {
+// Tabla 6 (unidades de medida) para los encabezados del 13.1 y 3.7
+const T6 = {unidad: 'NIU', caja: 'BX', paquete: 'PK', bolsa: 'BG', 'galón': 'GLL', metro: 'MTR', juego: 'SET'};
+const t6 = u => T6[u] ? `${T6[u]} (${u})` : u;
+// Tabla 8: código del libro o registro (referencia de la operación en el Libro Diario 5.1)
+const T8 = {'010100': 'Libro Caja y Bancos – efectivo (1.1)', '010200': 'Libro Caja y Bancos – cuenta corriente (1.2)', '080100': 'Registro de Compras (8.1)', '140100': 'Registro de Ventas e Ingresos (14.1)'};
+TAB_OF.lib = T8;
+const BL = '';  // celda en blanco de una columna oficial que no aplica a esta operación
+/* k = {cor: número correlativo en su registro, asiento: Nº de asiento del Diario, ref: {lib, alts, cor, cors, doc}} */
+function caseFromOp(op, fmt, co, k = {}) {
   const c = {fmt, op: op.type, title: OPNAME[op.type], date: op.date, text: op.text, instr: INSTR[fmt], cp: op.cp, hint: op.hint, fp: op.fp, glosa: op.glosa};
   if (fmt === 'planilla') return null;
-  if (fmt === 'diario') { c.kind = 'diario'; c.lines = op.lines.map(l => ({c: l.c, d: l.d, h: l.h, why: l.why, dest: l.dest})); return c; }
+  if (fmt === 'diario') {
+    c.kind = 'diario'; c.lines = op.lines.map(l => ({c: l.c, d: l.d, h: l.h, why: l.why, dest: l.dest}));
+    if (k.asiento) {
+      const hf = c.hf = {};
+      hf.cor = F('i', String(k.asiento), `Número correlativo del asiento: el asiento de apertura es el 1 y este es el ${k.asiento}.`, {l: 'Nº correlativo del asiento', k: 'dato'});
+      hf.fe = F('d', op.date, 'Fecha de la operación: la del comprobante o documento.', {l: 'Fecha de la operación', k: 'fecha'});
+      const r = k.ref;
+      if (r) {
+        hf.lib = F('k', r.lib, `Tabla 8: el código del libro o registro donde se anotó la operación (${r.lib} = ${T8[r.lib]}).`, {l: 'Referencia: código del libro (Tabla 8)', k: 'tabla', a: r.alts || []});
+        hf.rcor = F('i', String(r.cor), `Es el número correlativo con el que la operación figura en ${T8[r.lib]}.`, {l: 'Referencia: número correlativo', k: 'dato', a: (r.cors || []).map(String)});
+        hf.doc = F('i', r.doc, 'Número del documento sustentatorio: serie y número del comprobante (o el número de la operación bancaria).', {l: 'Referencia: Nº del documento sustentatorio', k: 'comprobante'});
+      }
+      if (r) c.text += ` En el Libro Diario se referencia al ${T8[r.lib]} con el correlativo Nº ${r.cor}.`;
+    }
+    return c;
+  }
   c.kind = 'grid'; const fl = {}; let tbl;
+  const cor = k.cor ? (fl.cor = F('i', String(k.cor), 'Número correlativo del registro: el orden en que anotas la operación en el libro del mes (1, 2, 3…).', {l: 'Nº correlativo', k: 'dato'}), {f: 'cor'}) : BL;
   if (fmt === 'compras' || fmt === 'ventas') {
     const g = op.reg; if (!g) return null;
     const nc = g.tcp === '07';
@@ -3161,16 +3231,26 @@ function caseFromOp(op, fmt, co) {
     fl.nd = F('doc', g.nd, 'Número de RUC o DNI del ' + (fmt === 'compras' ? 'proveedor' : 'cliente') + '.', {l: 'Nº doc. identidad', k: 'comprobante'});
     fl.bi = F('n', g.bi, nc ? 'En la nota de crédito la base va en negativo (disminuye las ventas).' : 'Base imponible = valor sin IGV (operación gravada).', {l: 'Base imponible', k: 'monto'});
     fl.igv = F('n', g.igv, nc ? 'El IGV de la nota de crédito va en negativo.' : 'IGV = base imponible × 18%.', {l: 'IGV', k: 'igv'});
-    fl.ng = F('n', g.ng, 'Solo se llena si hay importes no gravados o exonerados; aquí es 0.', {l: fmt === 'compras' ? 'Valor no gravado' : 'Exonerada / inafecta', k: 'monto', z: true});
+    fl.ng = F('n', g.ng, 'Solo se llena si hay importes no gravados, exonerados o inafectos; aquí es 0 (puedes dejarlo vacío).', {l: fmt === 'compras' ? 'Valor de las adquisiciones no gravadas' : 'Exonerada', k: 'monto', z: true});
     fl.tot = F('n', g.tot, 'Importe total = base imponible + IGV (+ no gravado).', {l: 'Importe total', k: 'monto'});
-    const cols = [['Fecha de emisión', 'fe'], ['Tipo CP (T10)', 'tcp'], ['Serie', 'se'], ['Número', 'nu'], ['Tipo doc. (T2)', 'td'], ['Nº doc. identidad', 'nd'], [fmt === 'compras' ? 'Proveedor (razón social)' : 'Cliente (razón social)', null, g.rs], ['Base imponible', 'bi'], ['IGV', 'igv'], [fmt === 'compras' ? 'No gravadas' : 'Exonerada/inafecta', 'ng'], ['Importe total', 'tot']];
     if (nc) {
+      if (g.rfe) fl.rfe = F('d', g.rfe, 'Referencia: fecha de emisión de la factura que se modifica.', {l: 'Ref. fecha', k: 'fecha'});
       fl.rtcp = F('k', g.rtcp, 'Referencia: tipo del comprobante que se modifica (01 factura).', {l: 'Ref. tipo CP', k: 'tabla'});
       fl.rse = F('s', g.rserie, 'Referencia: serie de la factura que se modifica.', {l: 'Ref. serie', k: 'comprobante'});
       fl.rnu = F('i', g.rnum, 'Referencia: número de la factura que se modifica.', {l: 'Ref. número', k: 'comprobante'});
-      cols.push(['Ref. tipo', 'rtcp'], ['Ref. serie', 'rse'], ['Ref. número', 'rnu']);
     }
-    tbl = {cols: cols.map(x => x[0]), rows: [cols.map(x => x[1] ? {f: x[1]} : x[2])]};
+    const ref = nc ? [g.rfe ? {f: 'rfe'} : BL, {f: 'rtcp'}, {f: 'rse'}, {f: 'rnu'}] : [BL, BL, BL, BL];
+    if (fmt === 'compras') {
+      let det = [BL, BL];
+      if (k.dt) { fl.dn = F('i', k.dt.cons, 'Número de la constancia de depósito de detracción (la del Banco de la Nación, al pagar la factura).', {l: 'Constancia de detracción: número', k: 'comprobante'}); fl.df = F('d', k.dt.fe, 'Fecha de la constancia de depósito de detracción.', {l: 'Constancia de detracción: fecha', k: 'fecha'}); det = [{f: 'dn'}, {f: 'df'}]; }
+      tbl = {sunat: true, groups: [['', 3], ['COMPROBANTE DE PAGO O DOCUMENTO', 4], ['INFORMACIÓN DEL PROVEEDOR', 3], ['ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES GRAVADAS Y/O DE EXPORTACIÓN', 2], ['ADQ. GRAVADAS DESTINADAS A OP. GRAVADAS Y/O DE EXPORTACIÓN Y A OP. NO GRAVADAS', 2], ['ADQUISICIONES GRAVADAS DESTINADAS A OPERACIONES NO GRAVADAS', 2], ['', 6], ['CONSTANCIA DE DEPÓSITO DE DETRACCIÓN', 2], ['', 1], ['REFERENCIA DEL COMPROBANTE DE PAGO QUE SE MODIFICA', 4]],
+        cols: ['Nº correlativo del registro o CUO', 'Fecha de emisión del comprobante', 'Fecha de vencimiento o fecha de pago', 'Tipo (Tabla 10)', 'Serie o código de la dependencia aduanera', 'Año de emisión de la DUA o DSI', 'Nº del comprobante de pago o documento', 'Doc. identidad: tipo (Tabla 2)', 'Doc. identidad: número', 'Apellidos y nombres, denominación o razón social', 'Base imponible', 'IGV', 'Base imponible', 'IGV', 'Base imponible', 'IGV', 'Valor de las adquisiciones no gravadas', 'ISC', 'ICBPER', 'Otros tributos y cargos', 'Importe total', 'Nº de comprobante emitido por sujeto no domiciliado', 'Número', 'Fecha de emisión', 'Tipo de cambio', 'Fecha', 'Tipo (Tabla 10)', 'Serie', 'Nº del comprobante'],
+        rows: [[cor, {f: 'fe'}, BL, {f: 'tcp'}, {f: 'se'}, BL, {f: 'nu'}, {f: 'td'}, {f: 'nd'}, g.rs, {f: 'bi'}, {f: 'igv'}, BL, BL, BL, BL, {f: 'ng'}, BL, BL, BL, {f: 'tot'}, BL, ...det, BL, ...ref]]};
+    } else {
+      tbl = {sunat: true, groups: [['', 3], ['COMPROBANTE DE PAGO O DOCUMENTO', 3], ['INFORMACIÓN DEL CLIENTE', 3], ['', 2], ['IMPORTE TOTAL DE LA OPERACIÓN EXONERADA O INAFECTA', 2], ['', 6], ['REFERENCIA DEL COMPROBANTE DE PAGO QUE SE MODIFICA', 4]],
+        cols: ['Nº correlativo del registro o CUO', 'Fecha de emisión del comprobante', 'Fecha de vencimiento y/o pago', 'Tipo (Tabla 10)', 'Nº de serie o de máquina registradora', 'Número', 'Doc. identidad: tipo (Tabla 2)', 'Doc. identidad: número', 'Apellidos y nombres, denominación o razón social', 'Valor facturado de la exportación', 'Base imponible de la operación gravada', 'Exonerada', 'Inafecta', 'ISC', 'IGV y/o IPM', 'ICBPER', 'Otros tributos y cargos', 'Importe total del comprobante', 'Tipo de cambio', 'Fecha', 'Tipo (Tabla 10)', 'Serie', 'Nº del comprobante'],
+        rows: [[cor, {f: 'fe'}, BL, {f: 'tcp'}, {f: 'se'}, {f: 'nu'}, {f: 'td'}, {f: 'nd'}, g.rs, BL, {f: 'bi'}, {f: 'ng'}, BL, BL, {f: 'igv'}, BL, BL, {f: 'tot'}, BL, ...ref]]};
+    }
     c.reg = g;
   } else if (fmt === 'caja' || fmt === 'banco') {
     const x = op.cash && op.cash[fmt]; if (!x) return null;
@@ -3180,43 +3260,43 @@ function caseFromOp(op, fmt, co) {
     fl.ac = F('n', x.sal, 'Columna Acreedor = salidas de dinero.', {l: 'Acreedor (salida)', k: 'debe-haber', z: true});
     fl.sf = F('n', fin, 'Saldo final = saldo anterior + deudor − acreedor.', {l: 'Saldo final', k: 'saldo'});
     if (fmt === 'caja') {
-      tbl = {cols: ['Fecha', 'Descripción de la operación', 'Cuenta asociada (código)', 'Deudor', 'Acreedor'], rows: [
-        [{s: fmtD(op.date)}, 'Saldo anterior', '', {s: nf(x.prev), c: 'num'}, ''],
-        [{s: fmtD(op.date)}, x.desc, {f: 'cta'}, {f: 'de'}, {f: 'ac'}],
-        ['', {s: 'Saldo final de caja', c: 'b'}, '', {f: 'sf'}, '']]};
+      tbl = {sunat: true, groups: [['', 3], ['CUENTA CONTABLE ASOCIADA', 2], ['SALDOS Y MOVIMIENTOS', 2]], cols: ['Nº correlativo del registro o CUO', 'Fecha de la operación', 'Descripción de la operación', 'Código', 'Denominación', 'Deudor', 'Acreedor'], rows: [
+        [BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, {s: nf(x.prev), c: 'num'}, BL],
+        [cor, {s: fmtD(op.date)}, x.desc, {f: 'cta'}, {den: 'cta'}, {f: 'de'}, {f: 'ac'}],
+        [BL, BL, {s: 'Saldo final de caja', c: 'b'}, BL, BL, {f: 'sf'}, BL]]};
     } else {
       fl.mp = F('k', x.medio[0], 'Tabla 1 (medios de pago): 001 depósito, 003 transferencia, 007 cheque, 999 otros.', {l: 'Medio de pago (T1)', k: 'tabla', a: x.medio.slice(1)});
-      tbl = {cols: ['Fecha', 'Medio de pago (T1)', 'Descripción', 'Girador / beneficiario', 'Nº operación', 'Cuenta asociada', 'Deudor', 'Acreedor'], rows: [
-        [{s: fmtD(op.date)}, '', 'Saldo anterior', '', '', '', {s: nf(x.prev), c: 'num'}, ''],
-        [{s: fmtD(op.date)}, {f: 'mp'}, x.desc, x.gir || '', x.nop || '', {f: 'cta'}, {f: 'de'}, {f: 'ac'}],
-        ['', '', {s: 'Saldo final de la cuenta corriente', c: 'b'}, '', '', '', {f: 'sf'}, '']]};
+      tbl = {sunat: true, groups: [['', 2], ['OPERACIONES BANCARIAS', 4], ['CUENTA CONTABLE ASOCIADA', 2], ['SALDOS Y MOVIMIENTOS', 2]], cols: ['Nº correlativo del registro o CUO', 'Fecha de la operación', 'Medio de pago (Tabla 1)', 'Descripción de la operación', 'Apellidos y nombres, denominación o razón social', 'Nº de transacción bancaria, documento sustentatorio o control interno', 'Código', 'Denominación', 'Deudor', 'Acreedor'], rows: [
+        [BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, BL, BL, {s: nf(x.prev), c: 'num'}, BL],
+        [cor, {s: fmtD(op.date)}, {f: 'mp'}, x.desc, x.gir || BL, x.nop || BL, {f: 'cta'}, {den: 'cta'}, {f: 'de'}, {f: 'ac'}],
+        [BL, BL, BL, {s: 'Saldo final de la cuenta corriente', c: 'b'}, BL, BL, BL, BL, {f: 'sf'}, BL]]};
+      c.sh = [['ENTIDAD FINANCIERA', co.banco], ['CÓDIGO DE LA CUENTA CORRIENTE', co.cta]];
     }
     c.cash = {...x, fin};
   } else if (fmt === 'kardex' || fmt === 'kardexu') {
-    const k = op.kx; if (!k) return null;
+    const kx = op.kx; if (!kx) return null;
     const val = fmt === 'kardex';
-    fl.top = F('k', k.top, 'Tabla 12: 01 = venta, 02 = compra.', {l: 'Tipo de operación (T12)', k: 'tabla'});
-    const inR = [], outR = [];
+    fl.top = F('k', kx.top, 'Tabla 12: 01 = venta, 02 = compra, 05 = devolución recibida.', {l: 'Tipo de operación (T12)', k: 'tabla'});
     if (val) {
-      if (k.ent) { fl.eq = F('n', k.ent.q, 'Cantidad que ingresa.', {l: 'Entrada: cantidad', k: 'kardex', tol: 0}); fl.ecu = F('n', k.ent.cu, 'En la compra, el costo unitario es el valor de compra sin IGV.', {l: 'Entrada: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.et = F('n', k.ent.t, 'Costo total = cantidad × costo unitario.', {l: 'Entrada: costo total', k: 'kardex', tol: 0.05}); }
-      if (k.sal) { fl.sq = F('n', k.sal.q, 'Cantidad que sale.', {l: 'Salida: cantidad', k: 'kardex', tol: 0}); fl.scu = F('n', k.sal.cu, 'En promedio ponderado, la salida se valoriza al costo unitario del saldo anterior.', {l: 'Salida: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.st = F('n', k.sal.t, 'Costo total de la salida = cantidad × costo promedio.', {l: 'Salida: costo total', k: 'kardex', tol: 0.05}); }
-      fl.fq = F('n', k.fin.q, 'Saldo en unidades = anterior + entradas − salidas.', {l: 'Saldo: cantidad', k: 'saldo', tol: 0});
-      fl.fcu = F('n', k.fin.cu, 'Nuevo costo promedio = costo total del saldo ÷ cantidad del saldo.', {l: 'Saldo: costo unitario', k: 'costo-promedio', tol: 0.011});
-      fl.ft = F('n', k.fin.t, 'Costo total del saldo = anterior + entrada − salida.', {l: 'Saldo: costo total', k: 'saldo', tol: 0.05});
-      const E = k.ent ? [{f: 'eq'}, {f: 'ecu'}, {f: 'et'}] : ['—', '—', '—'], S = k.sal ? [{f: 'sq'}, {f: 'scu'}, {f: 'st'}] : ['—', '—', '—'];
-      tbl = {groups: [['Documento', 4], ['', 1], ['Entradas', 3], ['Salidas', 3], ['Saldo final', 3]], cols: ['Fecha', 'Tipo (T10)', 'Serie', 'Número', 'Tipo op. (T12)', 'Cant.', 'C. unit.', 'C. total', 'Cant.', 'C. unit.', 'C. total', 'Cant.', 'C. unit.', 'C. total'], rows: [
-        ['', '', '', '', {s: 'Saldo anterior', c: 'b'}, '', '', '', '', '', '', {s: String(k.prev.q), c: 'num'}, {s: nf(k.prev.cu), c: 'num'}, {s: nf(k.prev.t), c: 'num'}],
-        [{s: fmtD(op.date)}, k.tcp, k.serie, String(k.num), {f: 'top'}, ...E, ...S, {f: 'fq'}, {f: 'fcu'}, {f: 'ft'}]]};
+      if (kx.ent) { fl.eq = F('n', kx.ent.q, 'Cantidad que ingresa.', {l: 'Entrada: cantidad', k: 'kardex', tol: 0}); fl.ecu = F('n', kx.ent.cu, 'En la compra, el costo unitario es el valor de compra sin IGV.', {l: 'Entrada: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.et = F('n', kx.ent.t, 'Costo total = cantidad × costo unitario.', {l: 'Entrada: costo total', k: 'kardex', tol: 0.05}); }
+      if (kx.sal) { fl.sq = F('n', kx.sal.q, 'Cantidad que sale.', {l: 'Salida: cantidad', k: 'kardex', tol: 0}); fl.scu = F('n', kx.sal.cu, 'En promedio ponderado, la salida se valoriza al costo unitario del saldo anterior.', {l: 'Salida: costo unitario', k: 'costo-promedio', tol: 0.011}); fl.st = F('n', kx.sal.t, 'Costo total de la salida = cantidad × costo promedio.', {l: 'Salida: costo total', k: 'kardex', tol: 0.05}); }
+      fl.fq = F('n', kx.fin.q, 'Saldo en unidades = anterior + entradas − salidas.', {l: 'Saldo: cantidad', k: 'saldo', tol: 0});
+      fl.fcu = F('n', kx.fin.cu, 'Nuevo costo promedio = costo total del saldo ÷ cantidad del saldo.', {l: 'Saldo: costo unitario', k: 'costo-promedio', tol: 0.011});
+      fl.ft = F('n', kx.fin.t, 'Costo total del saldo = anterior + entrada − salida.', {l: 'Saldo: costo total', k: 'saldo', tol: 0.05});
+      const E = kx.ent ? [{f: 'eq'}, {f: 'ecu'}, {f: 'et'}] : [BL, BL, BL], S = kx.sal ? [{f: 'sq'}, {f: 'scu'}, {f: 'st'}] : [BL, BL, BL];
+      tbl = {sunat: true, groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 1], ['ENTRADAS', 3], ['SALIDAS', 3], ['SALDO FINAL', 3]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [
+        [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, BL, BL, BL, BL, {s: String(kx.prev.q), c: 'num'}, {s: nf(kx.prev.cu), c: 'num'}, {s: nf(kx.prev.t), c: 'num'}],
+        [{s: fmtD(op.date)}, kx.tcp, kx.serie, String(kx.num), {f: 'top'}, ...E, ...S, {f: 'fq'}, {f: 'fcu'}, {f: 'ft'}]]};
     } else {
-      if (k.ent) fl.eq = F('n', k.ent.q, 'Unidades que ingresan.', {l: 'Entradas', k: 'kardex', tol: 0});
-      if (k.sal) fl.sq = F('n', k.sal.q, 'Unidades que salen.', {l: 'Salidas', k: 'kardex', tol: 0});
-      fl.fq = F('n', k.fin.q, 'Saldo final = anterior + entradas − salidas.', {l: 'Saldo final', k: 'saldo', tol: 0});
-      tbl = {cols: ['Fecha', 'Tipo (T10)', 'Serie', 'Número', 'Tipo op. (T12)', 'Entradas', 'Salidas', 'Saldo final'], rows: [
-        ['', '', '', '', {s: 'Saldo anterior', c: 'b'}, '', '', {s: String(k.prev.q), c: 'num'}],
-        [{s: fmtD(op.date)}, k.tcp, k.serie, String(k.num), {f: 'top'}, k.ent ? {f: 'eq'} : '—', k.sal ? {f: 'sq'} : '—', {f: 'fq'}]]};
+      if (kx.ent) fl.eq = F('n', kx.ent.q, 'Unidades que ingresan.', {l: 'Entradas', k: 'kardex', tol: 0});
+      if (kx.sal) fl.sq = F('n', kx.sal.q, 'Unidades que salen.', {l: 'Salidas', k: 'kardex', tol: 0});
+      fl.fq = F('n', kx.fin.q, 'Saldo final = anterior + entradas − salidas.', {l: 'Saldo final', k: 'saldo', tol: 0});
+      tbl = {sunat: true, groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 4]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Entradas', 'Salidas', 'Saldo final'], rows: [
+        [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, {s: String(kx.prev.q), c: 'num'}],
+        [{s: fmtD(op.date)}, kx.tcp, kx.serie, String(kx.num), {f: 'top'}, kx.ent ? {f: 'eq'} : BL, kx.sal ? {f: 'sq'} : BL, {f: 'fq'}]]};
     }
-    c.head = `Artículo: ${k.prod} · Código ${k.cod} · Unidad: ${k.u} · Método: promedio ponderado`;
-    c.kx = k;
+    c.sh = [['ESTABLECIMIENTO (1)', 'Almacén principal'], ['CÓDIGO DE LA EXISTENCIA', kx.cod], ['TIPO (TABLA 5)', '01 – Mercaderías'], ['DESCRIPCIÓN', kx.prod], ['CÓDIGO DE LA UNIDAD DE MEDIDA (TABLA 6)', t6(kx.u)], ...(val ? [['MÉTODO DE VALUACIÓN', 'Promedio ponderado']] : [])];
+    c.kx = kx;
   }
   c.fields = fl; c.tbl = tbl;
   return c;
@@ -3496,7 +3576,7 @@ function checkField(f, u) {
     case 'c': return vals.some(v => acctCompat(u, v));
     case 'k': return vals.some(v => normK(u) === normK(v));
     case 's': return vals.some(v => String(u ?? '').trim().toUpperCase() === String(v).toUpperCase());
-    case 'i': return vals.some(v => normK(String(u ?? '').replace(/\D/g, '')) === normK(v));
+    case 'i': return vals.some(v => normK(String(u ?? '').replace(/\D/g, '')) === normK(String(v).replace(/\D/g, '')));
     case 'doc': return vals.some(v => String(u ?? '').replace(/\D/g, '') === String(v));
     case 'd': return parseDate(u) === f.v;
     case 'sel': return u === f.v;
@@ -3552,7 +3632,18 @@ function gradeDiario(c, lines, destino) {
   const sc = sol.length ? Math.max(0, matched / Math.max(sol.length, matched + extra)) : 0;
   return {lineOk, notes, ok: matched === sol.length && extra === 0 && !(user.length && Math.abs(sD - sH) > 0.01), sc, msgs, kinds, sol};
 }
-function grade(c, ans, destino) { return c.kind === 'diario' ? gradeDiario(c, ans.lines || [], destino) : gradeGrid(c, ans.vals || {}); }
+function grade(c, ans, destino) {
+  if (c.kind !== 'diario') return gradeGrid(c, ans.vals || {});
+  const g = gradeDiario(c, ans.lines || [], destino);
+  if (!c.hf) return g;
+  // datos del asiento del Formato 5.1: Nº correlativo, fecha y referencia de la operación
+  const hv = ans.hv || {}, hc = {}; let okh = 0, nh = 0;
+  for (const [k, f] of Object.entries(c.hf)) { nh++; const good = checkField(f, hv[k]); hc[k] = good; if (good) okh++; else { g.kinds.push(f.k || 'dato'); g.msgs.push({l: f.l, exp: showSol(f), why: f.why, got: f.t === 'd' && parseDate(hv[k]) ? fmtD(parseDate(hv[k])) : hv[k]}); } }
+  const nl = c.lines.filter(l => destino || !l.dest).length;
+  g.hcells = hc; g.sc = (g.sc * nl + okh) / (nl + nh); g.ok = g.ok && okh === nh;
+  if (!String(hv.glo || '').trim()) (g.notes = g.notes || []).push('Escribe la glosa: en el Formato 5.1 cada asiento lleva su descripción. Ejemplo: «' + c.glosa + '».');
+  return g;
+}
 /* Versión compacta de la solución (para el mes, el historial y la exportación) */
 function solCompact(c, destino) {
   if (c.kind === 'diario') return {L: c.lines.filter(l => destino || !l.dest).map(l => [l.c, l.d, l.h])};
@@ -3630,11 +3721,24 @@ const N2 = (v, why, l, k = 'calculo', o = {}) => F('n', v, why, {l, k, tol: 0.02
 function stageCasesFromOps(mo, ops) {
   const out = [];
   const push = c => { if (c) { c.stage = stgOf(c.fmt); out.push(c); } };
-  ops.forEach(op => push(caseFromOp(op, 'diario', mo.co)));
-  ops.forEach(op => { if (op.reg && !['venta_merc', 'nota_credito'].includes(op.type)) push(caseFromOp(op, 'compras', mo.co)); });
-  ops.forEach(op => { if (op.reg && ['venta_merc', 'nota_credito'].includes(op.type)) push(caseFromOp(op, 'ventas', mo.co)); });
-  ops.forEach(op => { if (op.cash && op.cash.caja) push(caseFromOp(op, 'caja', mo.co)); });
-  ops.forEach(op => { if (op.cash && op.cash.banco) push(caseFromOp(op, 'banco', mo.co)); });
+  const isV = op => ['venta_merc', 'nota_credito'].includes(op.type);
+  // correlativos de cada registro en el orden del mes
+  const COR = {compras: new Map(), ventas: new Map(), caja: new Map(), banco: new Map()};
+  ops.forEach(op => { if (op.reg) { const m = isV(op) ? COR.ventas : COR.compras; m.set(op, m.size + 1); } if (op.cash && op.cash.caja) COR.caja.set(op, COR.caja.size + 1); if (op.cash && op.cash.banco) COR.banco.set(op, COR.banco.size + 1); });
+  const dts = {}; ops.forEach(op => { if (op.dt) dts[op.dt.doc] = op.dt; });
+  const refOf = op => {
+    const L = [];
+    if (op.reg) L.push([isV(op) ? '140100' : '080100', (isV(op) ? COR.ventas : COR.compras).get(op), op.reg.serie + '-' + op.reg.num]);
+    if (op.cash && op.cash.caja) L.push(['010100', COR.caja.get(op), op.cash.caja.nop || (op.cash.banco && op.cash.banco.nop) || (op.cp ? op.cp.serie + '-' + op.cp.num : '')]);
+    if (op.cash && op.cash.banco) L.push(['010200', COR.banco.get(op), op.cash.banco.nop || '']);
+    if (!L.length || !L[0][2]) return null;
+    return {lib: L[0][0], alts: L.slice(1).map(x => x[0]), cor: L[0][1], cors: L.slice(1).map(x => x[1]), doc: String(L[0][2])};
+  };
+  ops.forEach((op, i) => push(caseFromOp(op, 'diario', mo.co, {asiento: i + 2, ref: refOf(op)})));
+  ops.forEach(op => { if (op.reg && !isV(op)) push(caseFromOp(op, 'compras', mo.co, {cor: COR.compras.get(op), dt: dts[op.reg.serie + '-' + op.reg.num]})); });
+  ops.forEach(op => { if (op.reg && isV(op)) push(caseFromOp(op, 'ventas', mo.co, {cor: COR.ventas.get(op)})); });
+  ops.forEach(op => { if (op.cash && op.cash.caja) push(caseFromOp(op, 'caja', mo.co, {cor: COR.caja.get(op)})); });
+  ops.forEach(op => { if (op.cash && op.cash.banco) push(caseFromOp(op, 'banco', mo.co, {cor: COR.banco.get(op)})); });
   ops.forEach(op => { if (op.kx) push(caseFromOp(op, 'kardex', mo.co)); });
   ops.forEach(op => { if (op.pla) planillaCases(mo, op).forEach(push); });
   ops.forEach(op => { if (op.bs) push(bsCase(mo, op)); });
@@ -3694,7 +3798,7 @@ function planillaCases(mo, op) {
 function mayorCase(mo, ops, code) {
   const openL = mo.open.find(o => o[0] === code);
   const si = openL ? r2(openL[1] - openL[2]) : 0;
-  const mv = []; ops.forEach(op => op.lines.forEach(l => { if (l.c === code) mv.push({f: op.date, g: op.glosa, d: l.d, h: l.h}); }));
+  const mv = []; ops.forEach((op, i) => op.lines.forEach(l => { if (l.c === code) mv.push({f: op.date, g: op.glosa, d: l.d, h: l.h, n: i + 2}); }));
   if (mv.length < 2) return null;
   const td = r2(mv.reduce((s, l) => s + l.d, 0)), th = r2(mv.reduce((s, l) => s + l.h, 0)), sf = r2(si + td - th);
   const c = {fmt: 'mayor', op: 'synth', date: ops[ops.length - 1].date, kind: 'grid', cp: null, fields: {}, title: 'Mayorizar ' + code + ' ' + acctName(code)};
@@ -3704,29 +3808,38 @@ function mayorCase(mo, ops, code) {
   c.fields.th = N2(th, 'Suma de todos los abonos (Haber) del mes.', 'Total movimiento Haber', 'saldo');
   c.fields.sf = N2(Math.abs(sf), 'Saldo final = saldo inicial + Debe − Haber (en valor absoluto).', 'Saldo final', 'saldo');
   c.fields.nat = F('sel', sf >= 0 ? 'Deudor' : 'Acreedor', 'Si los cargos (más el saldo deudor inicial) superan a los abonos, el saldo es deudor; si no, acreedor.', {l: 'Naturaleza del saldo', k: 'naturaleza', opts: ['Deudor', 'Acreedor']});
-  c.tbl = {cols: ['Fecha', 'Glosa', 'Debe', 'Haber'], rows: [
-    ['', {s: 'Saldo inicial', c: 'b'}, si >= 0 ? {s: nf(si), c: 'num'} : '', si < 0 ? {s: nf(-si), c: 'num'} : ''],
-    ...mv.map(l => [{s: fmtD(l.f)}, l.g, l.d ? {s: nf(l.d), c: 'num'} : '', l.h ? {s: nf(l.h), c: 'num'} : '']),
-    ['', {s: 'Total movimiento del mes', c: 'b'}, {f: 'td'}, {f: 'th'}],
-    ['', {s: 'Saldo final', c: 'b'}, {f: 'sf'}, {f: 'nat'}]]};
+  c.tbl = {sunat: true, groups: [['', 3], ['SALDOS Y MOVIMIENTOS', 2]], cols: ['Fecha de la operación', 'Nº correlativo del Libro Diario', 'Descripción o glosa de la operación', 'Deudor', 'Acreedor'], rows: [
+    ['', {s: '1', c: 'num'}, {s: 'Saldo inicial (asiento de apertura)', c: 'b'}, si >= 0 ? {s: nf(si), c: 'num'} : '', si < 0 ? {s: nf(-si), c: 'num'} : ''],
+    ...mv.map(l => [{s: fmtD(l.f)}, {s: String(l.n), c: 'num'}, l.g, l.d ? {s: nf(l.d), c: 'num'} : '', l.h ? {s: nf(l.h), c: 'num'} : '']),
+    ['', '', {s: 'Totales del movimiento del mes', c: 'b'}, {f: 'td'}, {f: 'th'}],
+    ['', '', {s: 'Saldo final y su naturaleza', c: 'b'}, {f: 'sf'}, {f: 'nat'}]]};
+  c.sh = [['CÓDIGO Y/O DENOMINACIÓN DE LA CUENTA CONTABLE', code + ' ' + acctName(code)]];
   c.hint = 'Suma por separado el Debe y el Haber del mes. Luego: saldo inicial (+ si es deudor, − si es acreedor) + Debe − Haber.';
   c.fp = 'my|' + code;
   return c;
 }
 function balanceCase(mo, ops) {
   const acc = cycleAgg(mo, ops), ks = Object.keys(acc).sort();
+  const op0 = {}; mo.open.forEach(([cc, d, h]) => { const k = k2(cc); const o = op0[k] || (op0[k] = {d: 0, h: 0}); o.d = r2(o.d + d); o.h = r2(o.h + h); });
   const c = {fmt: 'balance', op: 'synth', date: ops[ops.length - 1].date, kind: 'grid', cp: null, fields: {}, title: 'Balance de comprobación de la empresa'};
-  let tD = 0, tH = 0, tSD = 0, tSA = 0;
-  const rows = ks.map((k, i) => { const o = acc[k], s = r2(o.d - o.h); const sd = s > 0 ? s : 0, sa = s < 0 ? -s : 0; tD += o.d; tH += o.h; tSD += sd; tSA += sa;
-    c.fields['sd' + i] = F('n', sd, 'Saldo deudor = Debe − Haber cuando el Debe es mayor.', {l: `Saldo deudor ${k}`, k: 'saldo', z: true, tol: 0.02});
-    c.fields['sa' + i] = F('n', sa, 'Saldo acreedor = Haber − Debe cuando el Haber es mayor.', {l: `Saldo acreedor ${k}`, k: 'saldo', z: true, tol: 0.02});
-    return [k, acctName(k), {s: nf(o.d), c: 'num'}, {s: nf(o.h), c: 'num'}, {f: 'sd' + i}, {f: 'sa' + i}]; });
-  c.fields.tSD = F('n', r2(tSD), 'Suma de los saldos deudores. Debe ser igual a la de saldos acreedores.', {l: 'Total saldos deudores', k: 'calculo', tol: 0.05});
-  c.fields.tSA = F('n', r2(tSA), 'Suma de los saldos acreedores.', {l: 'Total saldos acreedores', k: 'calculo', tol: 0.05});
-  c.instr = 'Completa el Balance de comprobación del mes (incluye apertura, asientos del mes y destino): calcula el saldo de cada cuenta. Deja vacío el lado que no corresponda.';
-  c.text = `Sumas del Libro Mayor de ${mo.co.name} al cierre de ${mesLbl(mo.id)}, agrupadas por cuenta (2 dígitos).`;
-  c.tbl = {groups: [['Cuenta', 2], ['Sumas', 2], ['Saldos', 2]], cols: ['Código', 'Denominación', 'Debe', 'Haber', 'Deudor', 'Acreedor'], rows: [...rows, ['', {s: 'Totales', c: 'b'}, {s: nf(r2(tD)), c: 'num'}, {s: nf(r2(tH)), c: 'num'}, {f: 'tSD'}, {f: 'tSA'}]]};
-  c.hint = 'En cada cuenta resta el menor del mayor. Al final, la suma de saldos deudores debe igualar a la de acreedores.';
+  const T = {si: 0, sa0: 0, md: 0, mh: 0, sd: 0, sa: 0};
+  const rows = ks.map((k, i) => {
+    const o = acc[k], o0 = op0[k] || {d: 0, h: 0}, s0 = r2(o0.d - o0.h), si = s0 > 0 ? s0 : 0, sa0 = s0 < 0 ? -s0 : 0, md = r2(o.d - o0.d), mh = r2(o.h - o0.h), s = r2(o.d - o.h), sd = s > 0 ? s : 0, sa = s < 0 ? -s : 0;
+    T.si += si; T.sa0 += sa0; T.md += md; T.mh += mh; T.sd += sd; T.sa += sa;
+    c.fields['sd' + i] = F('n', sd, 'Saldo final deudor = saldo inicial + debe − haber, cuando queda a favor del Debe.', {l: `Saldo final deudor ${k}`, k: 'saldo', z: true, tol: 0.02});
+    c.fields['sa' + i] = F('n', sa, 'Saldo final acreedor = cuando el Haber (más el saldo inicial acreedor) supera al Debe.', {l: `Saldo final acreedor ${k}`, k: 'saldo', z: true, tol: 0.02});
+    const n = v => v ? {s: nf(v), c: 'num'} : '';
+    return [k, acctName(k), n(si), n(sa0), n(md), n(mh), {f: 'sd' + i}, {f: 'sa' + i}, '', '', '', ''];
+  });
+  c.fields.tSD = F('n', r2(T.sd), 'Suma de los saldos finales deudores. Debe ser igual a la de saldos acreedores.', {l: 'Total saldos deudores', k: 'calculo', tol: 0.05});
+  c.fields.tSA = F('n', r2(T.sa), 'Suma de los saldos finales acreedores.', {l: 'Total saldos acreedores', k: 'calculo', tol: 0.05});
+  c.instr = 'Completa el Balance de comprobación (Formato 3.17): saldo final de cada cuenta = saldo inicial + movimientos del mes (incluye el destino). Deja vacío el lado que no corresponda. Las columnas del balance general y de pérdidas y ganancias se usan en el cierre anual.';
+  c.text = `Saldos iniciales (asiento de apertura) y movimientos del mes de ${mo.co.name} – ${mesLbl(mo.id)}, agrupados por cuenta (2 dígitos).`;
+  const tn = v => ({s: nf(r2(v)), c: 'num'});
+  c.tbl = {sunat: true, groups: [['CUENTA', 2], ['SALDOS INICIALES', 2], ['MOVIMIENTOS', 2], ['SALDOS FINALES', 2], ['SALDOS FINALES DEL BALANCE GENERAL', 2], ['SALDOS FINALES DEL ESTADO DE PÉRDIDAS Y GANANCIAS POR FUNCIÓN', 2]],
+    cols: ['Código', 'Denominación', 'Deudor', 'Acreedor', 'Debe', 'Haber', 'Deudor', 'Acreedor', 'Activo', 'Pasivo y patrimonio', 'Pérdidas', 'Ganancias'],
+    rows: [...rows, ['', {s: 'Totales', c: 'b'}, tn(T.si), tn(T.sa0), tn(T.md), tn(T.mh), {f: 'tSD'}, {f: 'tSA'}, '', '', '', '']]};
+  c.hint = 'Saldo final = saldo inicial + debe − haber. La suma de saldos deudores debe igualar a la de acreedores.';
   c.fp = 'bc';
   return c;
 }
@@ -3761,14 +3874,15 @@ function closeCases(mo, ops) {
   mo.state.assets.forEach((a, i) => {
     const months = (a.months || 0) + 1, anual = r2(a.cost * a.rate), mens = r2(anual / 12), acum = r2(mens * months), vn = r2(a.cost - acum);
     const c = base('activo', 'Activo fijo: ' + a.n), fl = c.fields;
-    fl.anual = N2(anual, 'Depreciación anual = costo × tasa.', 'Depreciación anual', 'calculo', {tol: 0.05});
-    fl.mens = N2(mens, 'Depreciación mensual = depreciación anual ÷ 12.', 'Depreciación del mes', 'calculo', {tol: 0.05});
-    fl.acum = N2(acum, `Depreciación acumulada = mensual × ${months} meses (los que ya tenía + este mes).`, 'Depreciación acumulada al cierre', 'calculo', {tol: 0.1});
-    fl.vn = N2(vn, 'Valor neto = costo − depreciación acumulada.', 'Valor neto en libros', 'calculo', {tol: 0.1});
+    fl.mens = N2(mens, 'Depreciación del período = costo × tasa ÷ 12.', 'Depreciación del ejercicio (este mes)', 'calculo', {tol: 0.05});
+    fl.acum = N2(acum, `Depreciación acumulada histórica = depreciación anterior + la de este mes (${months} meses en total).`, 'Depreciación acumulada histórica', 'calculo', {tol: 0.1});
     c.instr = 'Completa la línea del Registro de Activos Fijos (Formato 7.1) al cierre del mes (línea recta, tasas SUNAT).';
     c.text = `${a.n} (cuenta ${a.c}), costo ${money(a.cost)}, tasa ${a.rate * 100}% anual. Al empezar el mes ya tenía ${a.months || 0} meses depreciados.`;
-    c.tbl = {cols: ['Código', 'Descripción', 'Valor histórico', '% deprec.', 'Deprec. anual', 'Deprec. del mes', 'Deprec. acumulada', 'Valor neto'], rows: [[a.c, a.n, {s: nf(a.cost), c: 'num'}, {s: a.rate * 100 + '%', c: 'num'}, {f: 'anual'}, {f: 'mens'}, {f: 'acum'}, {f: 'vn'}]]};
-    c.hint = 'Mensual = costo × tasa ÷ 12.'; c.fp = 'af' + i; out.push(c);
+    const prevD = r2(mens * (a.months || 0)), fA = a.months ? '' : fmtD(date);
+    c.tbl = {sunat: true, groups: [['', 2], ['DETALLE DEL ACTIVO FIJO', 4], ['', 9], ['', 2], ['DEPRECIACIÓN', 2], ['', 8]],
+      cols: ['Código relacionado con el activo fijo', 'Cuenta contable del activo fijo', 'Descripción', 'Marca del activo fijo', 'Modelo del activo fijo', 'Nº de serie y/o placa', 'Saldo inicial', 'Adquisiciones adicionales', 'Mejoras', 'Retiros y/o bajas', 'Otros ajustes', 'Valor histórico del activo fijo al cierre', 'Ajuste por inflación', 'Valor ajustado del activo fijo', 'Fecha de adquisición', 'Fecha de inicio del uso', 'Método aplicado', 'Nº de documento de autorización', 'Porcentaje de depreciación', 'Depreciación acumulada al cierre del ejercicio anterior', 'Depreciación del ejercicio', 'Depreciación del ejercicio relacionada con retiros', 'Depreciación relacionada con otros ajustes', 'Depreciación acumulada histórica', 'Ajuste por inflación de la depreciación', 'Depreciación acumulada ajustada por inflación'],
+      rows: [[`AF-${p2(i + 1)}`, a.c, a.n, '', '', '', a.months ? {s: nf(a.cost), c: 'num'} : '', a.months ? '' : {s: nf(a.cost), c: 'num'}, '', '', '', {s: nf(a.cost), c: 'num'}, '', '', fA, fA, 'Línea recta', '', {s: a.rate * 100 + '%', c: 'num'}, {s: nf(prevD), c: 'num'}, {f: 'mens'}, '', '', {f: 'acum'}, '', '']]};
+    c.hint = 'Depreciación del período = costo × tasa ÷ 12. Acumulada histórica = la del cierre anterior + la del período.'; c.fp = 'af' + i; out.push(c);
   });
   // Costo de ventas desde el kárdex
   {
@@ -3849,16 +3963,17 @@ function closeCases(mo, ops) {
     fl.tot = N2(r2(caja + bco), 'Total efectivo = caja + cuenta corriente. Debe ser igual al saldo de la cuenta 10 del Mayor.', 'Total cuenta 10', 'saldo');
     c.instr = 'Completa el Formato 3.2 del Libro de Inventarios y Balances: detalle del saldo de la cuenta 10 al cierre.';
     c.text = `${co.name} al ${lastDay(mo.id)}/${mo.id.slice(5)}/${mo.id.slice(0, 4)}. Usa los saldos finales de tu Libro Caja y de tu Libro Bancos.`;
-    c.tbl = {cols: ['Código', 'Denominación', 'Entidad financiera', 'Número de cuenta', 'Saldo contable final'], rows: [['101', 'Caja', '—', '—', {f: 'caja'}], ['1041', 'Cuentas corrientes operativas', co.banco, co.cta, {f: 'bco'}], ['', {s: 'Total', c: 'b'}, '', '', {f: 'tot'}]]};
+    c.tbl = {sunat: true, groups: [['CUENTA CONTABLE DIVISIONARIA', 2], ['REFERENCIA DE LA CUENTA', 3], ['SALDO CONTABLE FINAL', 2]], cols: ['Código', 'Denominación', 'Entidad financiera (Tabla 3)', 'Número de la cuenta', 'Tipo de moneda (Tabla 4)', 'Deudor', 'Acreedor'],
+      rows: [['101', 'Caja', '', '', 'PEN', {f: 'caja'}, ''], ['1041', 'Cuentas corrientes operativas', '99 – ' + co.banco, co.cta, 'PEN', {f: 'bco'}, ''], ['', {s: 'Totales', c: 'b'}, '', '', '', {f: 'tot'}, '']]};
     c.hint = 'Toma el último saldo de tu Libro Caja (1.1) y de tu Libro Bancos (1.2).'; c.fp = 'ib32'; out.push(c);
   }
   {
     const L = st.cxc.filter(x => x.total > 0.005), c = base('ib33', '3.3 Detalle de la cuenta 12 – Clientes'), fl = c.fields;
-    const rows = L.map((x, i) => { fl['s' + i] = N2(x.total, 'Saldo pendiente de cobro de ese comprobante (total menos lo cobrado o rebajado con nota de crédito).', 'Saldo ' + x.doc, 'saldo'); return [x.cli.ruc, x.cli.n, (x.prev ? 'Del mes anterior · ' : '') + 'F ' + x.doc, {f: 's' + i}]; });
+    const rows = L.map((x, i) => { fl['s' + i] = N2(x.total, 'Saldo pendiente de cobro de ese comprobante (total menos lo cobrado o rebajado con nota de crédito).', 'Saldo F ' + x.doc, 'saldo'); return ['6', x.cli.ruc, x.cli.n, x.fe ? fmtD(x.fe) : 'mes anterior', 'F ' + x.doc, {f: 's' + i}]; });
     fl.tot = N2(r2(L.reduce((s, x) => s + x.total, 0)), 'Total de clientes: debe ser igual al saldo de la cuenta 12 del Mayor.', 'Total cuenta 12', 'saldo');
     c.instr = 'Completa el Formato 3.3: clientes con saldo pendiente al cierre (cuenta 12).';
     c.text = `Estas facturas de ${co.name} siguen pendientes de cobro al cierre de ${mesLbl(mo.id)}. Revisa tus ventas, notas de crédito y cobranzas para hallar el saldo de cada una.`;
-    c.tbl = {cols: ['RUC', 'Cliente', 'Comprobante', 'Saldo final'], rows: [...rows, ['', {s: 'Total', c: 'b'}, '', {f: 'tot'}]]};
+    c.tbl = {sunat: true, groups: [['INFORMACIÓN DE TERCEROS', 3], ['', 3]], cols: ['Doc. identidad: tipo (Tabla 2)', 'Doc. identidad: número', 'Apellidos y nombres, denominación o razón social', 'Fecha de emisión del comprobante de pago', 'Comprobante (referencia)', 'Monto de la cuenta por cobrar'], rows: [...rows, ['', '', {s: 'Totales', c: 'b'}, '', '', {f: 'tot'}]]};
     c.hint = 'Saldo = importe de la factura − cobranzas − notas de crédito. El total debe cuadrar con la 12.'; c.fp = 'ib33'; out.push(c);
   }
   {
@@ -3867,21 +3982,22 @@ function closeCases(mo, ops) {
     const rows = co.prods.map((p, i) => { const I = st.inv[p.id], cu = I.q ? r2(I.t / I.q) : 0; tot = r2(tot + I.t);
       fl['u' + i] = N2(cu, 'Costo unitario promedio final = costo total ÷ cantidad (según tu kárdex).', 'Costo unitario ' + p.n, 'costo-promedio');
       fl['t' + i] = N2(I.t, 'Costo total final del producto (último saldo de su kárdex).', 'Costo total ' + p.n, 'saldo', {tol: 0.05});
-      return [p.cod, p.n, p.u, {s: String(I.q), c: 'num'}, {f: 'u' + i}, {f: 't' + i}]; });
+      return [p.cod, '01', p.n, t6(p.u), {s: String(I.q), c: 'num'}, {f: 'u' + i}, {f: 't' + i}]; });
     fl.tot = N2(tot, 'Total de mercaderías: debe ser igual al saldo de la cuenta 20.', 'Total cuenta 20', 'saldo', {tol: 0.05});
     c.instr = 'Completa el Formato 3.7: inventario de mercaderías valorizado al cierre (cuenta 20).';
     c.text = `Inventario físico de ${co.name} al cierre de ${mesLbl(mo.id)}. Las cantidades se contaron en el almacén; el costo sale de tu kárdex (promedio ponderado).`;
-    c.tbl = {cols: ['Código', 'Descripción', 'Unidad', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [...rows, ['', {s: 'Total', c: 'b'}, '', '', '', {f: 'tot'}]]};
+    c.tbl = {sunat: true, groups: [['INVENTARIO PERMANENTE VALORIZADO', 4], ['', 3]], cols: ['Código de la existencia', 'Tipo de existencia (Tabla 5)', 'Descripción', 'Código de la unidad de medida (Tabla 6)', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [...rows, ['', '', {s: 'Costo total general', c: 'b'}, '', '', '', {f: 'tot'}]]};
+    c.sh = [['MÉTODO DE VALUACIÓN APLICADO', 'Promedio ponderado']];
     c.hint = 'Costo total = último saldo del kárdex de cada producto.'; c.fp = 'ib37'; out.push(c);
   }
   {
-    const hon = ops.filter(o => o.type === 'rxh').map(o => ({doc: 'RHE ' + o.cp.serie + '-' + o.cp.num, total: o.lines.find(l => l.c === '424').h, sup: {n: o.cp.em, ruc: o.cp.emRuc}, h: true}));
+    const hon = ops.filter(o => o.type === 'rxh').map(o => ({doc: 'RHE ' + o.cp.serie + '-' + o.cp.num, total: o.lines.find(l => l.c === '424').h, sup: {n: o.cp.em, ruc: o.cp.emRuc}, h: true, fe: o.date}));
     const L = st.cxp.filter(x => x.total > 0.005).concat(hon), c = base('ib312', '3.12 Detalle de la cuenta 42 – Proveedores'), fl = c.fields;
-    const rows = L.map((x, i) => { fl['s' + i] = N2(x.total, x.h ? 'Honorarios por pagar (424): el neto del recibo, después de la retención.' : 'Saldo pendiente de pago de ese comprobante.', 'Saldo ' + x.doc, 'saldo'); return [x.sup.ruc, x.sup.n, (x.prev ? 'Del mes anterior · ' : '') + x.doc, {f: 's' + i}]; });
+    const rows = L.map((x, i) => { fl['s' + i] = N2(x.total, x.h ? 'Honorarios por pagar (424): el neto del recibo, después de la retención.' : 'Saldo pendiente de pago de ese comprobante.', 'Saldo ' + x.doc, 'saldo'); return ['6', x.sup.ruc, x.sup.n, x.fe ? fmtD(x.fe) : 'mes anterior', x.doc, {f: 's' + i}]; });
     fl.tot = N2(r2(L.reduce((s, x) => s + x.total, 0)), 'Total de proveedores: debe ser igual al saldo de la cuenta 42.', 'Total cuenta 42', 'saldo');
     c.instr = 'Completa el Formato 3.12: proveedores con saldo pendiente al cierre (cuenta 42).';
     c.text = `Estos comprobantes de ${co.name} siguen pendientes de pago al cierre (facturas de proveedores y recibos por honorarios). Revisa tus compras (con percepción, si hubo), honorarios y pagos.`;
-    c.tbl = {cols: ['RUC', 'Proveedor', 'Comprobante', 'Saldo final'], rows: [...rows, ['', {s: 'Total', c: 'b'}, '', {f: 'tot'}]]};
+    c.tbl = {sunat: true, groups: [['INFORMACIÓN DEL PROVEEDOR', 3], ['', 3]], cols: ['Doc. identidad: tipo (Tabla 2)', 'Doc. identidad: número', 'Apellidos y nombres, denominación o razón social', 'Fecha de emisión del comprobante de pago', 'Comprobante (referencia)', 'Monto de la cuenta por pagar'], rows: [...rows, ['', '', {s: 'Totales', c: 'b'}, '', '', {f: 'tot'}]]};
     c.hint = 'Saldo = importe total del comprobante (más la percepción) − pagos.'; c.fp = 'ib312'; out.push(c);
   }
   // ===== Libro Diario de formato simplificado (5.2): totales del mes por cuenta =====
@@ -3892,12 +4008,14 @@ function closeCases(mo, ops) {
     const rows = ks.map((k, i) => { tD = r2(tD + sums[k].d); tH = r2(tH + sums[k].h);
       fl['d' + i] = N2(sums[k].d, 'Suma de todos los cargos del mes en esa columna (sin el asiento de apertura).', 'Debe ' + k, 'monto', {z: true, tol: 0.05});
       fl['h' + i] = N2(sums[k].h, 'Suma de todos los abonos del mes en esa columna.', 'Haber ' + k, 'monto', {z: true, tol: 0.05});
-      return [k, acctName(k), {f: 'd' + i}, {f: 'h' + i}]; });
-    fl.tD = N2(tD, 'Total de cargos del mes: debe ser igual al total de abonos.', 'Total Debe', 'calculo', {tol: 0.1});
-    fl.tH = N2(tH, 'Total de abonos del mes.', 'Total Haber', 'calculo', {tol: 0.1});
-    c.instr = 'En el Libro Diario de formato simplificado (5.2) cada cuenta es una columna. Totaliza cada columna con los asientos del mes (sin la apertura).';
+      return k; });
+    c.instr = 'En el Libro Diario de formato simplificado (5.2) cada cuenta es una columna con su Debe y Haber, y cada fila es una operación. Totaliza cada columna (fila Totales) con los asientos del mes, sin la apertura. La suma de todos los Debe debe ser igual a la de todos los Haber.';
     c.text = `Lo usan las empresas MYPE y del Régimen General con ingresos de hasta 300 UIT, en lugar del Diario 5.1 y el Mayor. Toma los asientos de ${mesLbl(mo.id)} de ${co.name}.`;
-    c.tbl = {cols: ['Cuenta', 'Denominación', 'Debe', 'Haber'], rows: [...rows, ['', {s: 'Totales', c: 'b'}, {f: 'tD'}, {f: 'tH'}]]};
+    const sc = t => t === t.toUpperCase() ? t.charAt(0) + t.slice(1).toLowerCase() : t;
+    const opRows = ops.map((o, n) => { const m = {}; o.lines.forEach(l => { const k = k2(l.c); const x = m[k] || (m[k] = {d: 0, h: 0}); x.d = r2(x.d + l.d); x.h = r2(x.h + l.h); });
+      return [{s: String(n + 2), c: 'num'}, {s: fmtD(o.date)}, o.glosa, ...ks.flatMap(k => [m[k] && m[k].d ? {s: nf(m[k].d), c: 'num'} : '', m[k] && m[k].h ? {s: nf(m[k].h), c: 'num'} : ''])]; });
+    c.tbl = {sunat: true, groups: [['', 3], ...ks.map(k => [k + ' ' + sc(acctName(k)), 2])], cols: ['Nº correlativo o CUO', 'Fecha de la operación', 'Glosa o descripción de la operación', ...ks.flatMap(() => ['Debe', 'Haber'])],
+      rows: [...opRows, ['', '', {s: 'Totales', c: 'b'}, ...ks.flatMap((k, i) => [{f: 'd' + i}, {f: 'h' + i}])]]};
     c.hint = 'Suma por cuenta (2 dígitos) los cargos y los abonos de todos tus asientos del mes.'; c.fp = 'd52'; out.push(c);
   }
   // ===== SIRE: propuesta del Registro de Compras Electrónico (RCE) =====
@@ -4314,7 +4432,7 @@ function renderCase(target = '#casebox', ro = null) {
   const a = li.ans[c.n], answered = !!(a && !a.draft);
   const exam = !ro && isExamOpen();
   const key = li.id + ':' + c.n;
-  const draft = answered ? (c.kind === 'diario' ? {lines: a.v} : {vals: a.v}) : (A.drafts[key] || (a && a.draft ? (c.kind === 'diario' ? {lines: a.v} : {vals: a.v}) : null));
+  const draft = answered ? (c.kind === 'diario' ? {lines: a.v, hv: a.hv} : {vals: a.v}) : (A.drafts[key] || (a && a.draft ? (c.kind === 'diario' ? {lines: a.v, hv: a.hv} : {vals: a.v}) : null));
   const destino = A.P.destino;
   const g = answered ? grade(c, draft, a.dest ?? destino) : null;
   const hintOn = A.hint[key] || (a && a.h);
@@ -4370,15 +4488,27 @@ function colLabels(t) {
   return L;
 }
 function gridCards(c, cellHtml) {
-  const t = c.tbl, L = colLabels(t);
+  const t = c.tbl, L = colLabels(t), G = [];
+  if (t.groups) t.groups.forEach(([g, n]) => { for (let k = 0; k < n; k++) G.push(g); });
   if (t.cols.length === 2 && !t.groups) return `<div class="mcard mlist">${t.rows.map(r => { const [a, b] = r; const lab = typeof a === 'string' ? esc(a) : `<span class="${a.c === 'b' ? 'b' : ''}">${esc(a.s)}</span>`; const v = b == null || b === '' ? '' : cellHtml(b); return `<div class="mli ${b && b.f ? 'mf' : ''} ${a && a.c === 'b' ? 'tot' : ''}"><span class="ml">${lab}</span><span class="mv">${v}</span></div>`; }).join('')}</div>`;
   const codeHead = t.cols[0] === 'Código' && t.cols[1] === 'Denominación';
   return `<div class="mcards">${t.rows.map(r => {
     const hasF = r.some(x => x && x.f);
     if (codeHead && typeof r[0] === 'string' && r[0]) { r = [{s: r[0] + ' · ' + r[1], c: 'b'}, '', ...r.slice(2)]; }
-    const parts = r.map((x, i) => { if (x == null || x === '' || x === '—') return ''; if (x.c === 'b' && !x.f) return `<div class="mhead">${esc(x.s)}</div>`; const v = cellHtml(x); if (!v) return ''; return `<div class="mrow ${x && x.f ? 'mf' : ''}"><span class="ml">${esc(L[i] || '')}</span><span class="mv">${v}</span></div>`; }).join('');
+    let lastG = '';
+    const parts = r.map((x, i) => { if (x == null || x === '' || x === '—') return ''; if (x.c === 'b' && !x.f) return `<div class="mhead">${esc(x.s)}</div>`; const v = cellHtml(x); if (!v) return '';
+      let gh = ''; if (t.sunat && G[i] !== lastG) { lastG = G[i]; if (G[i]) gh = `<div class="mgrp">${esc(G[i])}</div>`; }
+      return `${gh}<div class="mrow ${x && x.f ? 'mf' : ''}"><span class="ml">${esc((t.sunat ? t.cols[i] : L[i]) || '')}</span><span class="mv">${v}</span></div>`; }).join('');
     return parts ? `<div class="mcard ${hasF ? 'mcard-in' : ''}">${parts}</div>` : '';
   }).join('')}</div>`;
+}
+/* Encabezado de tabla: en los formatos oficiales, las columnas sin grupo ocupan las dos filas */
+function theadHtml(t) {
+  if (!t.groups) return `<tr>${t.cols.map(h => `<th>${esc(h)}</th>`).join('')}</tr>`;
+  if (!t.sunat) return `<tr>${t.groups.map(([l, s]) => `<th colspan="${s}" class="grp">${esc(l)}</th>`).join('')}</tr><tr>${t.cols.map(h => `<th>${esc(h)}</th>`).join('')}</tr>`;
+  let i = 0; const r1 = [], r2 = [];
+  t.groups.forEach(([l, n]) => { const cs = t.cols.slice(i, i + n); i += n; if (!l) cs.forEach(h => r1.push(`<th rowspan="2">${esc(h)}</th>`)); else { r1.push(`<th colspan="${n}" class="grp">${esc(l)}</th>`); cs.forEach(h => r2.push(`<th>${esc(h)}</th>`)); } });
+  return `<tr>${r1.join('')}</tr>${r2.length ? `<tr>${r2.join('')}</tr>` : ''}`;
 }
 function gridForm(c, draft, g, answered) {
   const vals = (draft && draft.vals) || {};
@@ -4387,31 +4517,73 @@ function gridForm(c, draft, g, answered) {
     if (x == null || x === '') return '<td></td>';
     if (typeof x === 'string') return `<td class="tx">${esc(x)}</td>`;
     if (x.f) { const f = c.fields[x.f]; const st = g ? (g.cells[x.f] ? 'ok' : 'bad') : ''; return `<td class="in t-${f.t} ${st}">${inp(x.f, f, vals[x.f], f.t === 'n' ? 'num' : '', answered || A.roMode)}</td>`; }
+    if (x.den) return `<td class="tx dencell" data-den="${x.den}">${esc(acctName(vals[x.den] || ''))}</td>`;
     return `<td class="${x.c || ''}">${esc(x.s)}</td>`;
   };
-  if (isMobile()) return gridCards(c, x => {
+  if (isMobile()) return sunatHead(c) + gridCards(c, x => {
     if (typeof x === 'string') return esc(x);
     if (x.f) { const f = c.fields[x.f]; const st = g ? (g.cells[x.f] ? 'ok' : 'bad') : ''; return `<span class="in t-${f.t} ${st}">${inp(x.f, f, vals[x.f], f.t === 'n' ? 'num' : '', answered || A.roMode)}</span>`; }
+    if (x.den) return `<span class="dencell" data-den="${x.den}">${esc(acctName(vals[x.den] || '')) || '—'}</span>`;
     return `<span class="${x.c || ''}">${esc(x.s)}</span>`;
   });
-  return `<div class="tw"><table class="book ${c.fmt}">
-    <thead>${t.groups ? `<tr>${t.groups.map(([l, s]) => `<th colspan="${s}" class="grp">${esc(l)}</th>`).join('')}</tr>` : ''}<tr>${t.cols.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
-    <tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div>${t.cols.length > 5 ? '<p class="mini swipe">Desliza la tabla hacia los lados para ver todas las columnas.</p>' : ''}`;
+  return `${sunatHead(c)}<div class="tw"><table class="book ${c.fmt} ${t.sunat ? 'sunat' : ''}">
+    <thead>${theadHtml(t)}</thead>
+    <tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div>${t.sunat && t.cols.length > 8 ? '<p class="mini swipe sw2">Formato oficial completo: desliza la tabla hacia los lados. Las columnas en gris no aplican a esta operación.</p>' : t.cols.length > 5 ? '<p class="mini swipe">Desliza la tabla hacia los lados para ver todas las columnas.</p>' : ''}`;
+}
+/* Cabecera oficial de cada formato (R.S. 234-2006/SUNAT) */
+const FMT_SUNAT = {
+  diario: ['5.1', 'LIBRO DIARIO'], cierre: ['5.1', 'LIBRO DIARIO'], compras: ['8.1', 'REGISTRO DE COMPRAS'], ventas: ['14.1', 'REGISTRO DE VENTAS E INGRESOS'],
+  caja: ['1.1', 'LIBRO CAJA Y BANCOS - DETALLE DE LOS MOVIMIENTOS DEL EFECTIVO'], banco: ['1.2', 'LIBRO CAJA Y BANCOS - DETALLE DE LOS MOVIMIENTOS DE LA CUENTA CORRIENTE'],
+  kardex: ['13.1', 'REGISTRO DE INVENTARIO PERMANENTE VALORIZADO - DETALLE DEL INVENTARIO VALORIZADO'], kardexu: ['12.1', 'REGISTRO DEL INVENTARIO PERMANENTE EN UNIDADES FÍSICAS - DETALLE DEL INVENTARIO PERMANENTE EN UNIDADES FÍSICAS'],
+  mayor: ['6.1', 'LIBRO MAYOR'], activo: ['7.1', 'REGISTRO DE ACTIVOS FIJOS - DETALLE DE LOS ACTIVOS FIJOS'], d52: ['5.2', 'LIBRO DIARIO DE FORMATO SIMPLIFICADO'],
+  balance: ['3.17', 'LIBRO DE INVENTARIOS Y BALANCES - BALANCE DE COMPROBACIÓN', 1], esf: ['3.1', 'LIBRO DE INVENTARIOS Y BALANCES - ESTADO DE SITUACIÓN FINANCIERA', 1],
+  efe: ['3.18', 'LIBRO DE INVENTARIOS Y BALANCES - ESTADO DE FLUJOS DE EFECTIVO', 1], ecp: ['3.19', 'LIBRO DE INVENTARIOS Y BALANCES - ESTADO DE CAMBIOS EN EL PATRIMONIO NETO', 1], er: ['3.20', 'LIBRO DE INVENTARIOS Y BALANCES - ESTADO DE RESULTADOS', 1],
+  ib32: ['3.2', 'LIBRO DE INVENTARIOS Y BALANCES - DETALLE DEL SALDO DE LA CUENTA 10 - EFECTIVO Y EQUIVALENTES DE EFECTIVO', 1], ib33: ['3.3', 'LIBRO DE INVENTARIOS Y BALANCES - DETALLE DEL SALDO DE LA CUENTA 12 - CUENTAS POR COBRAR COMERCIALES – TERCEROS', 1],
+  ib37: ['3.7', 'LIBRO DE INVENTARIOS Y BALANCES - DETALLE DEL SALDO DE LA CUENTA 20 - MERCADERÍAS Y LA CUENTA 21 - PRODUCTOS TERMINADOS', 1], ib312: ['3.12', 'LIBRO DE INVENTARIOS Y BALANCES - DETALLE DEL SALDO DE LA CUENTA 42 - CUENTAS POR PAGAR COMERCIALES – TERCEROS', 1],
+};
+function sunatHead(c) {
+  const F0 = FMT_SUNAT[c.fmt], mo = A.loteMo || (A.li && A.li.emp); if (!F0 || !mo) return '';
+  const per = F0[2] ? ['EJERCICIO', mo.id.slice(0, 4) + ' (al ' + lastDay(mo.id) + '/' + mo.id.slice(5) + ')'] : ['PERÍODO', mesLbl(mo.id).toUpperCase()];
+  const L = [per, ['RUC', mo.co.ruc], ['APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL', mo.co.name], ...(c.sh || [])];
+  return `<div class="fhead"><p class="ft">FORMATO ${F0[0]}: "${esc(F0[1])}"</p>${L.map(([k, v]) => `<p><span>${esc(k)}:</span> <b>${esc(v)}</b></p>`).join('')}</div>`;
+}
+const hinp = (k, f, v, ro) => inp(k, f, v, f && f.t === 'n' ? 'num' : '', ro).replace(/data-k=/g, 'data-h=');
+function diarioHead(c, hv, g, ro) {
+  const H = c.hf || {}, st = k => g && g.hcells ? (g.hcells[k] ? 'ok' : 'bad') : '';
+  const cell = k => H[k] ? `<span class="in hin ${st(k)}">${hinp(k, H[k], hv[k], ro)}</span>` : '';
+  const glo = `<textarea data-h="glo" class="glo" rows="2" placeholder="Describe la operación" ${ro ? 'disabled' : ''}>${esc(hv.glo || '')}</textarea>`;
+  return {cor: H.cor ? cell('cor') : esc(String(c.n)), fe: H.fe ? cell('fe') : fmtD(c.date), glo: c.hf ? glo : esc(c.glosa), lib: cell('lib'), rcor: cell('rcor'), doc: cell('doc')};
 }
 function diarioForm(c, draft, g, answered) {
   let lines = (draft && draft.lines) ? draft.lines.slice() : [];
+  const hv = (draft && draft.hv) || {};
   if (!answered) while (lines.length < 4) lines.push({c: '', d: '', h: ''});
   const ro = answered || A.roMode;
   const sD = r2(lines.reduce((a, l) => a + (parseNum(l.d) || 0), 0)), sH = r2(lines.reduce((a, l) => a + (parseNum(l.h) || 0), 0));
-  return `<div class="glosa"><span>Asiento Nº ${c.n}</span><span>Fecha ${fmtD(c.date)}</span><span>Glosa: ${esc(c.glosa)}</span></div>
-  <div class="tw"><table class="book diario nostack"><thead><tr><th style="width:7.5em">Cuenta</th><th class="dh">Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th>${ro ? '' : '<th style="width:2.4em"></th>'}</tr></thead>
-  <tbody id="dlines">${lines.map((l, i) => { const st = g ? (g.lineOk[i] ? 'ok' : 'bad') : ''; return `<tr class="${st}" data-i="${i}"><td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}<div class="den-m">${esc(acctName(l.c))}</div></td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}</tr>`; }).join('')}</tbody>
-  <tfoot><tr><td class="b">Totales</td><td class="den b"> ${Math.abs(sD - sH) > 0.005 && (sD || sH) ? '<span class="warnc">· no cuadra</span>' : ''}</td><td class="num b" id="sD">${nf(sD)}</td><td class="num b" id="sH">${nf(sH)}</td>${ro ? '' : '<td></td>'}</tr></tfoot></table></div>
+  const H = diarioHead(c, hv, g, ro);
+  const lineCells = (l, i) => `<td class="in">${`<input data-l="c" data-acc="1" inputmode="numeric" autocomplete="off" placeholder="cuenta" value="${esc(l.c)}" ${ro ? 'disabled' : ''}>`}<div class="den-m">${esc(acctName(l.c))}</div></td><td class="den">${esc(acctName(l.c))}</td><td class="in"><input data-l="d" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.d)}" ${ro ? 'disabled' : ''}></td><td class="in"><input data-l="h" class="num" inputmode="decimal" placeholder="0.00" value="${esc(l.h)}" ${ro ? 'disabled' : ''}></td>${ro ? '' : `<td><button class="x sm" data-act="rmline" data-i="${i}" aria-label="Quitar línea">✕</button></td>`}`;
+  const tot = `<td class="den b"> ${Math.abs(sD - sH) > 0.005 && (sD || sH) ? '<span class="warnc">· no cuadra</span>' : ''}</td><td class="num b" id="sD">${nf(sD)}</td><td class="num b" id="sH">${nf(sH)}</td>${ro ? '' : '<td></td>'}`;
+  if (isMobile()) {
+    return `${sunatHead(c)}<div class="dhead">
+      <label><span>Nº correlativo del asiento</span>${H.cor}</label><label><span>Fecha de la operación</span>${H.fe}</label>
+      <label class="w"><span>Glosa o descripción de la operación</span>${H.glo}</label>
+      ${c.hf && c.hf.lib ? `<p class="dref">Referencia de la operación</p><label><span>Código del libro o registro (Tabla 8)</span>${H.lib}</label><label><span>Número correlativo</span>${H.rcor}</label><label class="w"><span>Nº del documento sustentatorio</span>${H.doc}</label>` : ''}</div>
+    <div class="tw"><table class="book diario nostack"><thead><tr><th style="width:7.5em">Cuenta</th><th class="dh">Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th>${ro ? '' : '<th style="width:2.4em"></th>'}</tr></thead>
+    <tbody id="dlines">${lines.map((l, i) => `<tr class="${g ? (g.lineOk[i] ? 'ok' : 'bad') : ''}" data-i="${i}">${lineCells(l, i)}</tr>`).join('')}</tbody>
+    <tfoot><tr><td class="b">Totales</td>${tot}</tr></tfoot></table></div>
+    ${ro ? '' : `<button class="ghost sm addl" data-act="addline">+ Agregar línea</button>`}`;
+  }
+  const first = i => i === 0;
+  return `${sunatHead(c)}<div class="tw"><table class="book diario d51 nostack sunat"><colgroup><col style="width:56px"><col style="width:132px"><col><col style="width:98px"><col style="width:58px"><col style="width:110px"><col style="width:118px"><col class="cden"><col style="width:100px"><col style="width:100px">${ro ? '' : '<col style="width:36px">'}</colgroup><thead>
+    <tr><th rowspan="2" class="c-cor">Nº correlativo del asiento o código único de la operación</th><th rowspan="2" class="c-fe">Fecha de la operación</th><th rowspan="2" class="c-glo">Glosa o descripción de la operación</th><th colspan="3" class="grp">Referencia de la operación</th><th colspan="2" class="grp">Cuenta contable asociada a la operación</th><th colspan="2" class="grp">Movimiento</th>${ro ? '' : '<th rowspan="2"></th>'}</tr>
+    <tr><th class="c-lib">Código del libro o registro (Tabla 8)</th><th class="c-rc">Número correlativo</th><th class="c-doc">Número del documento sustentatorio</th><th style="width:7.5em">Código</th><th class="dh">Denominación</th><th style="width:8.5em">Debe</th><th style="width:8.5em">Haber</th></tr></thead>
+  <tbody id="dlines">${lines.map((l, i) => `<tr class="${g ? (g.lineOk[i] ? 'ok' : 'bad') : ''}" data-i="${i}"><td class="hc">${first(i) ? H.cor : ''}</td><td class="hc">${first(i) ? H.fe : ''}</td><td class="hc">${first(i) ? H.glo : ''}</td><td class="hc">${first(i) ? H.lib : ''}</td><td class="hc">${first(i) ? H.rcor : ''}</td><td class="hc">${first(i) ? H.doc : ''}</td>${lineCells(l, i)}</tr>`).join('')}</tbody>
+  <tfoot><tr><td colspan="6" class="b">Totales</td><td></td>${tot}</tr></tfoot></table></div>
   ${ro ? '' : `<button class="ghost sm addl" data-act="addline">+ Agregar línea</button>`}`;
 }
 function collect() {
   const c = caseByN(A.cur);
-  if (c.kind === 'diario') return {lines: $$('#dlines tr').map(tr => ({c: tr.querySelector('[data-l=c]').value.trim(), d: tr.querySelector('[data-l=d]').value.trim(), h: tr.querySelector('[data-l=h]').value.trim()}))};
+  if (c.kind === 'diario') return {hv: Object.fromEntries($$('#casebox [data-h]').map(el => [el.dataset.h, el.value])), lines: $$('#dlines tr').map(tr => ({c: tr.querySelector('[data-l=c]').value.trim(), d: tr.querySelector('[data-l=d]').value.trim(), h: tr.querySelector('[data-l=h]').value.trim()}))};
   const vals = {}; $$('#casebox [data-k]').forEach(el => { vals[el.dataset.k] = el.value; }); return {vals};
 }
 function saveDraft() { if (A.view !== 'lote' || !A.lote) return; const c = caseByN(A.cur); const a = A.li.ans[c.n]; if (a && !a.draft) return; A.drafts[A.li.id + ':' + c.n] = collect(); }
@@ -4424,12 +4596,13 @@ function feedback(c, g, a) {
 function solution(c, a) {
   if (c.kind === 'diario') {
     const L = c.lines.filter(l => (a.dest ?? A.P.destino) || !l.dest);
-    return `<div class="solbox"><p class="fbh">Solución</p><div class="tw"><table class="book"><thead><tr><th>Cuenta</th><th>Denominación</th><th>Debe</th><th>Haber</th></tr></thead><tbody>${L.map(l => `<tr class="${l.dest ? 'dest' : ''}"><td class="mono">${l.c}</td><td>${esc(acctName(l.c))}${l.dest ? ' <small>(destino)</small>' : ''}</td><td class="num">${l.d ? nf(l.d) : ''}</td><td class="num">${l.h ? nf(l.h) : ''}</td></tr>`).join('')}</tbody></table></div><ul class="whys">${L.map(l => `<li><span class="mono">${l.c}</span> ${esc(l.why)}</li>`).join('')}</ul></div>`;
+    const H = c.hf || {}, hs = k => H[k] ? esc(showSol(H[k])) : '';
+    return `<div class="solbox"><p class="fbh">Solución</p>${c.hf ? `<p class="mini solh">Asiento Nº <b>${hs('cor')}</b> · fecha <b>${hs('fe')}</b> · glosa: <b>${esc(c.glosa)}</b>${H.lib ? ` · referencia: libro <b>${hs('lib')}</b>, correlativo <b>${hs('rcor')}</b>, documento <b>${hs('doc')}</b>` : ''}</p>` : ''}<div class="tw"><table class="book"><thead><tr><th>Cuenta</th><th>Denominación</th><th>Debe</th><th>Haber</th></tr></thead><tbody>${L.map(l => `<tr class="${l.dest ? 'dest' : ''}"><td class="mono">${l.c}</td><td>${esc(acctName(l.c))}${l.dest ? ' <small>(destino)</small>' : ''}</td><td class="num">${l.d ? nf(l.d) : ''}</td><td class="num">${l.h ? nf(l.h) : ''}</td></tr>`).join('')}</tbody></table></div><ul class="whys">${L.map(l => `<li><span class="mono">${l.c}</span> ${esc(l.why)}</li>`).join('')}</ul></div>`;
   }
   const t = c.tbl;
-  if (isMobile()) return `<div class="solbox"><p class="fbh">Solución</p>${gridCards(c, x => typeof x === 'string' ? esc(x) : x.f ? `<b class="solc">${esc(showSol(c.fields[x.f]))}</b>` : esc(x.s))}</div>`;
-  const cell = x => { if (x == null || x === '') return '<td></td>'; if (typeof x === 'string') return `<td class="tx">${esc(x)}</td>`; if (x.f) return `<td class="solc ${c.fields[x.f].t === 'n' ? 'num' : ''}">${esc(showSol(c.fields[x.f]))}</td>`; return `<td class="${x.c || ''}">${esc(x.s)}</td>`; };
-  return `<div class="solbox"><p class="fbh">Solución</p><div class="tw"><table class="book ${c.fmt}"><thead>${t.groups ? `<tr>${t.groups.map(([l, s]) => `<th colspan="${s}" class="grp">${esc(l)}</th>`).join('')}</tr>` : ''}<tr>${t.cols.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+  if (isMobile()) return `<div class="solbox"><p class="fbh">Solución</p>${gridCards(c, x => typeof x === 'string' ? esc(x) : x.f ? `<b class="solc">${esc(showSol(c.fields[x.f]))}</b>` : x.den ? esc(acctName(c.fields[x.den].v)) : esc(x.s))}</div>`;
+  const cell = x => { if (x == null || x === '') return '<td></td>'; if (typeof x === 'string') return `<td class="tx">${esc(x)}</td>`; if (x.f) return `<td class="solc ${c.fields[x.f].t === 'n' ? 'num' : ''}">${esc(showSol(c.fields[x.f]))}</td>`; if (x.den) return `<td class="tx">${esc(acctName(c.fields[x.den].v))}</td>`; return `<td class="${x.c || ''}">${esc(x.s)}</td>`; };
+  return `<div class="solbox"><p class="fbh">Solución</p><div class="tw"><table class="book ${c.fmt} ${t.sunat ? 'sunat' : ''}"><thead>${theadHtml(t)}</thead><tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div></div>`;
 }
 
 async function checkCase() {
@@ -4439,7 +4612,7 @@ async function checkCase() {
   const empty = c.kind === 'diario' ? !ans.lines.length : !Object.values(ans.vals).some(v => String(v).trim());
   if (empty) { toast('Completa el caso antes de revisarlo'); return; }
   const g = grade(c, ans, A.P.destino);
-  li.ans[c.n] = {v: c.kind === 'diario' ? ans.lines : ans.vals, ok: g.ok, sc: r2(g.sc), k: [...new Set(g.kinds)], h: !!A.hint[key], at: Date.now(), dest: A.P.destino, s: solCompact(c, A.P.destino)};
+  li.ans[c.n] = {v: c.kind === 'diario' ? ans.lines : ans.vals, ...(ans.hv && c.hf ? {hv: ans.hv} : {}), ok: g.ok, sc: r2(g.sc), k: [...new Set(g.kinds)], h: !!A.hint[key], at: Date.now(), dest: A.P.destino, s: solCompact(c, A.P.destino)};
   delete A.drafts[key];
   await saveIndex(li);
   renderLote();
@@ -4517,7 +4690,7 @@ function updTimer() {
 async function saveExamDraft() {
   const c = caseByN(A.cur), ans = collect();
   if (c.kind === 'diario') ans.lines = ans.lines.filter(l => l.c || l.d || l.h);
-  A.li.ans[c.n] = {draft: true, v: c.kind === 'diario' ? ans.lines : ans.vals};
+  A.li.ans[c.n] = {draft: true, v: c.kind === 'diario' ? ans.lines : ans.vals, ...(ans.hv && c.hf ? {hv: ans.hv} : {})};
   await saveIndex(A.li);
 }
 async function finishExam(auto) {
@@ -4527,8 +4700,8 @@ async function finishExam(auto) {
   for (const c of A.lote.cases) {
     const a = li.ans[c.n];
     const v = a ? a.v : (c.kind === 'diario' ? [] : {});
-    const g = grade(c, c.kind === 'diario' ? {lines: v} : {vals: v}, A.P.destino);
-    li.ans[c.n] = {v, ok: g.ok, sc: r2(g.sc), k: [...new Set(g.kinds)], h: false, at: Date.now(), dest: A.P.destino, s: solCompact(c, A.P.destino)};
+    const hv = a && a.hv; const g = grade(c, c.kind === 'diario' ? {lines: v, hv} : {vals: v}, A.P.destino);
+    li.ans[c.n] = {v, ...(hv ? {hv} : {}), ok: g.ok, sc: r2(g.sc), k: [...new Set(g.kinds)], h: false, at: Date.now(), dest: A.P.destino, s: solCompact(c, A.P.destino)};
   }
   li.exam.fin = true; li.exam.done = Date.now();
   await saveIndex(li);
@@ -5112,6 +5285,7 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('input', e => {
   const el = e.target;
+  if (el.dataset && el.dataset.k && el.matches('#casebox [data-acc]')) { const box = el.closest('tr') || el.closest('.mcard'); const d = box && box.querySelector(`[data-den="${el.dataset.k}"]`); if (d) d.textContent = acctName(el.value) || (box.tagName === 'TR' ? '' : '—'); }
   if (el.matches('#dlines input')) {
     const tr = el.closest('tr');
     if (el.dataset.l === 'c') { tr.querySelector('.den').textContent = acctName(el.value); const dm = tr.querySelector('.den-m'); if (dm) dm.textContent = acctName(el.value); }
@@ -5213,6 +5387,7 @@ function fitTables() {
     if (mob) { t.classList.remove('fitcards'); return; }
     if (!t.offsetParent) return;
     t.classList.remove('fitcards');
+    if (t.classList.contains('sunat')) return;
     const w = t.closest('.tw') || t.parentElement;
     let bad = w.scrollWidth > w.clientWidth + 2 || t.offsetWidth > w.clientWidth + 2;
     if (!bad) bad = [...t.querySelectorAll('input:not(.dpick)')].some(i => i.offsetParent && i.clientWidth < 72 && !i.classList.contains('ok') && i.type !== 'checkbox');
