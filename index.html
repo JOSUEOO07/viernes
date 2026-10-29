@@ -22,8 +22,8 @@
 <style>
 /* Viernes — identidad: tinta índigo + lápiz rojo de corrección sobre papel de libro contable */
 :root{
-  --bg:#dceae2; --surface:#ffffff; --paper:#f6faf7; --ink:#10241c; --muted:#4a5f55; --line:#cfe0d5; --rule:#d6e6dc;
-  --brand:#0d5c46; --brand-2:#14805f; --brand-ink:#ffffff; --brand-soft:#e3f0e8; --accent:#b4532f;
+  --bg:#efe5d1; --surface:#fffcf5; --paper:#f8f1e3; --ink:#2a2418; --muted:#6b5f49; --line:#dfd0b4; --rule:#e6d9c1;
+  --brand:#0d5c46; --brand-2:#14805f; --brand-ink:#ffffff; --brand-soft:#e6ede2; --accent:#b8862f;
   --ok:#16815a; --ok-bg:#e1f3ea; --bad:#c2392b; --bad-bg:#fbe5e1; --warn:#985f00; --warn-bg:#fbefd2;
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif; --body:"Figtree",ui-sans-serif,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   --r:16px; --shadow:0 1px 2px rgba(27,29,54,.05),0 6px 18px rgba(27,29,54,.05);
@@ -341,6 +341,25 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .sw{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px;display:grid;gap:6px;justify-items:center;font-size:.8rem;font-weight:600}
 .sw i{width:38px;height:38px;border-radius:50%;display:block}
 .sw.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.bfx{position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden}
+.bfx i{position:absolute;border-radius:50%;background:var(--brand);box-shadow:inset -4px -6px 10px rgba(255,255,255,.35),inset 3px 3px 6px rgba(255,255,255,.25);animation:bub 1s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes bub{0%{transform:translate(0,0) scale(.25);opacity:.95}55%{opacity:.7}100%{transform:translate(var(--dx),var(--dy)) scale(1.15);opacity:0}}
+#view.vin{animation:vin .45s cubic-bezier(.2,.7,.3,1)}
+@keyframes vin{0%{opacity:0;transform:translateY(10px) scale(.985)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){#view.vin{animation:none}}
+.chk.big{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--rule)}
+.chk.big input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--brand)}
+.chk.big span{display:grid;gap:2px}.chk.big small{color:var(--muted);font-size:.85rem}
+.ghost.adm{border-style:dashed;border-color:var(--brand);color:var(--brand)}
+.tpl{margin:12px 0 4px;font-weight:700;font-size:.92rem}.tpl small{font-weight:500;color:var(--muted)}
+.tprev{border-radius:14px;padding:14px;border:1px solid var(--line);transition:background .3s}
+.tpcard{border:1px solid;border-radius:12px;padding:12px 14px;display:grid;gap:4px;position:relative;overflow:hidden;max-width:320px}
+.tpbar{position:absolute;left:0;top:0;bottom:0;width:5px}.tpbtn{justify-self:start;color:#fff;border-radius:999px;padding:5px 14px;font-size:.8rem;font-weight:700;margin-top:4px}
+.combos{display:flex;flex-wrap:wrap;gap:8px}
+.cmb{width:46px;height:46px;border-radius:50%;padding:3px;border:2px solid var(--line);background:var(--surface)}
+.cmb i{display:block;width:100%;height:100%;border-radius:50%;position:relative;overflow:hidden}
+.cmb em{position:absolute;right:0;bottom:0;width:50%;height:50%;border-top-left-radius:100%}
+.cmb.on{border-color:var(--brand)}
 #acbox{position:fixed;z-index:25;width:290px;max-width:calc(100vw - 16px);max-height:260px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(10,11,25,.22);padding:4px}
 .aci{display:grid;grid-template-columns:4.6em minmax(0,1fr);gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:.86rem}
 .aci span:last-child{overflow-wrap:anywhere}
@@ -2398,7 +2417,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '21';
+const APP_V = '22';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -3707,7 +3726,7 @@ const TEORIA = {
   6: {q: 'El Registro de Inventario Permanente Valorizado (Formato 13.1) controla cantidades y costos de cada producto. La empresa debe indicar su método de valuación; SUNAT acepta, entre otros, PEPS (primeras entradas, primeras salidas), promedio ponderado e identificación específica, pero no UEPS. En Viernes se usa el PROMEDIO PONDERADO: el costo unitario se recalcula en cada compra y las salidas se valorizan a ese costo.', c: ['Fecha y documento', 'Tipo de operación (Tabla 12: 01 venta, 02 compra)', 'Entradas: cantidad, costo unitario, costo total', 'Salidas: cantidad, costo unitario, costo total', 'Saldo final: cantidad, costo unitario, costo total'], e: 'Saldo 100 u a 10.00 = 1,000. Compra 50 u a 13.00 = 650. Saldo 150 u, total 1,650, costo promedio 1,650 ÷ 150 = 11.00. Venta de 30 u: salida 30 × 11.00 = 330.'},
   7: {q: 'La planilla calcula, por trabajador, la remuneración, los descuentos (ONP 13% o AFP: 10% + prima + comisión, y renta de 5ta si corresponde), el neto a pagar y el ESSALUD 9% que paga la empresa. Cada mes también se provisionan gratificación, CTS y vacaciones.', c: ['Básico y asignación familiar (10% de la RMV)', 'Total remuneración', 'ONP o AFP (aporte, prima, comisión)', 'Renta de 5ta', 'Neto a pagar', 'ESSALUD 9%'], e: 'Sueldo 2,000 con hijos (+123) = 2,123. AFP Integra: 212.30 + 29.09 + 32.91 = 274.30. Neto 1,848.70. ESSALUD 191.07. Asiento: 6211 2,123 y 6271 191.07 contra 4031 191.07, 407 274.30 y 4111 1,848.70.'},
   8: {q: 'El Libro Mayor (Formato 6.1) agrupa por cuenta todos los movimientos del Diario para obtener su saldo: saldo inicial + Debe − Haber.', c: ['Fecha', 'Glosa', 'Debe', 'Haber', 'Saldo deudor o acreedor'], e: 'Cuenta 1041: saldo inicial 50,000 D; Debe 12,000; Haber 8,500. Saldo final = 50,000 + 12,000 − 8,500 = 53,500 deudor.'},
-  9: {q: 'El Balance de comprobación (Formato 3.17) lista todas las cuentas con sus sumas del Debe y Haber y su saldo. Comprueba que la suma de saldos deudores sea igual a la de acreedores.', c: ['Cuenta', 'Sumas Debe y Haber', 'Saldo deudor', 'Saldo acreedor'], e: 'Cuenta 42: Debe 9,000, Haber 15,000 → saldo acreedor 6,000. Al final: total saldos deudores = total saldos acreedores.'},
+  9: {q: 'El Balance de Comprobación (Formato 3.17, R.S. 234-2006/SUNAT) lista todas las cuentas con saldos iniciales, movimientos y saldos finales, y reparte cada saldo final entre el Balance General y el Estado de Resultados por función. Al final: totales, resultado del período y totales finales que deben cuadrar.', c: ['Cuenta (código y denominación)', 'Saldos iniciales: deudor / acreedor', 'Movimientos: debe / haber', 'Saldos finales: deudor / acreedor', 'Balance General: activo / pasivo y patrimonio (clases 1-5)', 'Resultados por función: pérdidas / ganancias (66, 69, 70-77, 8x, 9x)', 'Totales → Resultado del período → Totales'], e: 'Ganancias 147,593 − Pérdidas 104,725 = utilidad 42,868: se anota en Pérdidas y en Pasivo y patrimonio. Así Activo = Pasivo y patrimonio y Pérdidas = Ganancias.'},
   10: {q: 'El cierre reúne la declaración mensual (PDT 621), el Libro de Inventarios y Balances (formatos 3.x: detalle de cuentas y estados financieros), el Diario simplificado (5.2), la revisión del SIRE y la determinación del resultado con la clase 8 y el impuesto a la renta.', c: ['PDT 621: 100/101 ventas, 107/108 compras, 140 resultante, 171 percepciones, 179 retenciones, 184 a pagar', '3.2 efectivo, 3.3 clientes, 3.7 mercaderías, 3.12 proveedores', '3.1 Situación Financiera, 3.18 Flujo de Efectivo, 3.19 Patrimonio, 3.20 Resultados', 'Clase 8: 80 → 82 → 83 → 84 → 85 → 89'], e: 'IGV: ventas 4,434 − compras 1,876 = 2,558 (140); menos percepciones 36 y retenciones 465 → 184 = 2,057 a pagar.'},
 };
 // etapa de cada formato (también reubica las empresas creadas con el esquema anterior de 7 etapas)
@@ -3852,29 +3871,74 @@ function mayorCase(mo, ops, code) {
   c.fp = 'my|' + code;
   return c;
 }
+/* ¿A qué columnas del 3.17 va cada cuenta? Balance general: clases 1-5. Estado de resultados por función: 66, 69, 7x (menos 78 y 79), 8x y 9x.
+   Las cargas por naturaleza con destino (60-65, 67, 68) y su contrapartida 79 no se llevan: se compensan entre sí. */
+function bcDest(k) {
+  const c1 = +k[0];
+  if (c1 >= 1 && c1 <= 5) return 'bg';
+  if (k === '66' || k === '69' || (c1 === 7 && k !== '78' && k !== '79') || c1 === 8 || c1 === 9) return 'er';
+  return '';
+}
 function balanceCase(mo, ops) {
   const acc = cycleAgg(mo, ops), ks = Object.keys(acc).sort();
   const op0 = {}; mo.open.forEach(([cc, d, h]) => { const k = k2(cc); const o = op0[k] || (op0[k] = {d: 0, h: 0}); o.d = r2(o.d + d); o.h = r2(o.h + h); });
-  const c = {fmt: 'balance', op: 'synth', date: ops[ops.length - 1].date, kind: 'grid', cp: null, fields: {}, title: 'Balance de comprobación de la empresa'};
-  const T = {si: 0, sa0: 0, md: 0, mh: 0, sd: 0, sa: 0};
-  const rows = ks.map((k, i) => {
-    const o = acc[k], o0 = op0[k] || {d: 0, h: 0}, s0 = r2(o0.d - o0.h), si = s0 > 0 ? s0 : 0, sa0 = s0 < 0 ? -s0 : 0, md = r2(o.d - o0.d), mh = r2(o.h - o0.h), s = r2(o.d - o.h), sd = s > 0 ? s : 0, sa = s < 0 ? -s : 0;
-    T.si += si; T.sa0 += sa0; T.md += md; T.mh += mh; T.sd += sd; T.sa += sa;
-    c.fields['sd' + i] = F('n', sd, 'Saldo final deudor = saldo inicial + debe − haber, cuando queda a favor del Debe.', {l: `Saldo final deudor ${k}`, k: 'saldo', z: true, tol: 0.02});
-    c.fields['sa' + i] = F('n', sa, 'Saldo final acreedor = cuando el Haber (más el saldo inicial acreedor) supera al Debe.', {l: `Saldo final acreedor ${k}`, k: 'saldo', z: true, tol: 0.02});
-    const n = v => v ? {s: nf(v), c: 'num'} : '';
-    return [k, acctName(k), n(si), n(sa0), n(md), n(mh), {f: 'sd' + i}, {f: 'sa' + i}, '', '', '', ''];
+  const items = ks.map(k => {
+    const o = acc[k], o0 = op0[k] || {d: 0, h: 0}, s0 = r2(o0.d - o0.h), s = r2(o.d - o.h);
+    return {k, si: s0 > 0 ? s0 : 0, sa0: s0 < 0 ? -s0 : 0, md: r2(o.d - o0.d), mh: r2(o.h - o0.h), sd: s > 0 ? s : 0, sa: s < 0 ? -s : 0};
   });
-  c.fields.tSD = F('n', r2(T.sd), 'Suma de los saldos finales deudores. Debe ser igual a la de saldos acreedores.', {l: 'Total saldos deudores', k: 'calculo', tol: 0.05});
-  c.fields.tSA = F('n', r2(T.sa), 'Suma de los saldos finales acreedores.', {l: 'Total saldos acreedores', k: 'calculo', tol: 0.05});
-  c.instr = 'Completa el Balance de comprobación (Formato 3.17): saldo final de cada cuenta = saldo inicial + movimientos del mes (incluye el destino). Deja vacío el lado que no corresponda. Las columnas del balance general y de pérdidas y ganancias se usan en el cierre anual.';
-  c.text = `Saldos iniciales (asiento de apertura) y movimientos del mes de ${mo.co.name} – ${mesLbl(mo.id)}, agrupados por cuenta (2 dígitos).`;
+  return bcBuild(items, ops[ops.length - 1].date, `Saldos iniciales (asiento de apertura) y movimientos del mes de ${mo.co.name} – ${mesLbl(mo.id)}, agrupados por cuenta (2 dígitos).`);
+}
+function bcBuild(items, date, text) {
+  const c = {fmt: 'balance', op: 'synth', date, kind: 'grid', cp: null, fields: {}, title: 'Balance de comprobación de la empresa'};
+  const T = {si: 0, sa0: 0, md: 0, mh: 0, sd: 0, sa: 0, ac: 0, pp: 0, pe: 0, ga: 0};
+  const WBG = 'Cuentas de las clases 1 a 5 (Balance General): su saldo final deudor va a Activo y el acreedor a Pasivo y patrimonio.';
+  const WER = 'Cuentas 66, 69, 70 a 77, 8x y 9x (Estado de Resultados por función): su saldo final deudor va a Pérdidas y el acreedor a Ganancias.';
+  const WNO = 'Gastos por naturaleza con destino (60 a 65, 67, 68) y su contrapartida 79: se compensan entre sí, por eso no se llevan a ninguna columna de estados financieros (quedan vacías).';
+  const n = v => v ? {s: nf(v), c: 'num'} : '';
+  const rows = items.map(({k, si, sa0, md, mh, sd, sa}, i) => {
+    const dst = bcDest(k), ac = dst === 'bg' ? sd : 0, pp = dst === 'bg' ? sa : 0, pe = dst === 'er' ? sd : 0, ga = dst === 'er' ? sa : 0;
+    T.si += si; T.sa0 += sa0; T.md += md; T.mh += mh; T.sd += sd; T.sa += sa; T.ac += ac; T.pp += pp; T.pe += pe; T.ga += ga;
+    c.fields['sd' + i] = F('n', sd, 'Saldo final deudor = saldo inicial + debe − haber, cuando queda a favor del Debe.', {l: `Saldo final deudor ${k}`, k: 'saldo', z: true, tol: 0.02, hz: 1});
+    c.fields['sa' + i] = F('n', sa, 'Saldo final acreedor = cuando el Haber (más el saldo inicial acreedor) supera al Debe.', {l: `Saldo final acreedor ${k}`, k: 'saldo', z: true, tol: 0.02, hz: 1});
+    const w = dst === 'bg' ? WBG : dst === 'er' ? WER : WNO, o = {k: 'saldo', z: true, tol: 0.02, hz: 1};
+    c.fields['ac' + i] = F('n', ac, w, {l: `Activo ${k}`, ...o});
+    c.fields['pp' + i] = F('n', pp, w, {l: `Pasivo y patrimonio ${k}`, ...o});
+    c.fields['pe' + i] = F('n', pe, w, {l: dst ? `Pérdidas ${k}` : `Cuenta ${k}`, ...o, hz: dst ? 1 : 0});
+    c.fields['ga' + i] = F('n', ga, w, {l: `Ganancias ${k}`, ...o});
+    return [k, acctName(k), n(si), n(sa0), n(md), n(mh), {f: 'sd' + i}, {f: 'sa' + i}, {f: 'ac' + i}, {f: 'pp' + i}, {f: 'pe' + i}, {f: 'ga' + i}];
+  });
+  Object.keys(T).forEach(k => T[k] = r2(T[k]));
+  const res = r2(T.ga - T.pe), u = res > 0 ? res : 0, p = res < 0 ? -res : 0;
+  const fl = c.fields;
+  fl.tSD = F('n', T.sd, 'Suma de los saldos finales deudores. Debe ser igual a la de saldos acreedores.', {l: 'Total saldos deudores', k: 'calculo', tol: 0.05});
+  fl.tSA = F('n', T.sa, 'Suma de los saldos finales acreedores.', {l: 'Total saldos acreedores', k: 'calculo', tol: 0.05});
+  fl.tAC = F('n', T.ac, 'Suma de la columna Activo.', {l: 'Total activo', k: 'calculo', tol: 0.05});
+  fl.tPP = F('n', T.pp, 'Suma de la columna Pasivo y patrimonio (todavía sin el resultado del período).', {l: 'Total pasivo y patrimonio', k: 'calculo', tol: 0.05});
+  fl.tPE = F('n', T.pe, 'Suma de la columna Pérdidas.', {l: 'Total pérdidas', k: 'calculo', tol: 0.05});
+  fl.tGA = F('n', T.ga, 'Suma de la columna Ganancias.', {l: 'Total ganancias', k: 'calculo', tol: 0.05});
+  const rw = res >= 0
+    ? `Ganancias ${nf(T.ga)} − Pérdidas ${nf(T.pe)} = utilidad de ${nf(u)}. La utilidad se anota en Pérdidas (para igualar el Estado de Resultados) y en Pasivo y patrimonio (porque aumenta el patrimonio).`
+    : `Pérdidas ${nf(T.pe)} − Ganancias ${nf(T.ga)} = pérdida de ${nf(p)}. La pérdida se anota en Ganancias (para igualar el Estado de Resultados) y en Activo (porque disminuye el patrimonio).`;
+  fl.rAC = F('n', p, rw, {l: 'Resultado: activo', k: 'calculo', z: true, tol: 0.05});
+  fl.rPP = F('n', u, rw, {l: 'Resultado: pasivo y patrimonio', k: 'calculo', z: true, tol: 0.05});
+  fl.rPE = F('n', u, rw, {l: 'Resultado: pérdidas', k: 'calculo', z: true, tol: 0.05});
+  fl.rGA = F('n', p, rw, {l: 'Resultado: ganancias', k: 'calculo', z: true, tol: 0.05});
+  const fw = 'Totales finales = suma de la columna + resultado del período. Activo = Pasivo y patrimonio, y Pérdidas = Ganancias: así compruebas que todo cuadra.';
+  fl.fAC = F('n', r2(T.ac + p), fw, {l: 'Total final activo', k: 'calculo', tol: 0.05});
+  fl.fPP = F('n', r2(T.pp + u), fw, {l: 'Total final pasivo y patrimonio', k: 'calculo', tol: 0.05});
+  fl.fPE = F('n', r2(T.pe + u), fw, {l: 'Total final pérdidas', k: 'calculo', tol: 0.05});
+  fl.fGA = F('n', r2(T.ga + p), fw, {l: 'Total final ganancias', k: 'calculo', tol: 0.05});
+  c.instr = 'Completa el Balance de Comprobación (Formato 3.17): saldo final de cada cuenta; luego llévalo al Balance General (clases 1 a 5) o al Estado de Resultados por función (66, 69, 70-77, 8x, 9x). Las cuentas 60-65, 67, 68 y la 79 no se llevan. Termina con los totales, el resultado del período y los totales finales.';
+  c.text = text;
   const tn = v => ({s: nf(r2(v)), c: 'num'});
   c.tbl = {sunat: true, groups: [['CUENTA', 2], ['SALDOS INICIALES', 2], ['MOVIMIENTOS', 2], ['SALDOS FINALES', 2], ['SALDOS FINALES DEL BALANCE GENERAL', 2], ['SALDOS FINALES DEL ESTADO DE PÉRDIDAS Y GANANCIAS POR FUNCIÓN', 2]],
     cols: ['Código', 'Denominación', 'Deudor', 'Acreedor', 'Debe', 'Haber', 'Deudor', 'Acreedor', 'Activo', 'Pasivo y patrimonio', 'Pérdidas', 'Ganancias'],
-    rows: [...rows, ['', {s: 'Totales', c: 'b'}, tn(T.si), tn(T.sa0), tn(T.md), tn(T.mh), {f: 'tSD'}, {f: 'tSA'}, '', '', '', '']]};
-  c.hint = 'Saldo final = saldo inicial + debe − haber. La suma de saldos deudores debe igualar a la de acreedores.';
-  c.fp = 'bc';
+    rows: [...rows,
+      ['', {s: 'TOTALES', c: 'b'}, tn(T.si), tn(T.sa0), tn(T.md), tn(T.mh), {f: 'tSD'}, {f: 'tSA'}, {f: 'tAC'}, {f: 'tPP'}, {f: 'tPE'}, {f: 'tGA'}],
+      ['', {s: 'RESULTADO DEL EJERCICIO O PERÍODO', c: 'b'}, '', '', '', '', '', '', {f: 'rAC'}, {f: 'rPP'}, {f: 'rPE'}, {f: 'rGA'}],
+      ['', {s: 'TOTALES', c: 'b'}, '', '', '', '', '', '', {f: 'fAC'}, {f: 'fPP'}, {f: 'fPE'}, {f: 'fGA'}]]};
+  c.hint = 'Saldo final = saldo inicial + debe − haber. Clases 1-5 → Balance General; 66, 69, 70-77, 8x, 9x → Resultados por función. Utilidad = Ganancias − Pérdidas: va en Pérdidas y en Pasivo y patrimonio.';
+  c.fp = 'bc2';
   return c;
 }
 function closeCases(mo, ops) {
@@ -4211,14 +4275,18 @@ async function startSession(user) {
   A.acc = acc || {}; A.exams = (exs && exs.list) || [];
   if (blk) { $('#view').innerHTML = `<section class="card ob">${LOGO(56)}<h2>Cuenta bloqueada</h2><p>El administrador bloqueó esta cuenta. Si crees que es un error, comunícate con él.</p><button class="ghost" data-act="logout">Cerrar sesión</button></section>`; return; }
   A.isAdmin = A.user.email.toLowerCase() === SUPER_ADMIN || !!adm;
-  A.aviso = aviso && aviso.on && aviso.text ? aviso : null;
+  A.avisoDoc = aviso || {}; setAvisos();
   renderNav();
   A.P = await Store.get(PATH.prof());
   if (!A.P) return onboarding();
+  setAvisos();
   if (await needGroup()) return groupGate();
   if (A.P.name !== A.user.name || A.P.photo !== A.user.photo || A.P.email !== A.user.email) { A.P.name = A.user.name; A.P.photo = A.user.photo; A.P.email = A.user.email; saveProfile(); }
   await afterProfile();
 }
+/* Avisos del administrador: para todos o para un grupo */
+function avisoList(d) { d = d || {}; const L = Array.isArray(d.list) ? d.list.slice() : []; if (!d.list && d.text) L.push({id: 'A0', text: d.text, on: !!d.on, group: '', ts: d.ts || 0}); return L; }
+function setAvisos() { A.avisos = avisoList(A.avisoDoc).filter(x => x.on && x.text && (A.isAdmin || !x.group || (A.P && x.group === A.P.group))); }
 /* Acceso solo con código de grupo (si el administrador lo activó) */
 async function needGroup() {
   if (!A.acc || !A.acc.req || A.isAdmin) return false;
@@ -4318,8 +4386,7 @@ function renderNav() {
   const items = A.user ? NAV.concat(A.isAdmin ? [ADMIN_NAV] : []) : [];
   $('#nav').innerHTML = `<div class="brand">${LOGO(36)}<div><b>Viernes</b><small>Práctica contable SUNAT</small></div></div>` +
     items.map(([k, t, d]) => `<button class="nv ${k === 'admin' ? 'nvadm' : ''}" data-go="${k}"><svg viewBox="0 0 24 24" width="22" height="22"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ll">${t}</span><span class="ls">${{mes: 'Empresa', admin: 'Admin', historial: 'Historial'}[k] || t}</span></button>`).join('') +
-    `<div class="nvsp"></div>` + (A.user ? `<div class="nvuser">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<span>${esc(A.user.name)}${A.isAdmin ? '<small>Administrador</small>' : ''}</span></div>` : '') +
-    `<button class="nv nvtheme" data-act="theme"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-1.2-1-1.5-1-2.6 0-.9.7-1.4 1.6-1.4H16a5 5 0 0 0 5-5C21 6.4 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7.5" r="1.3" fill="currentColor"/></svg><span>Tema y colores</span></button>`;
+    `<div class="nvsp"></div>` + (A.user ? `<div class="nvuser">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<span>${esc(A.user.name)}${A.isAdmin ? '<small>Administrador</small>' : ''}</span></div>` : '');
 }
 function go(v) {
   if (!A.user) return;
@@ -4358,7 +4425,7 @@ function renderHome() {
   const exam = A.idx.find(x => x.kind === 'examen' && x.exam && !x.exam.fin);
   const done = A.idx.filter(x => x.kind === 'ciclo' && x.fin).sort((a, b) => b.ts - a.ts);
   $('#view').innerHTML = `
-  ${A.aviso ? `<div class="aviso"><b>Aviso:</b> ${esc(A.aviso.text)}</div>` : ''}
+  ${(A.avisos || []).map(x => `<div class="aviso"><b>Aviso${x.group ? ' · ' + esc(x.group) : ''}:</b> ${esc(x.text)}</div>`).join('')}
   <header class="hero">
     <div><p class="eyebrow">${hola}, ${esc(A.user.name.split(' ')[0])}</p><h1>Tu práctica de libros contables</h1><p class="sub">Una empresa por ciclo: del Libro Diario a los estados financieros</p></div>
     <div class="streak" title="Días seguidos practicando"><b>${st.n}</b><span>día${st.n === 1 ? '' : 's'} de racha${st.today ? '' : ' · practica hoy'}</span></div>
@@ -4418,7 +4485,13 @@ async function openLote(id, n) {
 }
 function isExamOpen() { return A.li && A.li.kind === 'examen' && A.li.exam && !A.li.exam.fin; }
 // Los alumnos siempre siguen el ciclo en orden; solo el administrador puede quitar los candados (interruptor propio)
-function unlocked(st) { if (!A.li || A.li.kind !== 'ciclo' || (A.isAdmin && A.P && A.P.adminUnlock)) return true; return st <= stageInfo(A.li).cur || A.li.fin; }
+function unlocked(st) {
+  if (!A.li || A.li.kind !== 'ciclo' || (A.isAdmin && A.P && A.P.adminUnlock)) return true;
+  if (A.li.fin) return true;
+  if (!A.isAdmin && A.acc && A.acc.maxSt && st > A.acc.maxSt) return false;
+  return st <= stageInfo(A.li).cur;
+}
+function maxStBlock(st) { return !A.isAdmin && A.acc && A.acc.maxSt && st > A.acc.maxSt && !(A.li && A.li.fin); }
 function renderLote() {
   const li = A.li, b = A.lote, cyc = li.kind === 'ciclo';
   const si = cyc ? stageInfo(li) : null;
@@ -4432,7 +4505,8 @@ function renderLote() {
     <div class="lt"><h1>${title}</h1><p class="sub">${cyc ? `Empresa ${li.cycleNo} · ` : ''}${li.done}/${li.n} resueltos · ${li.okc} correctos</p></div>
     ${isExamOpen() ? `<div class="timer" id="timer">--:--</div>` : ''}
   </div>
-  ${cyc && A.isAdmin ? `<div class="admlock"><span>${A.P.adminUnlock ? '🔓 Candados desactivados: puedes entrar a cualquier etapa.' : '🔒 Candados activados: avanzas en orden, como un alumno.'} <small>Solo lo ves tú (administrador). Los alumnos siempre siguen el ciclo en orden.</small></span><button class="ghost sm" data-act="admlock">${A.P.adminUnlock ? 'Activar candados' : 'Quitar candados'}</button></div>` : ''}
+  ${cyc && A.isAdmin ? `<div class="admlock"><span>${A.P.adminUnlock ? '🔓 Candados desactivados: puedes entrar a cualquier etapa.' : '🔒 Candados activados: avanzas en orden, como un alumno.'} <small>Solo lo ves tú (administrador). Los alumnos siempre siguen el ciclo en orden. Más opciones en Administrar → Control.</small></span><button class="ghost sm" data-act="admlock">${A.P.adminUnlock ? 'Activar candados' : 'Quitar candados'}</button></div>` : ''}
+  ${cyc && !A.isAdmin && A.acc && A.acc.maxSt && A.acc.maxSt < NST && !li.fin ? `<div class="aviso">Tu profesor habilitó el ciclo hasta la <b>etapa ${A.acc.maxSt}</b>. Las siguientes se abrirán cuando él lo indique.</div>` : ''}
   ${cyc ? `<div class="stages" role="tablist">${STAGES.filter(s => (si.per[s.n] || {}).n).map(s => { const p = si.per[s.n] || {n: 0, done: 0}; const lock = !unlocked(s.n); return `<button role="tab" class="stg ${s.n === curSt ? 'on' : ''} ${lock ? 'lock' : ''} ${p.n && p.done === p.n ? 'fin' : ''}" data-stg="${s.n}" ${lock ? 'aria-disabled="true"' : ''}><b><span class="sn">${s.n}</span>${lock ? '🔒 ' : ''}${esc(s.c || s.t)}</b><span>${p.done}/${p.n}</span></button>`; }).join('')}</div>` : ''}
   <div class="chips">${shown.map(c => `<button class="chip ${st(c.n)} ${c.n === A.cur ? 'cur' : ''}" data-case="${c.n}" aria-label="Caso ${c.n}">${cyc ? shown.indexOf(c) + 1 : c.n}</button>`).join('')}</div>
   ${empresaCard(A.loteMo, li)}
@@ -4485,12 +4559,15 @@ function renderCase(target = '#casebox', ro = null) {
     ${c.kind === 'diario' ? diarioForm(c, draft, g, answered) : gridForm(c, draft, g, answered)}
     ${hintOn && !exam ? `<p class="hint"><b>Pista:</b> ${esc(c.hint)}</p>` : ''}
     ${answered ? feedback(c, g, a) : ''}
-    ${answered && solOn ? solution(c, a) : ''}
+    ${answered && solOn && !(A.acc && A.acc.noSol && !A.isAdmin) ? solution(c, a) : ''}
+    ${!answered && !ro && solOn && A.isAdmin && A.P.adminPeek ? solution(c, {dest: destino}) : ''}
     <div class="actions">
-      ${!answered && !exam ? `<button class="ghost" data-act="hint" ${hintOn ? 'disabled' : ''}>Pista</button>` : ''}
+      ${!answered && !exam && !(A.acc && A.acc.noHint && !A.isAdmin) ? `<button class="ghost" data-act="hint" ${hintOn ? 'disabled' : ''}>Pista</button>` : ''}
+      ${!answered && !ro && !exam && A.isAdmin && A.P.adminPeek ? `<button class="ghost adm" data-act="admpeek">${A.showSol[key] ? 'Ocultar solución' : '👁 Solución'}</button>` : ''}
+      ${!answered && !ro && !exam && A.isAdmin && A.P.adminFill ? `<button class="ghost adm" data-act="admfill">✎ Rellenar correcta</button>` : ''}
       ${c.kind === 'diario' && !answered && !ro ? `<button class="ghost" data-act="pcge">Buscar cuenta</button>` : ''}
       <button class="ghost" data-act="kcalc">Calculadora</button>
-      ${answered && !ro ? `<button class="ghost" data-act="sol">${solOn ? 'Ocultar solución' : 'Ver solución'}</button>` : ''}
+      ${answered && !ro && !(A.acc && A.acc.noSol && !A.isAdmin) ? `<button class="ghost" data-act="sol">${solOn ? 'Ocultar solución' : 'Ver solución'}</button>` : ''}
       <span class="sp"></span>
       ${ro ? '' : !answered ? (exam ? `<button class="btn" data-act="savenext">Guardar y seguir</button>` : `<button class="btn" data-act="check">Revisar</button>`) : (nextN() ? `<button class="btn" data-act="next">Siguiente →</button>` : `<button class="btn" data-go="home">Volver al inicio</button>`)}
     </div>
@@ -4572,13 +4649,13 @@ function gridForm(c, draft, g, answered) {
 /* Empresas creadas antes de los formatos oficiales: sus casos pendientes se pasan al formato SUNAT completo
    (los ya resueltos se quedan como estaban, para no cambiar su nota) */
 function upgradeLote(b, li) {
-  if (b._up) return; b._up = true;
+  if (b._up2) return; b._up2 = true;
   const co = (b.emp || li.emp).co, pend = c => { const a = li.ans[c.n]; return !a || a.draft || a.hv || (a.v && !Array.isArray(a.v) && a.v.cor !== undefined); };
   const cor = {}; ['compras', 'ventas', 'caja', 'banco'].forEach(f => { cor[f] = {}; b.cases.filter(c => c.fmt === f).sort((x, y) => x.n - y.n).forEach((c, i) => { cor[f][c.fp] = {k: i + 1, c}; }); });
   const dia = b.cases.filter(c => c.fmt === 'diario').sort((x, y) => x.n - y.n);
   const pseudo = c => ({type: c.op, date: c.date, text: c.text, cp: c.cp, hint: c.hint, fp: c.fp, glosa: c.glosa});
   b.cases = b.cases.map(c => {
-    if (!pend(c) || c.v2) return c;
+    if (!pend(c) || (c.v2 && !(c.fmt === 'balance' && !c.fields.fAC))) return c;
     let nc = null;
     try {
       if (c.fmt === 'diario' && !c.hf && dia.includes(c)) {
@@ -4594,6 +4671,10 @@ function upgradeLote(b, li) {
       } else if ((c.fmt === 'caja' || c.fmt === 'banco') && c.cash && !(c.tbl && c.tbl.sunat)) {
         const x = {...c.cash}; delete x.fin;
         nc = caseFromOp({...pseudo(c), cash: {[c.fmt]: x}}, c.fmt, co, {cor: (cor[c.fmt][c.fp] || {}).k});
+      } else if (c.fmt === 'balance' && !c.fields.fAC && c.tbl) {
+        const pn = x => x && x.s ? parseNum(x.s) || 0 : 0;
+        const items = c.tbl.rows.filter(r => r[0] && c.fields['sd' + c.tbl.rows.indexOf(r)]).map((r, i) => ({k: r[0], si: pn(r[2]), sa0: pn(r[3]), md: pn(r[4]), mh: pn(r[5]), sd: c.fields['sd' + i].v, sa: c.fields['sa' + i].v}));
+        nc = bcBuild(items, c.date, c.text);
       } else if ((c.fmt === 'kardex' || c.fmt === 'kardexu') && c.kx && !(c.tbl && c.tbl.sunat)) {
         nc = caseFromOp({...pseudo(c), kx: c.kx}, c.fmt, co);
       }
@@ -4669,7 +4750,7 @@ function feedback(c, g, a) {
 /* Por qué de cada respuesta: agrupa los campos que tienen la misma explicación */
 function whyList(fields, skip = []) {
   const G = new Map();
-  Object.entries(fields || {}).forEach(([k, f]) => { if (skip.includes(k) || !f.why) return; const g = G.get(f.why) || []; g.push(f); G.set(f.why, g); });
+  Object.entries(fields || {}).forEach(([k, f]) => { if (skip.includes(k) || !f.why || (f.hz && !f.v)) return; const g = G.get(f.why) || []; g.push(f); G.set(f.why, g); });
   if (!G.size) return '';
   return `<p class="fbh whyh">¿Por qué?</p><ul class="whys">${[...G.entries()].map(([w, fs]) => `<li><b>${fs.slice(0, 6).map(f => `${esc(f.l || '')}: <span class="mono">${esc(showSol(f))}</span>`).join(' · ')}${fs.length > 6 ? ` · y ${fs.length - 6} más` : ''}</b><br>${esc(w)}</li>`).join('')}</ul>`;
 }
@@ -4846,7 +4927,7 @@ function renderMas() {
     <button class="tile" data-act="calc"><b>Calculadora tributaria</b><span>IGV, detracción, percepción y retención</span></button>
     <button class="tile" data-go="mes"><b>Exportar mis libros</b><span>Excel o PDF, desde Mi empresa</span></button>
   </div>
-  <section class="card"><h2>Tema y colores</h2>${themePicker()}</section>
+  <section class="card"><h2>Tema y colores</h2><div class="tpwrap">${themePicker()}</div></section>
   <section class="card"><h2>Mi cuenta</h2>
     <div class="acct">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<div><b>${esc(A.user.name)}</b><small>${esc(A.user.email)}${A.isAdmin ? ' · Administrador' : ''}</small></div><button class="ghost sm" data-act="logout">Cerrar sesión</button></div>
     <label class="fld">Código de grupo o salón<div class="row"><input id="sGr" value="${esc(A.P.group || '')}" placeholder="Ej. VIE-4821" autocomplete="off" style="flex:1"><button class="ghost sm" data-act="joingroup">Guardar</button></div></label>
@@ -4925,9 +5006,10 @@ async function restoreBackup(file) {
   } catch (e) { toast('Ese archivo no es una copia de Viernes'); }
 }
 
-/* ===================== Temas de color ===================== */
+/* ===================== Temas de color: color predominante (fondo) + color de acento ===================== */
+// [id, nombre, marca, marca-2, acento, marca oscuro, marca-2 oscuro]
 const THEMES = [
-  ['cbo', 'Verde CBO', '#0d5c46', '#14805f', '#b4532f', '#2e9c77', '#6fd3a8', {bg: '#dceae2', paper: '#f6faf7', line: '#cfe0d5', ink: '#10241c', muted: '#4a5f55'}, {bg: '#0d4a39', surface: '#11392d', paper: '#0f3428', line: '#2a6a55', ink: '#eef7f2', muted: '#b3d6c6'}],
+  ['cbo', 'Verde CBO', '#0d5c46', '#14805f', '#b8862f', '#2e9c77', '#6fd3a8'],
   ['indigo', 'Índigo', '#2f2a85', '#4740c9', '#e2553d', '#5a53e6', '#8a84ff'],
   ['esmeralda', 'Esmeralda', '#0e6a4e', '#17956d', '#e89a1c', '#1fa57a', '#5fd3a8'],
   ['oceano', 'Océano', '#0b5a86', '#1580c2', '#ff7a45', '#1f8fd6', '#6cc0f5'],
@@ -4939,35 +5021,63 @@ const THEMES = [
   ['bosque', 'Bosque', '#2f5a1e', '#4b8a2e', '#d9822b', '#5fa43c', '#a6dc84'],
   ['turquesa', 'Turquesa', '#0b6b6b', '#139b9b', '#ef6f5e', '#1ab3b3', '#6fe0db'],
 ];
+// color predominante: fondo, tarjetas, papel, líneas, texto
+const BASES = [
+  ['beige', 'Beige', {bg: '#efe5d1', surface: '#fffcf5', paper: '#f8f1e3', line: '#dfd0b4', rule: '#e6d9c1', ink: '#2a2418', muted: '#6b5f49'}],
+  ['crema', 'Crema', {bg: '#f6f0de', surface: '#fffef9', paper: '#fbf7ea', line: '#e6dcc0', rule: '#ece4cc', ink: '#29261a', muted: '#6a634b'}],
+  ['blanco', 'Blanco', {bg: '#f3f4f6', surface: '#ffffff', paper: '#fafbfc', line: '#dfe2e8', rule: '#e6e8ed', ink: '#1a1d24', muted: '#5b6270'}],
+  ['perla', 'Gris perla', {bg: '#e6e7ea', surface: '#fbfbfc', paper: '#f2f3f5', line: '#d2d5db', rule: '#dadde2', ink: '#1d2027', muted: '#555b67'}],
+  ['menta', 'Menta', {bg: '#dceae2', surface: '#ffffff', paper: '#f6faf7', line: '#cfe0d5', rule: '#d6e6dc', ink: '#10241c', muted: '#4a5f55'}],
+  ['celeste', 'Celeste', {bg: '#dde9f3', surface: '#ffffff', paper: '#f5f9fc', line: '#cbdbe8', rule: '#d4e2ee', ink: '#13202c', muted: '#4a5b6b'}],
+  ['rosapalo', 'Rosa palo', {bg: '#f3e2e2', surface: '#fffafa', paper: '#fbf2f2', line: '#e6cfcf', rule: '#ecd8d8', ink: '#2a1a1c', muted: '#6c5155'}],
+  ['lavanda', 'Lavanda', {bg: '#e7e2f3', surface: '#fdfcff', paper: '#f5f2fb', line: '#d6cee8', rule: '#ded7ee', ink: '#1e1a2b', muted: '#5a5270'}],
+  ['durazno', 'Durazno', {bg: '#f7e2d0', surface: '#fffaf5', paper: '#fcf1e7', line: '#ead0b9', rule: '#efd9c6', ink: '#2b1d12', muted: '#6e5745'}],
+];
+const COMBOS = [['beige', 'cbo'], ['blanco', 'indigo'], ['celeste', 'oceano'], ['rosapalo', 'vino'], ['perla', 'grafito'], ['durazno', 'naranja'], ['lavanda', 'violeta'], ['menta', 'esmeralda']];
 const UI_KEY = 'viernesui:tema';
 function uiGet() { try { return JSON.parse(localStorage.getItem(UI_KEY) || '{}'); } catch { return {}; } }
 function uiSet(o) { try { localStorage.setItem(UI_KEY, JSON.stringify(o)); } catch {} }
 function applyTheme() {
-  const u = uiGet(); if (!u.v18) { u.c = 'cbo'; u.v18 = true; uiSet(u); }
-  const t = THEMES.find(x => x[0] === u.c) || THEMES[0];
-  const [, , b, b2, ac, db, db2, lx, dx] = t;
-  const ex = o => o ? Object.entries(o).map(([k, v]) => `--${k}:${v};`).join('') : '';
+  const u = uiGet();
+  // v22: fondo beige con verde CBO para todos (y modo claro, para que el beige se vea también en el celular)
+  if (!u.v22) { u.c = 'cbo'; u.bgc = 'beige'; u.m = 'light'; u.v22 = true; uiSet(u); }
+  const t = THEMES.find(x => x[0] === u.c) || THEMES[0], bs = (BASES.find(x => x[0] === u.bgc) || BASES[0])[2];
+  const [, , b, b2, ac, db, db2] = t;
+  const ex = o => Object.entries(o).map(([k, v]) => `--${k}:${v};`).join('');
   let st = document.getElementById('themeVars');
   if (!st) { st = document.createElement('style'); st.id = 'themeVars'; document.head.appendChild(st); }
-  const L = `--brand:${b};--brand-2:${b2};--accent:${ac};--brand-soft:color-mix(in srgb, ${b2} 11%, #ffffff);${ex(lx)}`;
-  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--brand-soft:color-mix(in srgb, ${db} 22%, #11392d);${ex(dx)}`;
+  const L = `--brand:${b};--brand-2:${b2};--accent:${ac};--brand-soft:color-mix(in srgb, ${b2} 13%, ${bs.surface});${ex(bs)}`;
+  const mx = (p, c = '#000') => `color-mix(in srgb, ${b} ${p}%, ${c})`;
+  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--bg:${mx(62, '#050807')};--surface:${mx(48, '#0a0d0c')};--paper:${mx(40, '#0a0d0c')};--line:${mx(60, '#5a6b64')};--rule:${mx(55, '#3a4a44')};--ink:#f1f5f3;--muted:color-mix(in srgb, ${db2} 45%, #e6ece9);--brand-soft:${mx(55, '#121816')};`;
   st.textContent = `:root:root{${L}}@media (prefers-color-scheme: dark){:root:root:not([data-theme="light"]){${D}}}:root:root[data-theme="dark"]{${D}}`;
   const r = document.documentElement;
   if (u.m === 'light' || u.m === 'dark') r.setAttribute('data-theme', u.m); else r.removeAttribute('data-theme');
   const mt = document.querySelector('meta[name=theme-color]'); if (mt) mt.content = b;
 }
 function themePicker() {
-  const u = uiGet(), cur = u.c || 'indigo', m = u.m || 'auto';
-  return `<div class="swatches">${THEMES.map(t => `<button class="sw ${t[0] === cur ? 'on' : ''}" data-theme-c="${t[0]}" aria-label="Tema ${t[1]}" title="${t[1]}"><i style="background:linear-gradient(135deg,${t[2]} 0 55%,${t[4]} 55% 100%)"></i><span>${t[1]}</span></button>`).join('')}</div>
-  <div class="seg modes">${[['auto', 'Automático'], ['light', 'Claro'], ['dark', 'Oscuro']].map(([k, l]) => `<button class="${k === m ? 'on' : ''}" data-theme-m="${k}">${l}</button>`).join('')}</div>`;
+  const u = uiGet(), cur = u.c || 'cbo', bg = u.bgc || 'beige', m = u.m || 'light';
+  const bsOf = id => (BASES.find(x => x[0] === id) || BASES[0])[2], thOf = id => THEMES.find(x => x[0] === id) || THEMES[0];
+  const t = thOf(cur), bs = bsOf(bg);
+  return `<div class="tprev" style="background:${bs.bg};color:${bs.ink}"><div class="tpcard" style="background:${bs.surface};border-color:${bs.line}"><span class="tpbar" style="background:${t[2]}"></span><b style="color:${t[2]}">Así se verá</b><small style="color:${bs.muted}">${esc((BASES.find(x => x[0] === bg) || BASES[0])[1])} + ${esc(t[1])}</small><span class="tpbtn" style="background:${t[2]}">Botón</span></div></div>
+  <p class="tpl">Combinaciones sugeridas</p>
+  <div class="combos">${COMBOS.map(([x, y]) => { const B = bsOf(x), T = thOf(y), on = x === bg && y === cur; return `<button class="cmb ${on ? 'on' : ''}" data-combo="${x}|${y}" title="${esc((BASES.find(z => z[0] === x) || [])[1] + ' + ' + T[1])}"><i style="background:${B.bg}"><em style="background:${T[2]}"></em></i></button>`; }).join('')}</div>
+  <p class="tpl">1. Color predominante <small>(el fondo de toda la app)</small></p>
+  <div class="swatches">${BASES.map(([id, n, B]) => `<button class="sw ${id === bg ? 'on' : ''}" data-theme-b="${id}" aria-label="Fondo ${n}"><i style="background:${B.bg};box-shadow:inset 0 0 0 1px ${B.line}"></i><span>${n}</span></button>`).join('')}</div>
+  <p class="tpl">2. Color de acento <small>(botones, barras y títulos)</small></p>
+  <div class="swatches">${THEMES.map(x => `<button class="sw ${x[0] === cur ? 'on' : ''}" data-theme-c="${x[0]}" aria-label="Acento ${x[1]}"><i style="background:linear-gradient(135deg,${x[2]} 0 55%,${x[4]} 55% 100%)"></i><span>${x[1]}</span></button>`).join('')}</div>
+  <p class="tpl">3. Modo</p>
+  <div class="seg modes">${[['light', 'Claro'], ['dark', 'Oscuro'], ['auto', 'Automático']].map(([k, l]) => `<button class="${k === m ? 'on' : ''}" data-theme-m="${k}">${l}</button>`).join('')}</div>
+  <p class="mini">El color predominante se ve en modo Claro. En modo Oscuro el fondo se oscurece con tu color de acento. Se guarda en este dispositivo.</p>`;
 }
-function openTheme() { modal(`<h3 class="mh">Tema y colores <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3>${themePicker()}<p class="mini">Se guarda en este dispositivo.</p>`, 'narrow'); }
+function openTheme() { modal(`<h3 class="mh">Tema y colores <button class="x" data-act="close" aria-label="Cerrar">✕</button></h3><div id="tpick">${themePicker()}</div>`, 'narrow'); }
 document.addEventListener('click', e => {
-  const c = e.target.closest('[data-theme-c]'), m = e.target.closest('[data-theme-m]');
-  if (!c && !m) return;
-  const u = uiGet(); if (c) u.c = c.dataset.themeC; if (m) u.m = m.dataset.themeM; uiSet(u); applyTheme();
-  $$('[data-theme-c]').forEach(b => b.classList.toggle('on', b.dataset.themeC === (u.c || 'indigo')));
-  $$('[data-theme-m]').forEach(b => b.classList.toggle('on', b.dataset.themeM === (u.m || 'auto')));
+  const c = e.target.closest('[data-theme-c]'), m = e.target.closest('[data-theme-m]'), bb = e.target.closest('[data-theme-b]'), cb = e.target.closest('[data-combo]');
+  if (!c && !m && !bb && !cb) return;
+  const u = uiGet();
+  if (c) u.c = c.dataset.themeC; if (m) u.m = m.dataset.themeM; if (bb) u.bgc = bb.dataset.themeB;
+  if (cb) { const [x, y] = cb.dataset.combo.split('|'); u.bgc = x; u.c = y; }
+  uiSet(u); applyTheme();
+  $$('.tpwrap,#tpick').forEach(w => { w.innerHTML = themePicker(); });
 });
 applyTheme();
 
@@ -5262,9 +5372,9 @@ async function exportPDF() {
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-act],[data-go],[data-open],[data-stg],[data-case],[data-hist],[data-mtab],[data-code],[data-ct],[data-hoja],[data-atab],[data-auser]');
   if (!t) { if (e.target.id === 'modal') closeModal(); return; }
-  if (t.dataset.go) { if (A.view === 'lote') saveDraft(); closeModal(); return go(t.dataset.go); }
+  if (t.dataset.go) { if (A.view === 'lote') saveDraft(); closeModal(); bubbleFx(t, t.dataset.go); return go(t.dataset.go); }
   if (t.dataset.open) return openLote(t.dataset.open);
-  if (t.dataset.stg) { const sn = +t.dataset.stg; if (!unlocked(sn)) { toast('Primero termina la etapa ' + stageInfo(A.li).cur + '.'); return; } saveDraft(); const c = A.lote.cases.find(c => (c.stage || 1) === sn && (!A.li.ans[c.n] || A.li.ans[c.n].draft)) || A.lote.cases.find(c => (c.stage || 1) === sn); if (c) A.cur = c.n; return renderLote(); }
+  if (t.dataset.stg) { const sn = +t.dataset.stg; if (!unlocked(sn)) { toast(maxStBlock(sn) ? 'Tu profesor todavía no habilita la etapa ' + sn + '.' : 'Primero termina la etapa ' + stageInfo(A.li).cur + '.'); return; } saveDraft(); const c = A.lote.cases.find(c => (c.stage || 1) === sn && (!A.li.ans[c.n] || A.li.ans[c.n].draft)) || A.lote.cases.find(c => (c.stage || 1) === sn); if (c) A.cur = c.n; return renderLote(); }
   if (t.dataset.atab) { A.admTab = t.dataset.atab; return renderAdmin(); }
   if (t.dataset.auser) return adminUser(t.dataset.auser);
   if (t.dataset.case) { if (isExamOpen()) await saveExamDraft(); else saveDraft(); A.cur = +t.dataset.case; renderLote(); return document.getElementById('casebox').scrollIntoView({behavior: 'smooth', block: 'start'}); }
@@ -5295,6 +5405,8 @@ document.addEventListener('click', async e => {
   if (act === 'repaso') return makeExtra('repaso');
   if (act === 'examen') return makeExtra('examen');
   if (act === 'gexam') return startGroupExam(t.dataset.id);
+  if (act === 'admpeek') { if (!A.isAdmin) return; const k = A.li.id + ':' + A.cur; saveDraft(); A.showSol[k] = !A.showSol[k]; return renderCase(); }
+  if (act === 'admfill') { if (!A.isAdmin) return; return adminFill(); }
   if (act === 'admlock') { if (!A.isAdmin) return; A.P.adminUnlock = !A.P.adminUnlock; await saveProfile(); toast(A.P.adminUnlock ? 'Candados desactivados para ti' : 'Candados activados'); return renderLote(); }
   if (act === 'constancia') return constanciaPDF(t.dataset.id);
   if (act === 'finexam') { if (confirmFin()) return finishExam(false); return; }
@@ -5521,6 +5633,38 @@ document.addEventListener('input', e => { const t = e.target; if (!t.classList |
 
 /* Separador de miles en todo número que escribe el estudiante (al salir de la casilla) */
 document.addEventListener('focusout', e => { const t = e.target; if (t && t.tagName === 'INPUT' && t.classList.contains('num') && !t.disabled) { const f = fmtIn(t.value); if (f !== t.value) { t.value = f; t.dispatchEvent(new Event('input', {bubbles: true})); } } });
+
+/* Transición de burbujas al cambiar de pantalla (Inicio, Practicar, Mi empresa, …) */
+function bubbleFx(src, to) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (to === A.view && to !== 'practicar') return;
+  const r = src && src.getBoundingClientRect ? src.getBoundingClientRect() : {left: innerWidth / 2, top: innerHeight, width: 0, height: 0};
+  const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+  const fx = document.createElement('div'); fx.className = 'bfx'; fx.setAttribute('aria-hidden', 'true');
+  const N = innerWidth < 701 ? 22 : 30;
+  for (let i = 0; i < N; i++) {
+    const b = document.createElement('i'), sz = 18 + Math.random() * 64, ang = Math.random() * Math.PI * 2, dist = 120 + Math.random() * Math.max(innerWidth, innerHeight) * 0.55;
+    b.style.cssText = `width:${sz}px;height:${sz}px;left:${ox - sz / 2}px;top:${oy - sz / 2}px;--dx:${Math.cos(ang) * dist}px;--dy:${Math.sin(ang) * dist - 80}px;animation-delay:${Math.random() * 120}ms;opacity:0;${i % 3 === 0 ? 'background:var(--accent)' : ''}`;
+    fx.appendChild(b);
+  }
+  document.body.appendChild(fx);
+  const v = document.getElementById('view'); if (v) { v.classList.remove('vin'); void v.offsetWidth; v.classList.add('vin'); }
+  setTimeout(() => fx.remove(), 1200);
+}
+
+/* Administrador: rellena el caso con la respuesta correcta (para revisar o preparar la clase) */
+function adminFill() {
+  const c = caseByN(A.cur), key = A.li.id + ':' + c.n;
+  if (c.kind === 'diario') {
+    A.drafts[key] = {hv: Object.assign({glo: c.glosa}, Object.fromEntries(Object.entries(c.hf || {}).map(([k, f]) => [k, f.t === 'd' ? fmtD(f.v) : String(f.v)]))),
+      lines: c.lines.filter(l => A.P.destino || !l.dest).map(l => ({c: l.c, d: l.d ? fmtIn(String(l.d)) : '', h: l.h ? fmtIn(String(l.h)) : ''}))};
+    renderCase();
+  } else {
+    Object.entries(c.fields).forEach(([k, f]) => { const el = document.querySelector(`#casebox [data-k="${k}"]`); if (!el) return; el.value = f.t === 'd' ? fmtD(f.v) : f.t === 'n' ? (f.z && !f.v ? '' : fmtIn(String(f.v))) : String(f.v); el.dispatchEvent(new Event('input', {bubbles: true})); });
+    saveDraft();
+  }
+  toast('Respuesta correcta colocada. Toca Revisar para registrarla.');
+}
 /* ===================== Ranking ===================== */
 async function renderRanking() {
   A.view = 'ranking'; setNavOn('ranking');
@@ -5547,20 +5691,37 @@ async function joinGroup() {
 async function renderAdmin() {
   if (!A.isAdmin) return go('home');
   A.view = 'admin'; setNavOn('admin');
-  const tab = A.admTab || 'usuarios';
-  $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Solo administradores</p><h1>Administrar</h1><p class="sub">Usuarios, grupos, avisos y administradores de Viernes.</p></div></header>
-  <div class="tabs">${[['usuarios', 'Usuarios'], ['grupos', 'Grupos'], ['examenes', 'Exámenes'], ['avisos', 'Avisos'], ['admins', 'Administradores']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-atab="${k}">${l}</button>`).join('')}</div>
+  const tab = A.admTab || 'control';
+  $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Solo administradores</p><h1>Administrar</h1><p class="sub">Tus accesos, el control de la clase, usuarios, grupos, exámenes y avisos.</p></div></header>
+  <div class="tabs">${[['control', 'Control'], ['usuarios', 'Usuarios'], ['grupos', 'Grupos'], ['examenes', 'Exámenes'], ['avisos', 'Avisos'], ['admins', 'Administradores']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-atab="${k}">${l}</button>`).join('')}</div>
   <div id="abody"><div class="loading sm"><p>Cargando…</p></div></div>`;
   const box = $('#abody');
   try {
-    if (tab === 'usuarios') {
+    if (tab === 'control') {
+      const acc = (await Store.get('config/acceso').catch(() => null)) || {}; A.acc = acc;
+      const P = A.P, ck = (id, on, t, d) => `<label class="chk big"><input type="checkbox" id="${id}" ${on ? 'checked' : ''}><span><b>${t}</b><small>${d}</small></span></label>`;
+      box.innerHTML = `<section class="card"><h2>Mis accesos de administrador</h2><p class="mini">Solo se aplican a tu cuenta. Los estudiantes no los ven.</p>
+        ${ck('apUn', P.adminUnlock, 'Quitar candados', 'Entras a cualquier etapa del ciclo sin terminar las anteriores.')}
+        ${ck('apPk', P.adminPeek, 'Ver la solución sin responder', 'Aparece el botón “👁 Solución” en cada caso pendiente, con su ¿Por qué?.')}
+        ${ck('apFl', P.adminFill, 'Rellenar con la respuesta correcta', 'Aparece el botón “✎ Rellenar correcta” para completar un caso al instante (útil para revisar la app o preparar la clase).')}
+        <button class="btn" data-act="admmine">Guardar mis accesos</button></section>
+      <section class="card"><h2>Control de la clase</h2><p class="mini">Se aplica a todos los estudiantes.</p>
+        <label class="fld">Etapa máxima habilitada<select id="acMax"><option value="0">Todas las etapas (${NST})</option>${STAGES.map(x => `<option value="${x.n}" ${acc.maxSt === x.n ? 'selected' : ''}>Hasta la etapa ${x.n} · ${esc(x.t)}</option>`).join('')}</select></label>
+        <p class="mini">Avanzan en orden y no pueden pasar de esta etapa hasta que tú la abras (por ejemplo, mientras enseñas ese tema).</p>
+        ${ck('acNh', acc.noHint, 'Ocultar las pistas', 'Los estudiantes no ven el botón Pista.')}
+        ${ck('acNs', acc.noSol, 'Ocultar “Ver solución”', 'Después de revisar, solo ven si acertaron y qué falló, sin la solución completa.')}
+        ${ck('acRq', acc.req, 'Pedir código de grupo para entrar', 'Quien no tenga un código válido no puede practicar.')}
+        <button class="btn" data-act="admclase">Guardar control de la clase</button></section>`;
+    } else if (tab === 'usuarios') {
       const [rk, bl] = await Promise.all([Store.listPlain('rank', 1000), Store.listPlain('blocked', 1000)]);
       const blocked = new Set(bl.map(b => b.id));
       rk.sort((a, b) => (b.ts || 0) - (a.ts || 0));
       const activos = rk.filter(r => Date.now() - (r.ts || 0) < 7 * 864e5).length;
       box.innerHTML = `<div class="kpis"><div class="kpi"><span>Usuarios</span><b>${rk.length}</b><small>con progreso guardado</small></div><div class="kpi"><span>Activos esta semana</span><b>${activos}</b><small>practicaron en 7 días</small></div><div class="kpi"><span>Casos resueltos</span><b>${rk.reduce((s, r) => s + (r.casos || 0), 0)}</b><small>entre todos</small></div><div class="kpi"><span>Bloqueados</span><b>${blocked.size}</b><small>sin acceso</small></div></div>
-      <div class="tw"><table class="book resp"><thead><tr><th>Estudiante</th><th>Grupo</th><th>Casos</th><th>% acierto</th><th>Empresas</th><th>Etapa</th><th>Última actividad</th><th>Estado</th></tr></thead>
-      <tbody>${rk.map(r => `<tr class="click" data-auser="${r.id}"><td class="tx lead" data-l="Estudiante"><span class="who">${r.photo ? `<img src="${esc(r.photo)}" alt="" referrerpolicy="no-referrer">` : ''}${esc(r.name || 'Estudiante')}</span></td><td data-l="Grupo">${esc(r.group || '—')}</td><td class="num" data-l="Casos">${r.casos || 0}</td><td class="num" data-l="% acierto">${r.pct || 0}%</td><td class="num" data-l="Empresas">${r.empresas || 0}</td><td data-l="Etapa">${r.etapa || '—'}</td><td data-l="Última actividad">${r.ts ? fmtD(limaISO(r.ts)) : '—'}</td><td data-l="Estado">${blocked.has(r.id) ? '<span class="pill bad">Bloqueado</span>' : '<span class="pill ok">Activo</span>'}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">Aún no hay usuarios.</td></tr>'}</tbody></table></div>
+      <section class="card"><h2>¿En qué etapa va la clase?</h2>${(() => { const c = {}; rk.forEach(r => { const e = r.etapa || 0; c[e] = (c[e] || 0) + 1; }); const mx = Math.max(1, ...Object.values(c)); return STAGES.map(x => `<div class="srow"><div class="sl"><span>${x.n}. ${esc(x.t)}</span><span class="num">${c[x.n] || 0}</span></div><div class="bar"><i style="width:${Math.round((c[x.n] || 0) / mx * 100)}%"></i></div></div>`).join(''); })()}</section>
+      <div class="row"><input id="auQ" type="search" placeholder="Buscar estudiante" style="flex:1;min-width:160px" aria-label="Buscar estudiante"><select id="auG" aria-label="Filtrar por grupo"><option value="">Todos los grupos</option>${[...new Set(rk.map(r => r.group).filter(Boolean))].sort().map(g => `<option>${esc(g)}</option>`).join('')}</select></div>
+      <div class="tw"><table class="book resp" id="auT"><thead><tr><th>Estudiante</th><th>Grupo</th><th>Casos</th><th>% acierto</th><th>Empresas</th><th>Etapa</th><th>Última actividad</th><th>Estado</th></tr></thead>
+      <tbody>${rk.map(r => `<tr class="click" data-auser="${r.id}" data-q="${esc(String(r.name || '').toLowerCase())}" data-g="${esc(r.group || '')}"><td class="tx lead" data-l="Estudiante"><span class="who">${r.photo ? `<img src="${esc(r.photo)}" alt="" referrerpolicy="no-referrer">` : ''}${esc(r.name || 'Estudiante')}</span></td><td data-l="Grupo">${esc(r.group || '—')}</td><td class="num" data-l="Casos">${r.casos || 0}</td><td class="num" data-l="% acierto">${r.pct || 0}%</td><td class="num" data-l="Empresas">${r.empresas || 0}</td><td data-l="Etapa">${r.etapa || '—'}</td><td data-l="Última actividad">${r.ts ? fmtD(limaISO(r.ts)) : '—'}</td><td data-l="Estado">${blocked.has(r.id) ? '<span class="pill bad">Bloqueado</span>' : '<span class="pill ok">Activo</span>'}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">Aún no hay usuarios.</td></tr>'}</tbody></table></div>
       <p class="mini">Toca un estudiante para ver su detalle, bloquearlo o eliminar sus datos.</p>
       <section class="card"><h2>Excel de notas</h2><p class="mini">Lista de estudiantes con casos, % de acierto, nota sobre 20, empresas terminadas, etapa y notas de los exámenes del grupo.</p>
       <div class="row"><select id="xgGr" aria-label="Grupo"><option value="">Todos los estudiantes</option>${[...new Set(rk.map(r => r.group).filter(Boolean))].sort().map(g => `<option>${esc(g)}</option>`).join('')}</select><button class="btn" data-act="admxls">Descargar Excel</button></div></section>`;
@@ -5586,16 +5747,18 @@ async function renderAdmin() {
         <div class="row"><span class="mini">${done.length} de ${tgt.length} entregaron</span><span class="sp"></span><button class="ghost sm" data-act="admexxls" data-id="${esc(e.id)}">Excel de notas</button><button class="ghost sm" data-act="admexdel" data-id="${esc(e.id)}">Eliminar</button></div></section>`; }).join('') : '<p class="empty">Aún no programaste exámenes.</p>'}`;
     } else if (tab === 'grupos') {
       const [gr, rk] = await Promise.all([Store.listPlain('groups', 500), Store.listPlain('rank', 1000)]);
-      const acc = await Store.get('config/acceso').catch(() => null);
+      const acc = await Store.get('config/acceso').catch(() => null); A.acc = acc || {};
       box.innerHTML = `<section class="card"><h2>Acceso a Viernes</h2><label class="chk"><input type="checkbox" id="accReq" ${acc && acc.req ? 'checked' : ''}> Solo pueden entrar estudiantes con un código de grupo válido</label><p class="mini">Si lo activas, quien entre con su cuenta de Google sin código (o con un código eliminado) tendrá que escribir el código de su grupo para practicar. Los administradores siempre entran.</p><button class="btn" data-act="admacceso">Guardar</button></section>
       <section class="card"><h2>Crear grupo</h2><div class="row"><input id="agName" placeholder="Nombre, p. ej. Contabilidad Integral – Sección A" style="flex:1;min-width:200px"><button class="btn" data-act="admgroupadd">Crear y generar código</button></div></section>
       <div class="tw"><table class="book resp"><thead><tr><th>Código</th><th>Nombre</th><th>Integrantes</th><th>Creado</th><th></th></tr></thead><tbody>${gr.sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(g => `<tr><td class="mono b lead" data-l="Código">${esc(g.id)}</td><td class="tx" data-l="Nombre">${esc(g.name || '')}</td><td class="num" data-l="Integrantes">${rk.filter(r => r.group === g.id).length}</td><td data-l="Creado">${g.ts ? fmtD(limaISO(g.ts)) : ''}</td><td data-l=""><button class="ghost sm" data-act="admgroupdel" data-id="${esc(g.id)}">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="5" class="empty">Aún no hay grupos.</td></tr>'}</tbody></table></div>
       <p class="mini">Comparte el código con tu salón. Cada estudiante lo pega en Más → Mi cuenta y queda registrado en el grupo.</p>`;
     } else if (tab === 'avisos') {
-      const av = await Store.get('config/aviso') || {};
-      box.innerHTML = `<section class="card"><h2>Aviso para todos</h2><label class="fld">Mensaje<textarea id="avTx" rows="3" placeholder="Ej. El examen de práctica es el viernes a las 8 p. m.">${esc(av.text || '')}</textarea></label>
-      <label class="chk"><input type="checkbox" id="avOn" ${av.on ? 'checked' : ''}> Mostrar el aviso en el inicio de todos los usuarios</label>
-      <button class="btn" data-act="admaviso">Guardar aviso</button></section>`;
+      const [av, gr] = await Promise.all([Store.get('config/aviso').catch(() => null), Store.listPlain('groups', 500)]);
+      const L = avisoList(av).sort((x, y) => (y.ts || 0) - (x.ts || 0));
+      box.innerHTML = `<section class="card"><h2>Nuevo aviso</h2><label class="fld">Mensaje<textarea id="avTx" rows="3" placeholder="Ej. El examen de práctica es el viernes a las 8 p. m."></textarea></label>
+      <label class="fld">Para<select id="avGr"><option value="">Todos los estudiantes</option>${gr.map(g => `<option value="${esc(g.id)}">Grupo ${esc(g.id)} · ${esc(g.name || '')}</option>`).join('')}</select></label>
+      <button class="btn" data-act="admaviso">Publicar aviso</button></section>
+      ${L.length ? `<div class="tw"><table class="book resp"><thead><tr><th>Aviso</th><th>Para</th><th>Fecha</th><th>Estado</th><th></th></tr></thead><tbody>${L.map(x => `<tr><td class="tx lead" data-l="Aviso">${esc(x.text)}</td><td data-l="Para">${x.group ? 'Grupo ' + esc(x.group) : 'Todos'}</td><td data-l="Fecha">${x.ts ? fmtD(limaISO(x.ts)) : ''}</td><td data-l="Estado">${x.on ? '<span class="pill ok">Visible</span>' : '<span class="pill">Oculto</span>'}</td><td data-l=""><button class="ghost sm" data-act="admavtog" data-id="${esc(x.id)}">${x.on ? 'Ocultar' : 'Mostrar'}</button> <button class="ghost sm" data-act="admavdel" data-id="${esc(x.id)}">Eliminar</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="empty">No hay avisos publicados.</p>'}`;
     } else if (tab === 'admins') {
       const ad = await Store.listPlain('admins', 100);
       box.innerHTML = `<section class="card"><h2>Administradores</h2><p class="mini">Tienen acceso a este panel. <b>${SUPER_ADMIN}</b> es el administrador principal y no se puede quitar.</p>
@@ -5626,7 +5789,7 @@ async function adminAct(act, t) {
       await Store.set('groups/' + code, {name, ts: Date.now(), by: A.user.email}, true); toast('Grupo creado: ' + code); return renderAdmin();
     }
     if (act === 'admgroupdel') { if (!confirmTwice('g' + t.dataset.id, '¿Eliminar el grupo ' + t.dataset.id + '? Toca otra vez para confirmar.')) return; await Store.del('groups/' + t.dataset.id); toast('Grupo eliminado'); return renderAdmin(); }
-    if (act === 'admacceso') { await Store.set('config/acceso', {req: $('#accReq').checked, ts: Date.now()}, true); return toast($('#accReq').checked ? 'Ahora se pide código de grupo para entrar' : 'Acceso libre con cuenta de Google'); }
+    if (act === 'admacceso') { A.acc = {...(A.acc || {}), req: $('#accReq').checked}; await Store.set('config/acceso', {...A.acc, ts: Date.now()}, true); return toast($('#accReq').checked ? 'Ahora se pide código de grupo para entrar' : 'Acceso libre con cuenta de Google'); }
     if (act === 'admxls') return notasXLS($('#xgGr').value);
     if (act === 'admexxls') { const ex = await Store.get('config/examenes'); const e = ((ex && ex.list) || []).find(x => x.id === t.dataset.id); return notasXLS(e ? e.group : '', e); }
     if (act === 'admexadd') {
@@ -5639,7 +5802,16 @@ async function adminAct(act, t) {
       ex.ts = Date.now(); await Store.set('config/examenes', ex); toast('Examen programado'); return renderAdmin();
     }
     if (act === 'admexdel') { if (!confirmTwice('e' + t.dataset.id, '¿Eliminar este examen? Toca otra vez para confirmar.')) return; const ex = (await Store.get('config/examenes')) || {list: []}; ex.list = (ex.list || []).filter(e => e.id !== t.dataset.id); ex.ts = Date.now(); await Store.set('config/examenes', ex); toast('Examen eliminado'); return renderAdmin(); }
-    if (act === 'admaviso') { await Store.set('config/aviso', {text: $('#avTx').value.trim(), on: $('#avOn').checked, ts: Date.now()}, true); A.aviso = $('#avOn').checked && $('#avTx').value.trim() ? {text: $('#avTx').value.trim(), on: true} : null; return toast('Aviso guardado'); }
+    if (act === 'admaviso' || act === 'admavtog' || act === 'admavdel') {
+      let L = avisoList(await Store.get('config/aviso').catch(() => null));
+      if (act === 'admaviso') { const text = $('#avTx').value.trim(); if (!text) return toast('Escribe el aviso'); L.push({id: 'A' + Date.now().toString(36), text, group: $('#avGr').value, on: true, ts: Date.now()}); }
+      if (act === 'admavtog') L = L.map(x => x.id === t.dataset.id ? {...x, on: !x.on} : x);
+      if (act === 'admavdel') { if (!confirmTwice('av' + t.dataset.id, '¿Eliminar este aviso? Toca otra vez para confirmar.')) return; L = L.filter(x => x.id !== t.dataset.id); }
+      A.avisoDoc = {list: L, ts: Date.now()}; await Store.set('config/aviso', A.avisoDoc, true); setAvisos();
+      toast(act === 'admaviso' ? 'Aviso publicado' : act === 'admavdel' ? 'Aviso eliminado' : 'Aviso actualizado'); return renderAdmin();
+    }
+    if (act === 'admmine') { A.P.adminUnlock = $('#apUn').checked; A.P.adminPeek = $('#apPk').checked; A.P.adminFill = $('#apFl').checked; await saveProfile(); return toast('Accesos guardados'); }
+    if (act === 'admclase') { const o = {req: $('#acRq').checked, maxSt: +$('#acMax').value || 0, noHint: $('#acNh').checked, noSol: $('#acNs').checked, ts: Date.now()}; await Store.set('config/acceso', o, true); A.acc = o; return toast('Control de la clase guardado'); }
     if (act === 'admadminadd') { const em = $('#adEm').value.trim().toLowerCase(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast('Escribe un correo válido'); await Store.set('admins/' + em, {ts: Date.now(), by: A.user.email}, true); toast('Administrador agregado'); return renderAdmin(); }
     if (act === 'admadmindel') { await Store.del('admins/' + t.dataset.id); toast('Administrador quitado'); return renderAdmin(); }
     if (act === 'admblock') { await Store.set('blocked/' + t.dataset.id, {ts: Date.now(), by: A.user.email}, true); toast('Usuario bloqueado'); closeModal(); return renderAdmin(); }
@@ -5671,6 +5843,9 @@ async function notasXLS(group, exam) {
 }
 function confirmTwice(key, msg) { if (A._cf === key && Date.now() - A._cfT < 5000) { A._cf = null; return true; } A._cf = key; A._cfT = Date.now(); toast(msg, 5000); return false; }
 document.addEventListener('click', e => { const b = e.target.closest('[data-act=rktab]'); if (b) { A.rkTab = b.dataset.k; renderRanking(); } });
+document.addEventListener('input', e => { if (e.target.id !== 'auQ') return; filtAU(); });
+document.addEventListener('change', e => { if (e.target.id !== 'auG') return; filtAU(); });
+function filtAU() { const q = ($('#auQ').value || '').trim().toLowerCase(), g = $('#auG').value; $$('#auT tbody tr[data-auser]').forEach(r => { r.hidden = !!(q && !r.dataset.q.includes(q)) || !!(g && r.dataset.g !== g); }); }
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js', {updateViaCache: 'none'}).then(r => { r.update(); setInterval(() => r.update(), 30 * 60 * 1000); }).catch(() => {}); let rl = !navigator.serviceWorker.controller; navigator.serviceWorker.addEventListener('controllerchange', () => { if (rl) return; rl = true; location.reload(); }); }); }
 </script>
