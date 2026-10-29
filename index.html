@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2f2a85">
+<meta name="theme-color" content="#0d5c46">
 <meta name="description" content="Práctica de libros contables SUNAT: 50 operaciones nuevas cada 4 horas.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -22,8 +22,8 @@
 <style>
 /* Viernes — identidad: tinta índigo + lápiz rojo de corrección sobre papel de libro contable */
 :root{
-  --bg:#f4f2ec; --surface:#ffffff; --paper:#fbfaf6; --ink:#1b1d36; --muted:#5f627c; --line:#e3dfd4; --rule:#dbe3f6;
-  --brand:#2f2a85; --brand-2:#4740c9; --brand-ink:#ffffff; --brand-soft:#ebeafb; --accent:#e2553d;
+  --bg:#dceae2; --surface:#ffffff; --paper:#f6faf7; --ink:#10241c; --muted:#4a5f55; --line:#cfe0d5; --rule:#d6e6dc;
+  --brand:#0d5c46; --brand-2:#14805f; --brand-ink:#ffffff; --brand-soft:#e3f0e8; --accent:#b4532f;
   --ok:#16815a; --ok-bg:#e1f3ea; --bad:#c2392b; --bad-bg:#fbe5e1; --warn:#985f00; --warn-bg:#fbefd2;
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif; --body:"Figtree",ui-sans-serif,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   --r:16px; --shadow:0 1px 2px rgba(27,29,54,.05),0 6px 18px rgba(27,29,54,.05);
@@ -262,7 +262,9 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .fb li{font-size:.9rem}
 .why{color:var(--muted)}
 .solbox{border:1px dashed var(--ok);border-radius:12px;padding:12px}
-.whys{margin:8px 0 0;padding-left:18px;font-size:.86rem;color:var(--muted);display:grid;gap:3px}
+.whys{margin:8px 0 0;padding-left:18px;font-size:.86rem;color:var(--muted);display:grid;gap:6px;line-height:1.45}
+.whys b{color:var(--ink);font-weight:600}
+.whyh{margin-top:12px}
 
 /* Historial */
 .filters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
@@ -509,6 +511,13 @@ table.book.sunat{min-width:100%;width:auto;border-collapse:collapse}
 
 .mgrp{font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin:8px 0 2px;padding-top:6px;border-top:1px solid var(--line)}
 
+/* Formatos con anchos fijos (13.1): entran en la tarjeta */
+table.book.sunat.fitw{table-layout:fixed;width:100%}
+.book.fitw th{min-width:0!important;font-size:.56rem;padding:4px 3px}
+.book.fitw td{min-width:0!important;padding:4px 3px}
+.book.fitw td.in input,.book.fitw td.in select{min-width:0!important;width:100%;font-size:12.5px;padding:5px 4px}
+.book.fitw td.in select.tsel{max-width:none}
+.book.fitw td.tx{min-width:0;font-size:.8rem}
 /* Diario 5.1 en PC: que entre completo en la tarjeta */
 table.book.d51{table-layout:fixed;width:100%;min-width:900px}
 .book.d51 col.cden{width:0}.book.d51 td.den,.book.d51 th.dh{padding:0!important;border:0!important;font-size:0;overflow:hidden;width:0}.book.d51 .den-m{display:block;font-size:.72rem}
@@ -517,6 +526,10 @@ table.book.d51{table-layout:fixed;width:100%;min-width:900px}
 .book.d51 td.hc,.book.d51 td.in,.book.d51 td.den{min-width:0!important}
 .book.d51 td.hc .dwrap .dtxt,.book.d51 td.in input.num,.book.d51 textarea.glo{min-width:0!important}
 .book.d51 td.hc select{max-width:none}
+.metodo{border:1px solid var(--brand);background:var(--brand-soft);border-radius:10px;padding:8px 12px;font-size:.86rem;line-height:1.45}
+.metodo b{color:var(--brand)}
+.fpre{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 8px}.fpre label{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.8rem;font-weight:700;color:var(--muted)}.fpre select{min-width:240px;max-width:100%}
+.fpre .in.ok select{background:var(--ok-bg);color:var(--ok)}.fpre .in.bad select{background:var(--bad-bg);color:var(--bad)}
 /* nada dentro de una tarjeta puede ensancharla */
 .card,.case{grid-template-columns:minmax(0,1fr)}
 .card>*,.solbox,.solbox>*,.cp>*{min-width:0}
@@ -2383,7 +2396,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '18';
+const APP_V = '19';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -3200,11 +3213,14 @@ const INSTR = {
   ventas: 'Anota el comprobante en el Registro de Ventas e Ingresos (Formato 14.1).',
   caja: 'Anota la operación en el Libro Caja y Bancos – detalle del efectivo (Formato 1.1) y calcula el saldo final de caja.',
   banco: 'Anota la operación en el Libro Caja y Bancos – detalle de la cuenta corriente (Formato 1.2) y calcula el saldo final.',
-  kardex: 'Registra el movimiento en el Registro de Inventario Permanente Valorizado (Formato 13.1), método promedio ponderado. Redondea el costo unitario a 2 decimales.',
+  kardex: 'Elige el método de valuación que corresponde a esta empresa y registra el movimiento en el Registro de Inventario Permanente Valorizado (Formato 13.1). Redondea el costo unitario a 2 decimales.',
   kardexu: 'Registra el movimiento en el Registro de Inventario Permanente en Unidades Físicas (Formato 12.1).',
   planilla: 'Completa la línea del trabajador en la planilla de remuneraciones del mes.',
 };
 
+// Métodos de valuación de existencias (art. 62 de la Ley del Impuesto a la Renta)
+const METODOS = ['PEPS (primeras entradas, primeras salidas)', 'Promedio ponderado', 'UEPS (últimas entradas, primeras salidas)', 'Identificación específica'];
+const METODO_WHY = 'Lo recomendado aquí es el PROMEDIO PONDERADO: la mercadería es homogénea (el mismo producto comprado a precios distintos) y el costo promedio reparte esas diferencias; es el método más usado en empresas comerciales y el que aplica esta empresa. PEPS también lo permite SUNAT, pero obliga a controlar cada lote por separado. La identificación específica es para bienes únicos y de alto valor (por ejemplo, vehículos con número de serie). UEPS no está permitido: el art. 62 de la Ley del Impuesto a la Renta solo admite PEPS, promedio, identificación específica, inventario al detalle y existencias básicas.';
 // Tabla 6 (unidades de medida) para los encabezados del 13.1 y 3.7
 const T6 = {unidad: 'NIU', caja: 'BX', paquete: 'PK', bolsa: 'BG', 'galón': 'GLL', metro: 'MTR', juego: 'SET'};
 const t6 = u => T6[u] ? `${T6[u]} (${u})` : u;
@@ -3298,7 +3314,7 @@ function caseFromOp(op, fmt, co, k = {}) {
       fl.fcu = F('n', kx.fin.cu, 'Nuevo costo promedio = costo total del saldo ÷ cantidad del saldo.', {l: 'Saldo: costo unitario', k: 'costo-promedio', tol: 0.011});
       fl.ft = F('n', kx.fin.t, 'Costo total del saldo = anterior + entrada − salida.', {l: 'Saldo: costo total', k: 'saldo', tol: 0.05});
       const E = kx.ent ? [{f: 'eq'}, {f: 'ecu'}, {f: 'et'}] : [BL, BL, BL], S = kx.sal ? [{f: 'sq'}, {f: 'scu'}, {f: 'st'}] : [BL, BL, BL];
-      tbl = {sunat: true, groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 1], ['ENTRADAS', 3], ['SALIDAS', 3], ['SALDO FINAL', 3]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [
+      tbl = {sunat: true, fit: true, cw: [74, 40, 50, 60, 92, 56, 66, 86, 56, 66, 86, 56, 66, 86], groups: [['DOCUMENTO DE TRASLADO, COMPROBANTE DE PAGO, DOCUMENTO INTERNO O SIMILAR', 4], ['', 1], ['ENTRADAS', 3], ['SALIDAS', 3], ['SALDO FINAL', 3]], cols: ['Fecha', 'Tipo (Tabla 10)', 'Serie', 'Número', 'Tipo de operación (Tabla 12)', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [
         [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, BL, BL, BL, BL, {s: ni(kx.prev.q), c: 'num'}, {s: nf(kx.prev.cu), c: 'num'}, {s: nf(kx.prev.t), c: 'num'}],
         [{s: fmtD(op.date)}, kx.tcp, kx.serie, String(kx.num), {f: 'top'}, ...E, ...S, {f: 'fq'}, {f: 'fcu'}, {f: 'ft'}]]};
     } else {
@@ -3309,7 +3325,8 @@ function caseFromOp(op, fmt, co, k = {}) {
         [BL, BL, BL, BL, {s: 'Saldo inicial (viene)', c: 'b'}, BL, BL, {s: ni(kx.prev.q), c: 'num'}],
         [{s: fmtD(op.date)}, kx.tcp, kx.serie, String(kx.num), {f: 'top'}, kx.ent ? {f: 'eq'} : BL, kx.sal ? {f: 'sq'} : BL, {f: 'fq'}]]};
     }
-    c.sh = [['ESTABLECIMIENTO (1)', 'Almacén principal'], ['CÓDIGO DE LA EXISTENCIA', kx.cod], ['TIPO (TABLA 5)', '01 – Mercaderías'], ['DESCRIPCIÓN', kx.prod], ['CÓDIGO DE LA UNIDAD DE MEDIDA (TABLA 6)', t6(kx.u)], ...(val ? [['MÉTODO DE VALUACIÓN', 'Promedio ponderado']] : [])];
+    c.sh = [['ESTABLECIMIENTO (1)', 'Almacén principal'], ['CÓDIGO DE LA EXISTENCIA', kx.cod], ['TIPO (TABLA 5)', '01 – Mercaderías'], ['DESCRIPCIÓN', kx.prod], ['CÓDIGO DE LA UNIDAD DE MEDIDA (TABLA 6)', t6(kx.u)]];
+    if (val) { fl.met = F('sel', METODOS[1], METODO_WHY, {l: 'Método de valuación', k: 'kardex', opts: METODOS}); c.pre = [['MÉTODO DE VALUACIÓN', 'met']]; }
     c.kx = kx;
   }
   c.fields = fl; c.tbl = tbl;
@@ -3684,7 +3701,7 @@ const TEORIA = {
   3: {q: 'El Registro de Ventas e Ingresos (Formato 14.1) lista cada comprobante que emites: facturas, boletas y notas de crédito (estas en negativo). Sus totales van a las casillas 100 y 101 del PDT 621.', c: ['Fecha de emisión', 'Tipo de comprobante (01 factura, 03 boleta, 07 nota de crédito)', 'Serie y número', 'Tipo y número de documento del cliente (6 RUC, 1 DNI)', 'Base imponible', 'IGV', 'Importe total'], e: 'Boleta B001-1250 a un cliente con DNI: tipo 03, documento 1, base 254.24, IGV 45.76, total 300.00.'},
   4: {q: 'El Libro Caja (Formato 1.1) controla el efectivo (cuenta 101): cada entrada va en Deudor y cada salida en Acreedor; al final se calcula el saldo.', c: ['Fecha', 'Descripción de la operación', 'Cuenta contable asociada (la contrapartida)', 'Deudor (ingreso)', 'Acreedor (salida)'], e: 'Saldo anterior 2,400. Venta al contado con boleta por 300: Deudor 300, cuenta asociada 7012. Saldo final = 2,400 + 300 = 2,700.'},
   5: {q: 'El Libro Bancos (Formato 1.2) controla cada cuenta corriente (cuenta 104) con el medio de pago de la Tabla 1, el girador o beneficiario y el número de operación.', c: ['Fecha', 'Medio de pago (Tabla 1: 001 depósito, 003 transferencia, 007 cheque)', 'Descripción', 'Girador / beneficiario', 'Nº de operación', 'Cuenta asociada', 'Deudor', 'Acreedor'], e: 'Pago a proveedor por transferencia de 1,180: medio 003, cuenta asociada 4212, Acreedor 1,180; saldo = saldo anterior − 1,180.'},
-  6: {q: 'El Registro de Inventario Permanente Valorizado (Formato 13.1) controla cantidades y costos de cada producto. Con promedio ponderado, el costo unitario se recalcula en cada compra.', c: ['Fecha y documento', 'Tipo de operación (Tabla 12: 01 venta, 02 compra)', 'Entradas: cantidad, costo unitario, costo total', 'Salidas: cantidad, costo unitario, costo total', 'Saldo final: cantidad, costo unitario, costo total'], e: 'Saldo 100 u a 10.00 = 1,000. Compra 50 u a 13.00 = 650. Saldo 150 u, total 1,650, costo promedio 1,650 ÷ 150 = 11.00. Venta de 30 u: salida 30 × 11.00 = 330.'},
+  6: {q: 'El Registro de Inventario Permanente Valorizado (Formato 13.1) controla cantidades y costos de cada producto. La empresa debe indicar su método de valuación; SUNAT acepta, entre otros, PEPS (primeras entradas, primeras salidas), promedio ponderado e identificación específica, pero no UEPS. En Viernes se usa el PROMEDIO PONDERADO: el costo unitario se recalcula en cada compra y las salidas se valorizan a ese costo.', c: ['Fecha y documento', 'Tipo de operación (Tabla 12: 01 venta, 02 compra)', 'Entradas: cantidad, costo unitario, costo total', 'Salidas: cantidad, costo unitario, costo total', 'Saldo final: cantidad, costo unitario, costo total'], e: 'Saldo 100 u a 10.00 = 1,000. Compra 50 u a 13.00 = 650. Saldo 150 u, total 1,650, costo promedio 1,650 ÷ 150 = 11.00. Venta de 30 u: salida 30 × 11.00 = 330.'},
   7: {q: 'La planilla calcula, por trabajador, la remuneración, los descuentos (ONP 13% o AFP: 10% + prima + comisión, y renta de 5ta si corresponde), el neto a pagar y el ESSALUD 9% que paga la empresa. Cada mes también se provisionan gratificación, CTS y vacaciones.', c: ['Básico y asignación familiar (10% de la RMV)', 'Total remuneración', 'ONP o AFP (aporte, prima, comisión)', 'Renta de 5ta', 'Neto a pagar', 'ESSALUD 9%'], e: 'Sueldo 2,000 con hijos (+123) = 2,123. AFP Integra: 212.30 + 29.09 + 32.91 = 274.30. Neto 1,848.70. ESSALUD 191.07. Asiento: 6211 2,123 y 6271 191.07 contra 4031 191.07, 407 274.30 y 4111 1,848.70.'},
   8: {q: 'El Libro Mayor (Formato 6.1) agrupa por cuenta todos los movimientos del Diario para obtener su saldo: saldo inicial + Debe − Haber.', c: ['Fecha', 'Glosa', 'Debe', 'Haber', 'Saldo deudor o acreedor'], e: 'Cuenta 1041: saldo inicial 50,000 D; Debe 12,000; Haber 8,500. Saldo final = 50,000 + 12,000 − 8,500 = 53,500 deudor.'},
   9: {q: 'El Balance de comprobación (Formato 3.17) lista todas las cuentas con sus sumas del Debe y Haber y su saldo. Comprueba que la suma de saldos deudores sea igual a la de acreedores.', c: ['Cuenta', 'Sumas Debe y Haber', 'Saldo deudor', 'Saldo acreedor'], e: 'Cuenta 42: Debe 9,000, Haber 15,000 → saldo acreedor 6,000. Al final: total saldos deudores = total saldos acreedores.'},
@@ -4157,7 +4174,7 @@ const PATH = {
 };
 /* ===================== Estado de la app ===================== */
 const A = {P: null, user: null, isAdmin: false, idx: [], months: {}, lotes: {}, view: 'home', li: null, lote: null, cur: 1, drafts: {}, hint: {}, showSol: {}, lastCode: null, busy: false, histN: 200, mesM: null, mesTab: 'resumen', timer: null};
-const LOGO = (s = 40) => `<svg class="logo" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="13" fill="var(--brand)"/><path d="M12.5 13.5 22 31.5 35.5 9.5" fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 37.2h24M12 41.6h24" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+const LOGO = (s = 40) => `<svg class="logo" width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="13" fill="var(--brand)"/><path d="M12.5 13.5 22 31.5 35.5 9.5" fill="none" stroke="#fff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 37.2h24M12 41.6h24" stroke="#c9a46a" stroke-width="2.4" stroke-linecap="round"/></svg>`;
 
 function toast(msg, ms = 3200) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, ms); }
 function modal(html, cls = '') { const m = $('#modal'); m.innerHTML = `<div class="sheet ${cls}" role="dialog" aria-modal="true">${html}</div>`; m.hidden = false; const f = m.querySelector('[autofocus]'); if (f) setTimeout(() => f.focus(), 30); }
@@ -4385,6 +4402,7 @@ function empresaCard(mo, li) {
 async function openLote(id, n) {
   const li = await getIndex(id), b = await getLote(id);
   if (!li || !b) { toast('No se encontró esa empresa'); return go('home'); }
+  if (li.kind === 'ciclo') upgradeLote(b, li);
   A.li = li; A.lote = b; A.view = 'lote'; setNavOn('practicar');
   A.loteMo = li.emp || null;
   history.replaceState(null, '', '#lote:' + id);
@@ -4396,7 +4414,7 @@ async function openLote(id, n) {
   window.scrollTo(0, 0);
 }
 function isExamOpen() { return A.li && A.li.kind === 'examen' && A.li.exam && !A.li.exam.fin; }
-function unlocked(st) { if (!A.li || A.li.kind !== 'ciclo') return true; return st <= stageInfo(A.li).cur || A.li.fin; }
+function unlocked(st) { if (!A.li || A.li.kind !== 'ciclo' || A.isAdmin) return true; return st <= stageInfo(A.li).cur || A.li.fin; }
 function renderLote() {
   const li = A.li, b = A.lote, cyc = li.kind === 'ciclo';
   const si = cyc ? stageInfo(li) : null;
@@ -4458,6 +4476,7 @@ function renderCase(target = '#casebox', ro = null) {
     ${renderCP(c.cp)}
     <p class="instr">${esc(c.instr)}${c.kind === 'diario' ? (destino ? ' Incluye los asientos de destino (clase 9 / 79) cuando correspondan.' : ' Los asientos de destino están desactivados en tus ajustes.') : ''}</p>
     ${c.head ? `<p class="mini head">${esc(c.head)}</p>` : ''}
+    ${c.fmt === 'kardex' && c.fields && c.fields.met ? `<div class="metodo"><b>Antes de llenar, elige el método de valuación.</b> La empresa vende mercadería homogénea que compra a precios distintos en el mes. Opciones: <b>PEPS</b> (lo primero que entra es lo primero que sale), <b>promedio ponderado</b> (el costo unitario se recalcula en cada compra), <b>UEPS</b> (lo último que entra sale primero) e <b>identificación específica</b> (cada unidad con su costo propio). Elige el más recomendado para este caso y calcula con ese método.</div>` : ''}
     ${c.kind === 'diario' ? diarioForm(c, draft, g, answered) : gridForm(c, draft, g, answered)}
     ${hintOn && !exam ? `<p class="hint"><b>Pista:</b> ${esc(c.hint)}</p>` : ''}
     ${answered ? feedback(c, g, a) : ''}
@@ -4534,15 +4553,50 @@ function gridForm(c, draft, g, answered) {
     if (x.den) return `<td class="tx dencell" data-den="${x.den}">${esc(acctName(vals[x.den] || ''))}</td>`;
     return `<td class="${x.c || ''}">${esc(x.s)}</td>`;
   };
-  if (isMobile()) return sunatHead(c) + gridCards(c, x => {
+  const pre = c.pre ? `<div class="fpre">${c.pre.map(([l, k]) => { const f = c.fields[k], st = g ? (g.cells[k] ? 'ok' : 'bad') : ''; return `<label><span>${esc(l)}:</span><span class="in ${st}">${inp(k, f, vals[k], '', answered || A.roMode)}</span></label>`; }).join('')}</div>` : '';
+  if (isMobile()) return sunatHead(c) + pre + gridCards(c, x => {
     if (typeof x === 'string') return esc(x);
     if (x.f) { const f = c.fields[x.f]; const st = g ? (g.cells[x.f] ? 'ok' : 'bad') : ''; return `<span class="in t-${f.t} ${st}">${inp(x.f, f, vals[x.f], f.t === 'n' ? 'num' : '', answered || A.roMode)}</span>`; }
     if (x.den) return `<span class="dencell" data-den="${x.den}">${esc(acctName(vals[x.den] || '')) || '—'}</span>`;
     return `<span class="${x.c || ''}">${esc(x.s)}</span>`;
   });
-  return `${sunatHead(c)}<div class="tw"><table class="book ${c.fmt} ${t.sunat ? 'sunat' : ''}">
+  return `${sunatHead(c)}${pre}<div class="tw"><table class="book ${c.fmt} ${t.sunat ? 'sunat' : ''} ${t.fit ? 'fitw' : ''}" ${t.cw ? `style="min-width:${t.cw.reduce((x, y) => x + y, 0)}px"` : ''}>${t.cw ? `<colgroup>${t.cw.map(w => `<col style="width:${w}px">`).join('')}</colgroup>` : ''}
     <thead>${theadHtml(t)}</thead>
-    <tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div>${t.sunat && t.cols.length > 8 ? '<p class="mini swipe sw2">Formato oficial completo: desliza la tabla hacia los lados. Las columnas en gris no aplican a esta operación.</p>' : t.cols.length > 5 ? '<p class="mini swipe">Desliza la tabla hacia los lados para ver todas las columnas.</p>' : ''}`;
+    <tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div>${t.sunat && !t.fit && t.cols.length > 8 ? '<p class="mini swipe sw2">Formato oficial completo: desliza la tabla hacia los lados. Las columnas en gris no aplican a esta operación.</p>' : t.cols.length > 5 ? '<p class="mini swipe">Desliza la tabla hacia los lados para ver todas las columnas.</p>' : ''}`;
+}
+/* Empresas creadas antes de los formatos oficiales: sus casos pendientes se pasan al formato SUNAT completo
+   (los ya resueltos se quedan como estaban, para no cambiar su nota) */
+function upgradeLote(b, li) {
+  if (b._up) return; b._up = true;
+  const co = (b.emp || li.emp).co, pend = c => { const a = li.ans[c.n]; return !a || a.draft || a.hv || (a.v && !Array.isArray(a.v) && a.v.cor !== undefined); };
+  const cor = {}; ['compras', 'ventas', 'caja', 'banco'].forEach(f => { cor[f] = {}; b.cases.filter(c => c.fmt === f).sort((x, y) => x.n - y.n).forEach((c, i) => { cor[f][c.fp] = {k: i + 1, c}; }); });
+  const dia = b.cases.filter(c => c.fmt === 'diario').sort((x, y) => x.n - y.n);
+  const pseudo = c => ({type: c.op, date: c.date, text: c.text, cp: c.cp, hint: c.hint, fp: c.fp, glosa: c.glosa});
+  b.cases = b.cases.map(c => {
+    if (!pend(c) || c.v2) return c;
+    let nc = null;
+    try {
+      if (c.fmt === 'diario' && !c.hf && dia.includes(c)) {
+        const L = [];
+        if (cor.compras[c.fp]) L.push(['080100', cor.compras[c.fp].k, cor.compras[c.fp].c.reg.serie + '-' + cor.compras[c.fp].c.reg.num]);
+        if (cor.ventas[c.fp]) L.push(['140100', cor.ventas[c.fp].k, cor.ventas[c.fp].c.reg.serie + '-' + cor.ventas[c.fp].c.reg.num]);
+        if (cor.caja[c.fp]) L.push(['010100', cor.caja[c.fp].k, cor.caja[c.fp].c.cash.nop || (cor.banco[c.fp] && cor.banco[c.fp].c.cash.nop) || (c.cp ? c.cp.serie + '-' + c.cp.num : '')]);
+        if (cor.banco[c.fp]) L.push(['010200', cor.banco[c.fp].k, cor.banco[c.fp].c.cash.nop || '']);
+        const ref = L.length && L[0][2] ? {lib: L[0][0], alts: L.slice(1).map(x => x[0]), cor: L[0][1], cors: L.slice(1).map(x => x[1]), doc: String(L[0][2])} : null;
+        nc = caseFromOp({...pseudo(c), lines: c.lines}, 'diario', co, {asiento: dia.indexOf(c) + 2, ref});
+      } else if ((c.fmt === 'compras' || c.fmt === 'ventas') && c.reg && !(c.tbl && c.tbl.sunat)) {
+        nc = caseFromOp({...pseudo(c), reg: c.reg}, c.fmt, co, {cor: (cor[c.fmt][c.fp] || {}).k});
+      } else if ((c.fmt === 'caja' || c.fmt === 'banco') && c.cash && !(c.tbl && c.tbl.sunat)) {
+        const x = {...c.cash}; delete x.fin;
+        nc = caseFromOp({...pseudo(c), cash: {[c.fmt]: x}}, c.fmt, co, {cor: (cor[c.fmt][c.fp] || {}).k});
+      } else if ((c.fmt === 'kardex' || c.fmt === 'kardexu') && c.kx && !(c.tbl && c.tbl.sunat)) {
+        nc = caseFromOp({...pseudo(c), kx: c.kx}, c.fmt, co);
+      }
+    } catch (e) { console.warn('upgrade', c.n, e); nc = null; }
+    if (!nc) return c;
+    Object.assign(nc, {n: c.n, stage: c.stage, fp: c.fp, title: c.title || nc.title, v2: true}); delete nc.head;
+    return nc;
+  });
 }
 /* Cabecera oficial de cada formato (R.S. 234-2006/SUNAT) */
 const FMT_SUNAT = {
@@ -4607,16 +4661,23 @@ function feedback(c, g, a) {
   ${g.notes && g.notes.length ? `<ul class="notes">${g.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
   ${g.msgs.length ? `<ul>${g.msgs.map(m => `<li><b>${esc(m.l)}</b>${m.exp ? ` — correcto: <span class="mono">${esc(m.exp)}</span>` : ''}${m.got !== undefined && m.got !== '' ? ` · pusiste: <span class="mono">${esc(m.got)}</span>` : ''}<br><span class="why">${esc(m.why)}</span></li>`).join('')}</ul>` : ''}</div>`;
 }
+/* Por qué de cada respuesta: agrupa los campos que tienen la misma explicación */
+function whyList(fields, skip = []) {
+  const G = new Map();
+  Object.entries(fields || {}).forEach(([k, f]) => { if (skip.includes(k) || !f.why) return; const g = G.get(f.why) || []; g.push(f); G.set(f.why, g); });
+  if (!G.size) return '';
+  return `<p class="fbh whyh">¿Por qué?</p><ul class="whys">${[...G.entries()].map(([w, fs]) => `<li><b>${fs.slice(0, 6).map(f => `${esc(f.l || '')}: <span class="mono">${esc(showSol(f))}</span>`).join(' · ')}${fs.length > 6 ? ` · y ${fs.length - 6} más` : ''}</b><br>${esc(w)}</li>`).join('')}</ul>`;
+}
 function solution(c, a) {
   if (c.kind === 'diario') {
     const L = c.lines.filter(l => (a.dest ?? A.P.destino) || !l.dest);
     const H = c.hf || {}, hs = k => H[k] ? esc(showSol(H[k])) : '';
-    return `<div class="solbox"><p class="fbh">Solución</p>${c.hf ? `<p class="mini solh">Asiento Nº <b>${hs('cor')}</b> · fecha <b>${hs('fe')}</b> · glosa: <b>${esc(c.glosa)}</b>${H.lib ? ` · referencia: libro <b>${hs('lib')}</b>, correlativo <b>${hs('rcor')}</b>, documento <b>${hs('doc')}</b>` : ''}</p>` : ''}<div class="tw"><table class="book"><thead><tr><th>Cuenta</th><th>Denominación</th><th>Debe</th><th>Haber</th></tr></thead><tbody>${L.map(l => `<tr class="${l.dest ? 'dest' : ''}"><td class="mono">${l.c}</td><td>${esc(acctName(l.c))}${l.dest ? ' <small>(destino)</small>' : ''}</td><td class="num">${l.d ? nf(l.d) : ''}</td><td class="num">${l.h ? nf(l.h) : ''}</td></tr>`).join('')}</tbody></table></div><ul class="whys">${L.map(l => `<li><span class="mono">${l.c}</span> ${esc(l.why)}</li>`).join('')}</ul></div>`;
+    return `<div class="solbox"><p class="fbh">Solución</p>${c.hf ? `<p class="mini solh">Asiento Nº <b>${hs('cor')}</b> · fecha <b>${hs('fe')}</b> · glosa: <b>${esc(c.glosa)}</b>${H.lib ? ` · referencia: libro <b>${hs('lib')}</b>, correlativo <b>${hs('rcor')}</b>, documento <b>${hs('doc')}</b>` : ''}</p>` : ''}<div class="tw"><table class="book"><thead><tr><th>Cuenta</th><th>Denominación</th><th>Debe</th><th>Haber</th></tr></thead><tbody>${L.map(l => `<tr class="${l.dest ? 'dest' : ''}"><td class="mono">${l.c}</td><td>${esc(acctName(l.c))}${l.dest ? ' <small>(destino)</small>' : ''}</td><td class="num">${l.d ? nf(l.d) : ''}</td><td class="num">${l.h ? nf(l.h) : ''}</td></tr>`).join('')}</tbody></table></div><p class="fbh whyh">¿Por qué?</p><ul class="whys">${L.map(l => `<li><span class="mono">${l.c}</span> ${esc(acctName(l.c))} — ${l.d ? 'Debe' : 'Haber'} ${esc(nf(l.d || l.h))}<br>${esc(l.why)}</li>`).join('')}</ul>${c.hf ? whyList(c.hf) : ''}</div>`;
   }
-  const t = c.tbl;
-  if (isMobile()) return `<div class="solbox"><p class="fbh">Solución</p>${gridCards(c, x => typeof x === 'string' ? esc(x) : x.f ? `<b class="solc">${esc(showSol(c.fields[x.f]))}</b>` : x.den ? esc(acctName(c.fields[x.den].v)) : esc(x.s))}</div>`;
+  const t = c.tbl, psol = c.pre ? c.pre.map(([l, k]) => `<p class="mini solh">${esc(l)}: <b>${esc(showSol(c.fields[k]))}</b><br><span class="why">${esc(c.fields[k].why)}</span></p>`).join('') : '';
+  if (isMobile()) return `<div class="solbox"><p class="fbh">Solución</p>${psol}${gridCards(c, x => typeof x === 'string' ? esc(x) : x.f ? `<b class="solc">${esc(showSol(c.fields[x.f]))}</b>` : x.den ? esc(acctName(c.fields[x.den].v)) : esc(x.s))}${whyList(c.fields, (c.pre || []).map(x => x[1]))}</div>`;
   const cell = x => { if (x == null || x === '') return '<td></td>'; if (typeof x === 'string') return `<td class="tx">${esc(x)}</td>`; if (x.f) return `<td class="solc ${c.fields[x.f].t === 'n' ? 'num' : ''}">${esc(showSol(c.fields[x.f]))}</td>`; if (x.den) return `<td class="tx">${esc(acctName(c.fields[x.den].v))}</td>`; return `<td class="${x.c || ''}">${esc(x.s)}</td>`; };
-  return `<div class="solbox"><p class="fbh">Solución</p><div class="tw"><table class="book ${c.fmt} ${t.sunat ? 'sunat' : ''}"><thead>${theadHtml(t)}</thead><tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+  return `<div class="solbox"><p class="fbh">Solución</p>${psol}<div class="tw"><table class="book ${c.fmt} ${t.sunat ? 'sunat' : ''} ${t.fit ? 'fitw' : ''}" ${t.cw ? `style="min-width:${t.cw.reduce((x, y) => x + y, 0)}px"` : ''}>${t.cw ? `<colgroup>${t.cw.map(w => `<col style="width:${w}px">`).join('')}</colgroup>` : ''}<thead>${theadHtml(t)}</thead><tbody>${t.rows.map(r => `<tr>${r.map(cell).join('')}</tr>`).join('')}</tbody></table></div>${whyList(c.fields, (c.pre || []).map(x => x[1]))}</div>`;
 }
 
 async function checkCase() {
@@ -4861,6 +4922,7 @@ async function restoreBackup(file) {
 
 /* ===================== Temas de color ===================== */
 const THEMES = [
+  ['cbo', 'Verde CBO', '#0d5c46', '#14805f', '#b4532f', '#2e9c77', '#6fd3a8', {bg: '#dceae2', paper: '#f6faf7', line: '#cfe0d5', ink: '#10241c', muted: '#4a5f55'}, {bg: '#061f18', surface: '#0c2a21', paper: '#0a251d', line: '#1d4436', ink: '#e6f2ec', muted: '#9cc3b1'}],
   ['indigo', 'Índigo', '#2f2a85', '#4740c9', '#e2553d', '#5a53e6', '#8a84ff'],
   ['esmeralda', 'Esmeralda', '#0e6a4e', '#17956d', '#e89a1c', '#1fa57a', '#5fd3a8'],
   ['oceano', 'Océano', '#0b5a86', '#1580c2', '#ff7a45', '#1f8fd6', '#6cc0f5'],
@@ -4876,12 +4938,14 @@ const UI_KEY = 'viernesui:tema';
 function uiGet() { try { return JSON.parse(localStorage.getItem(UI_KEY) || '{}'); } catch { return {}; } }
 function uiSet(o) { try { localStorage.setItem(UI_KEY, JSON.stringify(o)); } catch {} }
 function applyTheme() {
-  const u = uiGet(), t = THEMES.find(x => x[0] === u.c) || THEMES[0];
-  const [, , b, b2, ac, db, db2] = t;
+  const u = uiGet(); if (!u.v18) { u.c = 'cbo'; u.v18 = true; uiSet(u); }
+  const t = THEMES.find(x => x[0] === u.c) || THEMES[0];
+  const [, , b, b2, ac, db, db2, lx, dx] = t;
+  const ex = o => o ? Object.entries(o).map(([k, v]) => `--${k}:${v};`).join('') : '';
   let st = document.getElementById('themeVars');
   if (!st) { st = document.createElement('style'); st.id = 'themeVars'; document.head.appendChild(st); }
-  const L = `--brand:${b};--brand-2:${b2};--accent:${ac};--brand-soft:color-mix(in srgb, ${b2} 11%, #ffffff);`;
-  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--brand-soft:color-mix(in srgb, ${db} 22%, #181a2e);`;
+  const L = `--brand:${b};--brand-2:${b2};--accent:${ac};--brand-soft:color-mix(in srgb, ${b2} 11%, #ffffff);${ex(lx)}`;
+  const D = `--brand:${db};--brand-2:${db2};--accent:${ac};--brand-soft:color-mix(in srgb, ${db} 22%, #181a2e);${ex(dx)}`;
   st.textContent = `:root:root{${L}}@media (prefers-color-scheme: dark){:root:root:not([data-theme="light"]){${D}}}:root:root[data-theme="dark"]{${D}}`;
   const r = document.documentElement;
   if (u.m === 'light' || u.m === 'dark') r.setAttribute('data-theme', u.m); else r.removeAttribute('data-theme');
@@ -4912,7 +4976,7 @@ async function constanciaPDF(id) {
   try { await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'); } catch (e) { toast('No se pudo cargar el generador de PDF'); return; }
   const {jsPDF} = window.jspdf, doc = new jsPDF({unit: 'pt', format: 'a4'}), W = 595, co = li.emp.co, nota = Math.round(li.okc / li.n * 20);
   const d = new Date((li.finAt || Date.now()) - OFF), fecha = `${p2(d.getUTCDate())}/${p2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
-  doc.setFillColor(47, 42, 133); doc.rect(0, 0, W, 120, 'F'); doc.setFillColor(226, 85, 61); doc.rect(0, 120, W, 6, 'F');
+  doc.setFillColor(13, 92, 70); doc.rect(0, 0, W, 120, 'F'); doc.setFillColor(201, 164, 106); doc.rect(0, 120, W, 6, 'F');
   doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(30); doc.text('Viernes', 50, 62); doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Práctica contable SUNAT', 50, 86);
   doc.setTextColor(30, 30, 50); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text('Constancia de práctica', W / 2, 190, {align: 'center'});
   doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Se deja constancia de que', W / 2, 230, {align: 'center'});
@@ -4921,7 +4985,7 @@ async function constanciaPDF(id) {
   doc.text(doc.splitTextToSize(`completó el ciclo contable completo de la empresa simulada ${co.name} (RUC ${co.ruc}), período ${mesLbl(li.emp.id)}, ${REGIMEN[li.emp.regime || 'MYPE'].n}: del Libro Diario a los estados financieros.`, 440), W / 2, 296, {align: 'center'});
   doc.setDrawColor(220, 220, 230); doc.roundedRect(130, 360, 335, 110, 10, 10, 'S');
   doc.setFontSize(11); doc.text('Nota', 200, 392, {align: 'center'}); doc.text('Casos correctos', 395, 392, {align: 'center'});
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(34); doc.setTextColor(47, 42, 133); doc.text(nota + '/20', 200, 440, {align: 'center'}); doc.text(`${li.okc}/${li.n}`, 395, 440, {align: 'center'});
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(34); doc.setTextColor(13, 92, 70); doc.text(nota + '/20', 200, 440, {align: 'center'}); doc.text(`${li.okc}/${li.n}`, 395, 440, {align: 'center'});
   doc.setTextColor(30, 30, 50); doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
   doc.text('Libros y formatos practicados:', 70, 510);
   doc.setFontSize(10); doc.text(doc.splitTextToSize(STAGES.map(s => s.n + '. ' + s.t).join('  ·  '), 455), 70, 530);
