@@ -109,7 +109,9 @@ main{min-width:0}
 .lote.big .eyebrow,.lote.big .nums span{color:rgba(255,255,255,.75)}
 .lote.big .bar{background:rgba(255,255,255,.22)} .lote.big .bar i{background:#fff}
 .lote.big .btn{background:#fff;color:var(--brand);justify-self:start}
-.lote-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.lote-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.lote-h>div:first-child{min-width:0;flex:1 1 180px}
+.nums .link{display:block;margin-left:auto;margin-top:4px;font-size:.82rem}
 .nums{text-align:right}
 .nums b{font-family:var(--mono);font-size:1.25rem;display:block}
 .nums span{font-size:.8rem;color:var(--muted);white-space:nowrap}
@@ -446,6 +448,26 @@ textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);bo
 }
 
 @media (min-width:641px){.book.resp td:nth-child(n+3),.book.resp th:nth-child(n+3),.book.rank td:first-child,.book.rank th:first-child{text-align:center}.book.resp td:nth-child(n+3) .pill{margin:0 auto}.book.resp td,.book.resp th{vertical-align:middle}}
+
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 14px}
+.chks{display:flex;flex-wrap:wrap;gap:6px 16px;margin:6px 0 12px}
+.exh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.gexam{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border-left:4px solid var(--accent)}
+.gexam h2{margin:2px 0}
+
+.teo{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.teo summary{cursor:pointer;font-weight:700;color:var(--brand)}
+.teo p,.teo li{font-size:.88rem;line-height:1.45}
+.teo ul{margin:4px 0 8px;padding-left:18px}
+.teo.fin{margin:0 0 8px}
+
+.mlist{display:grid;gap:0;padding:4px 12px}
+.mli{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.mli:last-child{border-bottom:0}
+.mli .ml{font-size:.86rem;line-height:1.3;overflow-wrap:anywhere}
+.mli .mv{text-align:right;font-family:var(--mono);font-size:.86rem}
+.mli .mv input{width:100%;text-align:right}
+.mli.tot .ml{font-weight:700}
 /* nada dentro de una tarjeta puede ensancharla */
 .card,.case{grid-template-columns:minmax(0,1fr)}
 .card>*,.solbox,.solbox>*,.cp>*{min-width:0}
@@ -509,6 +531,10 @@ table.book.fitcards{min-width:0!important;border:0;background:transparent;width:
   .cpt th{white-space:normal;vertical-align:bottom}
   .cpt td.num{font-size:.72rem}
   .cpt th,.cpt td{padding:4px 3px}
+}
+@media (max-width:380px){
+  .book.diario td.in input{font-size:12.5px;padding:6px 3px}
+  .book.diario td:nth-child(5){width:26px}
 }
 </style>
 </head>
@@ -2306,7 +2332,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '14';
+const APP_V = '15';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -2620,11 +2646,11 @@ const FW = {compras: 4, ventas: 4, sire: 1, caja: 1, banco: 1, kardex: 2, kardex
 const LIBRO = {
   diario: '5.1 Libro Diario', compras: '8.1 Registro de Compras', ventas: '14.1 Registro de Ventas', sire: 'SIRE',
   caja: '1.1 Caja', banco: '1.2 Bancos', kardex: '13.1 Kárdex valorizado', kardexu: '12.1 Kárdex en unidades',
-  mayor: '6.1 Libro Mayor', balance: 'Balance de comprobación', f621: 'PDT 621', activo: '7.1 Activos fijos',
-  costo: '10 Costo de ventas', er: 'Estado de Resultados', esf: 'Situación Financiera', efe: 'Flujo de Efectivo', ecp: 'Cambios en el Patrimonio', planilla: 'Planilla de remuneraciones', plares: 'Resumen de planilla'
+  mayor: '6.1 Libro Mayor', balance: '3.17 Balance de comprobación', f621: 'PDT 621', activo: '7.1 Activos fijos',
+  costo: '10 Costo de ventas', er: '3.20 Estado de Resultados', esf: '3.1 Situación Financiera', efe: '3.18 Flujo de Efectivo', ecp: '3.19 Cambios en el Patrimonio', planilla: 'Planilla de remuneraciones', plares: 'Resumen de planilla', plabs: 'Beneficios sociales', ib32: '3.2 Efectivo', ib33: '3.3 Clientes', ib37: '3.7 Mercaderías', ib312: '3.12 Proveedores', d52: '5.2 Diario simplificado', det8: 'Clase 8 · Resultado', cierre: 'Asiento de cierre'
 };
 const OPNAME = {
-  compra_merc: 'Compra de mercadería', venta_merc: 'Venta de mercadería', compra_serv: 'Servicio recibido', rxh: 'Recibo por honorarios',
+  compra_merc: 'Compra de mercadería', compra_merc_p: 'Compra con percepción', compra_serv_d: 'Servicio con detracción', pago_detra: 'Pago con detracción', cobro_ret: 'Cobranza con retención', prov_bs: 'Provisión de beneficios sociales', venta_merc: 'Venta de mercadería', compra_serv: 'Servicio recibido', rxh: 'Recibo por honorarios',
   cobro_banco: 'Cobranza en banco', cobro_caja: 'Cobranza en efectivo', pago_prov: 'Pago a proveedor', deposito: 'Depósito de caja a banco',
   gasto_caja: 'Gasto pagado en efectivo', prestamo: 'Préstamo bancario', cuota: 'Pago de cuota de préstamo', planilla: 'Planilla de sueldos',
   pago_planilla: 'Pago de sueldos', depreciacion: 'Depreciación del mes', compra_activo: 'Compra de activo fijo', nota_credito: 'Nota de crédito (devolución)',
@@ -2667,7 +2693,7 @@ function newMonth(M, regime, seed = '') {
   const pers = Array.from({length: 6}, () => ({n: uniq(() => personName(R)), dni: String(R.int(10000000, 79999999))}));
   const banco = R.pick(BANCOS);
   const inv = {};
-  prods.forEach(p => { const q = R.int(40, 220); inv[p.id] = {q, t: r2(q * p.cu)}; });
+  prods.forEach(p => { const q = R.int(150, 600); inv[p.id] = {q, t: r2(q * p.cu)}; });
   const caja = R.int(15, 40) * 100, bco = R.int(30, 70) * 1000;
   const prevM = (() => { const [y, m] = M.split('-').map(Number); return m === 1 ? `${y - 1}-12` : `${y}-${p2(m - 1)}`; })();
   const cxc = [0, 1].map(() => { const c = R.pick(clis), base = R.amt(800, 4000), igv = r2(base * 0.18); return {doc: 'F001-' + R.int(20, 90), base, igv, total: r2(base + igv), cli: c, prev: true}; });
@@ -2690,6 +2716,13 @@ function newMonth(M, regime, seed = '') {
   };
 }
 
+/* Renta de 5ta categoría (sueldo igual todo el año): proyección anual = 12 sueldos + 2 gratificaciones + bonificación 9%; menos 7 UIT; escala progresiva; retención mensual = impuesto ÷ 12 */
+function quinta(rem) {
+  const proy = r2(rem * 12 + rem * 2 + rem * 2 * 0.09), neta = Math.max(0, r2(proy - 7 * UIT));
+  const tr = [[5, 0.08], [20, 0.14], [35, 0.17], [45, 0.20], [Infinity, 0.30]]; let rest = neta, lo = 0, imp = 0;
+  for (const [hi, t] of tr) { const top = hi * UIT, tramo = Math.max(0, Math.min(rest, top - lo)); imp += tramo * t; rest -= tramo; lo = top; if (rest <= 0) break; }
+  imp = r2(imp); return {proy, neta, imp, mens: r2(imp / 12)};
+}
 /* ===================== Operaciones (con su solución) ===================== */
 const OPS = {
   compra_merc: {w: 10, f: ['diario', 'compras', 'kardex', 'kardexu']},
@@ -2723,22 +2756,26 @@ function genOp(R, mo, type, date, fmt) {
   const op = {type, date};
   const cpBase = {fecha: date};
   switch (type) {
+    case 'compra_merc_p':
     case 'compra_merc': {
-      const p = R.pick(co.prods), q = qtyFor(R, p.cu), cu = r2(p.cu * (0.95 + R() * 0.12));
+      const pc = type === 'compra_merc_p';
+      const p = R.pick(co.prods); let q = qtyFor(R, p.cu); const cu = r2(p.cu * (0.95 + R() * 0.12));
+      if (pc) q = Math.max(q, Math.ceil(1200 / cu));
       const sup = R.pick(co.sups), serie = serieProv(R), num = R.int(100, 99999);
-      const base = r2(q * cu), igv = r2(base * 0.18), total = r2(base + igv);
+      const base = r2(q * cu), igv = r2(base * 0.18), total = r2(base + igv), perc = pc ? r2(total * 0.02) : 0;
       const I = st.inv[p.id], prev = {q: I.q, t: I.t, cu: r2(I.t / I.q)};
       I.q += q; I.t = r2(I.t + base);
-      st.cxp.push({doc: serie + '-' + num, total, sup});
-      op.text = `Compras al crédito (30 días) a ${sup.n} ${q} ${p.u}${q > 1 ? 's' : ''} de «${p.n}» a ${money(cu)} c/u más IGV. Recibes la factura ${serie}-${num}.`;
-      op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: sup.n, emRuc: sup.ruc, serie, num, rcLbl: 'Cliente', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [[q, p.u, p.n, cu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: 'Forma de pago: crédito a 30 días'};
-      op.lines = [Dl('6011', base, 'La mercadería comprada se carga a la 60 Compras (6011) por el valor sin IGV.'), Dl('40111', igv, 'El IGV de la factura es crédito fiscal: 40111 al Debe.'), Hl('4212', total, 'La deuda con el proveedor va a la 4212 al Haber por el importe total.'),
+      st.cxp.push({doc: serie + '-' + num, total: r2(total + perc), sup});
+      op.text = `Compras al crédito (30 días) a ${sup.n} ${q} ${p.u}${q > 1 ? 's' : ''} de «${p.n}» a ${money(cu)} c/u más IGV. Recibes la factura ${serie}-${num}.` + (pc ? ` El proveedor es agente de percepción: te cobra además la percepción del IGV de 2% sobre el importe total (${money(perc)}), que luego descontarás de tu IGV a pagar.` : '');
+      op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: sup.n, emRuc: sup.ruc, serie, num, rcLbl: 'Cliente', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [[q, p.u, p.n, cu, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total], ...(pc ? [['Percepción 2%', perc], ['Total a pagar', r2(total + perc)]] : [])], note: 'Forma de pago: crédito a 30 días' + (pc ? ' · Operación sujeta a percepción del IGV' : '')};
+      op.lines = [Dl('6011', base, 'La mercadería comprada se carga a la 60 Compras (6011) por el valor sin IGV.'), Dl('40111', igv, 'El IGV de la factura es crédito fiscal: 40111 al Debe.'), ...(pc ? [Dl('40113', perc, 'La percepción es un pago adelantado de IGV a tu favor: 40113 IGV – Régimen de percepciones al Debe.')] : []), Hl('4212', r2(total + perc), 'La deuda con el proveedor va a la 4212 al Haber por el importe total' + (pc ? ' más la percepción.' : '.')),
         Dl('2011', base, 'Asiento de ingreso al almacén: la mercadería entra al inventario → 20 al Debe.'), Hl('6111', base, '…con abono a la 61 Variación de inventarios.')];
       op.glosa = `Compra de mercadería s/ F ${serie}-${num}`;
       op.reg = {fe: date, tcp: '01', serie, num, td: '6', nd: sup.ruc, rs: sup.n, bi: base, igv, ng: 0, tot: total};
       op.kx = {pid: p.id, prod: p.n, u: p.u, cod: p.cod, tcp: '01', serie, num, top: '02', prev, ent: {q, cu, t: base}, sal: null, fin: {q: I.q, t: I.t, cu: r2(I.t / I.q)}};
-      op.hint = 'Compra al crédito con factura: 60 (valor de compra) + 40111 (IGV) contra 42 (total). Después, el asiento de ingreso al almacén: 20 a 61.';
-      op.fp = `cm|${p.id}|${q}|${cu}|${sup.ruc}`;
+      op.hint = 'Compra al crédito con factura: 60 (valor de compra) + 40111 (IGV) contra 42 (total). Después, el asiento de ingreso al almacén: 20 a 61.' + (pc ? ' La percepción va a la 40113 al Debe y aumenta la deuda con el proveedor.' : '');
+      if (pc) op.perc = perc;
+      op.fp = `cm|${p.id}|${q}|${cu}|${sup.ruc}|${pc}`;
       break;
     }
     case 'venta_merc': {
@@ -2746,9 +2783,9 @@ function genOp(R, mo, type, date, fmt) {
       if (!cand.length) return null;
       const p = R.pick(cand), I = st.inv[p.id];
       const bol = fmt === 'caja' || fmt === 'B' ? true : fmt === 'F' ? false : R.chance(0.3);
-      let q = R.int(Math.max(1, Math.floor(I.q * 0.15)), Math.max(2, Math.floor(I.q * 0.55)));
+      let q = R.int(Math.max(1, Math.floor(I.q * 0.3)), Math.max(2, Math.floor(I.q * 0.65)));
       const cuAvg = r2(I.t / I.q);
-      let pu = r2(cuAvg * (1.35 + R() * 0.45));
+      let pu = r2(cuAvg * (1.5 + R() * 0.5));
       if (bol) { q = Math.min(q, Math.max(1, Math.floor(1500 / (pu * 1.18)))); }
       const base = r2(q * pu), igv = r2(base * 0.18), total = r2(base + igv);
       const costT = r2(q * cuAvg);
@@ -2917,33 +2954,35 @@ function genOp(R, mo, type, date, fmt) {
     }
     case 'planilla': {
       if (st.plaPend > 0) return null;
-      const n = R.int(3, 4), used = new Set(), ws = [];
+      const mgr = (mo.level || 1) >= 2, n = R.int(2, 3) + (mgr ? 1 : 0), used = new Set(), ws = [];
       const sis = R.shuffle(['ONP', 'AFP Integra', 'AFP Prima', 'AFP Habitat', 'AFP Profuturo', 'ONP']);
       for (let k = 0; k < n; k++) {
         let nm, n1; do { n1 = R.pick(NOM); nm = n1 + ' ' + R.pick(APE) + ' ' + R.pick(APE); } while (used.has(nm)); used.add(nm);
-        const cg = CARGOS[R.int(0, CARGOS.length - 1)], cargo = NOM_F.has(n1) ? cg[1] : cg[0], dest = cg[2];
-        const bas = R.int(124, 260) * 10, hijos = R.chance(0.5), af = hijos ? ASIG_FAM : 0, rem = r2(bas + af);
+        const isM = mgr && k === 0, cg = isM ? ['Gerente general', 'Gerente general', 94] : CARGOS[R.int(0, CARGOS.length - 1)], cargo = NOM_F.has(n1) ? cg[1] : cg[0], dest = cg[2];
+        const bas = isM ? R.int(55, 80) * 100 : R.int(124, 260) * 10, hijos = R.chance(0.5), af = hijos ? ASIG_FAM : 0, rem = r2(bas + af);
         const sist = sis[k], afp = sist.startsWith('AFP') ? sist.slice(4) : '';
         const ap = r2(rem * (afp ? AFP_APORTE : ONP_TASA)), pr = afp ? r2(rem * AFP_PRIMA) : 0, cm = afp ? r2(rem * AFP[afp]) : 0;
-        const desc = r2(ap + pr + cm), net = r2(rem - desc), ess = r2(rem * ESSALUD_TASA);
-        ws.push({nm, dni: String(R.int(40000000, 79999999)), cargo, dest, bas, hijos, af, rem, sist, afp, ap, pr, cm, desc, net, ess});
+        const q = quinta(rem), q5 = q.mens;
+        const desc = r2(ap + pr + cm + q5), net = r2(rem - desc), ess = r2(rem * ESSALUD_TASA);
+        ws.push({nm, dni: String(R.int(40000000, 79999999)), cargo, dest, bas, hijos, af, rem, sist, afp, ap, pr, cm, q5, q, desc, net, ess});
       }
       const T = k => r2(ws.reduce((a, w) => a + w[k], 0));
-      const S = T('rem'), ess = T('ess'), onp = r2(ws.filter(w => !w.afp).reduce((a, w) => a + w.ap, 0)), afpT = r2(ws.filter(w => w.afp).reduce((a, w) => a + w.desc, 0)), net = T('net');
+      const q5T = T('q5'), S = T('rem'), ess = T('ess'), onp = r2(ws.filter(w => !w.afp).reduce((a, w) => a + w.ap, 0)), afpT = r2(ws.filter(w => w.afp).reduce((a, w) => a + w.ap + w.pr + w.cm, 0)), net = T('net');
       const g94 = r2(ws.filter(w => w.dest === 94).reduce((a, w) => a + w.rem + w.ess, 0)), g95 = r2(ws.filter(w => w.dest === 95).reduce((a, w) => a + w.rem + w.ess, 0));
-      st.plaPend = net;
-      op.pla = {ws, S, ess, onp, afp: afpT, net, g94, g95};
-      op.text = `Provisionas la planilla del mes: ${n} trabajadores, remuneraciones ${money(S)} (incluye asignación familiar). Retenciones: ONP ${money(onp)} y AFP ${money(afpT)}. La empresa aporta ESSALUD 9% (${money(ess)}). ${g95 ? 'Los vendedores y cajeros son del área de ventas; el resto, administración.' : 'Todos son del área administrativa.'}`;
-      op.cp = {...cpBase, kind: 'pla', title: 'RESUMEN DE PLANILLA', em: co.name, emRuc: co.ruc, serie: 'Mes', num: fmtD(date).slice(3), rcLbl: 'Trabajadores', rc: String(n), rcDoc: '', items: [], tot: [['Remuneraciones', S], ['ONP 13% (retenido)', onp], ['AFP (aporte + prima + comisión, retenido)', afpT], ['Neto a pagar', net], ['ESSALUD 9% (aporte empleador)', ess]], note: ''};
+      st.plaPend = net; st.plaWs = ws;
+      op.pla = {ws, S, ess, onp, afp: afpT, q5: q5T, net, g94, g95};
+      op.text = `Provisionas la planilla del mes: ${n} trabajadores, remuneraciones ${money(S)} (incluye asignación familiar). Retenciones: ONP ${money(onp)} y AFP ${money(afpT)}${q5T ? ` y renta de 5ta categoría ${money(q5T)}` : ''}. La empresa aporta ESSALUD 9% (${money(ess)}). ${g95 ? 'Los vendedores y cajeros son del área de ventas; el resto, administración.' : 'Todos son del área administrativa.'}`;
+      op.cp = {...cpBase, kind: 'pla', title: 'RESUMEN DE PLANILLA', em: co.name, emRuc: co.ruc, serie: 'Mes', num: fmtD(date).slice(3), rcLbl: 'Trabajadores', rc: String(n), rcDoc: '', items: [], tot: [['Remuneraciones', S], ['ONP 13% (retenido)', onp], ['AFP (aporte + prima + comisión, retenido)', afpT], ...(q5T ? [['Renta de 5ta categoría (retenida)', q5T]] : []), ['Neto a pagar', net], ['ESSALUD 9% (aporte empleador)', ess]], note: ''};
       op.lines = [Dl('6211', S, 'Las remuneraciones (básico + asignación familiar) son gasto de personal: 6211 al Debe.'), Dl('6271', ess, 'ESSALUD lo paga la empresa: 6271 al Debe.'), Hl('4031', ess, 'ESSALUD por pagar: 4031 al Haber.')];
       if (onp) op.lines.push(Hl('4032', onp, 'La ONP retenida a los trabajadores se debe al Estado: 4032 al Haber.'));
       if (afpT) op.lines.push(Hl('407', afpT, 'Lo retenido para las AFP (aporte, prima y comisión) se les debe: 407 al Haber.'));
+      if (q5T) op.lines.push(Hl('40173', q5T, 'La renta de 5ta categoría retenida se debe a SUNAT: 40173 al Haber.'));
       op.lines.push(Hl('4111', net, 'Lo que se pagará a los trabajadores: 4111 Sueldos por pagar.'));
       if (g94) op.lines.push(Dl('94', g94, 'Destino: personal administrativo → 94 (remuneraciones + ESSALUD).', true));
       if (g95) op.lines.push(Dl('95', g95, 'Destino: personal de ventas → 95 (remuneraciones + ESSALUD).', true));
       op.lines.push(Hl('791', r2(g94 + g95), '…con abono a la 79.', true));
       op.glosa = 'Provisión de planilla del mes';
-      op.hint = 'Planilla: 6211 (remuneraciones) + 6271 (ESSALUD) contra 4031 ESSALUD, 4032 ONP, 407 AFP y 4111 neto.';
+      op.hint = 'Planilla: 6211 (remuneraciones) + 6271 (ESSALUD) contra 4031 ESSALUD, 4032 ONP, 407 AFP, 40173 renta de 5ta (si hay) y 4111 neto.';
       op.fp = `pl|${ws.map(w => w.nm + w.bas).join('|')}`;
       break;
     }
@@ -3018,6 +3057,73 @@ function genOp(R, mo, type, date, fmt) {
       op.glosa = 'Aporte de capital en efectivo';
       op.hint = 'Aporte en efectivo: 104 al Debe contra 50 Capital al Haber.';
       op.fp = `ap|${amt}|${soc}`;
+      break;
+    }
+    case 'compra_serv_d': {
+      const sv = R.pick([['mantenimiento y reparación de los equipos de la oficina', '6343', '94', 'Servicios Técnicos'], ['mantenimiento de los equipos de aire acondicionado', '6343', '95', 'Mantenimiento Integral'], ['servicio de limpieza y desinfección del local', '639', '95', 'Limpieza Total']]);
+      const prov = sv[3] + ' ' + R.pick(W2) + ' S.A.C.', ruc = makeRuc(R);
+      const base = R.int(90, 380) * 10, igv = r2(base * 0.18), total = r2(base + igv), detr = Math.round(total * 0.12);
+      const serie = serieProv(R), num = R.int(100, 99999);
+      st.cxp.push({doc: serie + '-' + num, total, sup: {n: prov, ruc}, detr});
+      op.text = `Recibes la factura ${serie}-${num} de ${prov} por ${sv[0]}: ${money(base)} más IGV, a pagar en 15 días. Es un servicio sujeto a detracción (SPOT) del 12% porque el importe total supera S/ 700. Gasto del área ${sv[2] === '95' ? 'de ventas' : 'administrativa'}.`;
+      op.cp = {...cpBase, kind: 'fact', title: 'FACTURA ELECTRÓNICA', em: prov, emRuc: ruc, serie, num, rcLbl: 'Cliente', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [[1, 'servicio', sv[0].charAt(0).toUpperCase() + sv[0].slice(1), base, base]], tot: [['Op. gravada', base], ['IGV 18%', igv], ['Importe total', total]], note: `Operación sujeta al SPOT: detracción 12% = S/ ${nf(detr)} · Cta. Banco de la Nación del proveedor`};
+      op.lines = [Dl(sv[1], base, `El servicio es un gasto: ${sv[1]} ${acctName(sv[1])} al Debe.`), Dl('40111', igv, 'El IGV es crédito fiscal: 40111 al Debe (podrás usarlo cuando deposites la detracción).'), Hl('4212', total, 'La deuda con el proveedor va a la 4212 por el total; la detracción se paga después, al cancelar.'),
+        Dl(sv[2], base, `Destino: ${sv[2] === '95' ? '95 Gastos de ventas' : '94 Gastos administrativos'}.`, true), Hl('791', base, '…con abono a la 79.', true)];
+      op.glosa = `Provisión de ${sv[0]} s/ F ${serie}-${num}`;
+      op.reg = {fe: date, tcp: '01', serie, num: String(num), td: '6', nd: ruc, rs: prov, bi: base, igv, ng: 0, tot: total};
+      op.hint = 'Al recibir la factura la detracción no cambia el asiento: 63 + 40111 contra 42. La detracción se descuenta cuando pagas.';
+      op.fp = `sd|${base}|${prov}`;
+      break;
+    }
+    case 'pago_detra': {
+      const x = st.cxp.find(c => c.detr && !c.prev);
+      if (!x || st.caja < x.detr + 100 || st.banco < x.total + 500) return null;
+      st.cxp.splice(st.cxp.indexOf(x), 1);
+      const neto = r2(x.total - x.detr), nop = String(++st.seqOp), cons = String(R.int(10000000, 99999999));
+      const pc = st.caja, pb = st.banco; st.caja = r2(st.caja - x.detr); st.banco = r2(st.banco - neto);
+      op.text = `Cancelas la factura ${x.doc} de ${x.sup.n} (${money(x.total)}). Primero depositas en efectivo la detracción de ${money(x.detr)} (12%, redondeada sin decimales) en la cuenta del proveedor en el Banco de la Nación (constancia Nº ${cons}). El saldo de ${money(neto)} se lo transfieres desde tu cuenta corriente del ${co.banco}. Operación Nº ${nop}.`;
+      op.cp = {...cpBase, kind: 'vou', title: 'CONSTANCIA DE DEPÓSITO DE DETRACCIÓN', em: 'Banco de la Nación', serie: 'Const.', num: cons, rcLbl: 'Proveedor', rc: x.sup.n, rcDoc: 'RUC ' + x.sup.ruc, items: [], tot: [['Detracción depositada (efectivo)', x.detr], ['Saldo transferido (Cta. Cte.)', neto], ['Total cancelado', x.total]], note: 'Ref.: ' + x.doc};
+      op.lines = [Dl('4212', x.total, 'Se cancela toda la deuda con el proveedor: 4212 al Debe por el total.'), Hl('101', x.detr, 'La detracción sale en efectivo de Caja: 101 al Haber.'), Hl('1041', neto, 'El saldo sale de la cuenta corriente: 1041 al Haber.')];
+      op.cash = {caja: {desc: `Depósito de detracción F ${x.doc}`, cta: '4212', alts: ['42'], ing: 0, sal: x.detr, prev: pc}, banco: {desc: `Pago a proveedor (neto de detracción) ${x.doc}`, cta: '4212', alts: ['42'], ing: 0, sal: neto, prev: pb, medio: ['003'], gir: x.sup.n, nop}};
+      op.glosa = `Pago de ${x.doc} con detracción`;
+      op.hint = 'Pago con detracción: 42 al Debe por el total; al Haber 101 (detracción depositada) y 104 (saldo).';
+      op.fp = `pd|${x.doc}|${x.detr}`;
+      break;
+    }
+    case 'cobro_ret': {
+      const pend = st.cxc.filter(x => !x.prev && x.total > 700 && !x.nc);
+      if (!pend.length) return null;
+      const x = R.pick(pend); st.cxc.splice(st.cxc.indexOf(x), 1);
+      const ret = r2(x.total * 0.03), neto = r2(x.total - ret), nop = String(++st.seqOp), cr = String(R.int(100, 9999));
+      const prev = st.banco; st.banco = r2(st.banco + neto);
+      op.text = `${x.cli.n} es agente de retención del IGV. Al pagarte la factura ${x.doc} (${money(x.total)}) te retiene el 3% (${money(ret)}) y te entrega el comprobante de retención R001-${cr}. Te transfiere el saldo de ${money(neto)} a tu cuenta corriente del ${co.banco}. Operación Nº ${nop}.`;
+      op.cp = {...cpBase, kind: 'vou', title: 'COMPROBANTE DE RETENCIÓN ELECTRÓNICO', em: x.cli.n, emRuc: x.cli.ruc, serie: 'R001', num: cr, rcLbl: 'Proveedor', rc: co.name, rcDoc: 'RUC ' + co.ruc, items: [], tot: [['Importe de la factura', x.total], ['Retención IGV 3%', ret], ['Importe neto pagado', neto]], note: 'Ref.: F ' + x.doc + ' · Tipo 20 (Tabla 10)'};
+      op.lines = [Dl('1041', neto, 'Entra a la cuenta corriente lo que realmente te pagan: 1041 al Debe.'), Dl('40114', ret, 'La retención es IGV adelantado a tu favor: 40114 IGV – Régimen de retenciones al Debe.'), Hl('1212', x.total, 'Se cancela toda la factura por cobrar: 1212 al Haber por el total.')];
+      op.cash = {banco: {desc: `Cobranza F ${x.doc} (neto de retención)`, cta: '1212', alts: ['12'], ing: neto, sal: 0, prev, medio: ['003'], gir: x.cli.n, nop}};
+      op.ret = ret;
+      op.glosa = `Cobranza de F ${x.doc} con retención del IGV`;
+      op.hint = 'Cobranza con retención: 104 (neto) + 40114 (3% retenido) contra 12 (total de la factura).';
+      op.fp = `cr|${x.doc}|${ret}`;
+      break;
+    }
+    case 'prov_bs': {
+      const P = st.plaWs; if (!P || st.bsDone) return null;
+      st.bsDone = true;
+      const ws = P.map(w => { const gr = r2(w.rem / 6), bo = r2(gr * 0.09), cts = r2((w.rem + w.rem / 6) / 12), vac = r2(w.rem / 12); return {nm: w.nm, rem: w.rem, dest: w.dest, gr, bo, cts, vac}; });
+      const T = k => r2(ws.reduce((a, w) => a + w[k], 0));
+      const gr = T('gr'), bo = T('bo'), cts = T('cts'), vac = T('vac');
+      const g = d => r2(ws.filter(w => w.dest === d).reduce((a, w) => a + w.gr + w.bo + w.cts + w.vac, 0)), g94 = g(94), g95 = g(95);
+      op.bs = {ws, gr, bo, cts, vac};
+      op.text = `Al cierre del mes provisionas los beneficios sociales de tus ${ws.length} trabajadores (régimen general): gratificación (1/6 de la remuneración) con su bonificación extraordinaria del 9%, CTS ((remuneración + 1/6 de la gratificación) ÷ 12) y vacaciones (1/12 de la remuneración).`;
+      op.cp = {...cpBase, kind: 'pla', title: 'PROVISIÓN DE BENEFICIOS SOCIALES', em: co.name, emRuc: co.ruc, serie: 'Mes', num: fmtD(date).slice(3), rcLbl: 'Trabajadores', rc: String(ws.length), rcDoc: '', items: [], tot: [['Gratificación (1/6)', gr], ['Bonificación extraordinaria 9%', bo], ['CTS', cts], ['Vacaciones (1/12)', vac]], note: ''};
+      op.lines = [Dl('6214', r2(gr + bo), 'Gratificación y su bonificación extraordinaria: 6214 Gratificaciones al Debe.'), Dl('6291', cts, 'CTS del mes: 6291 Compensación por tiempo de servicio al Debe.'), Dl('6215', vac, 'Vacaciones devengadas: 6215 al Debe.'),
+        Hl('4114', r2(gr + bo), 'Se deben al trabajador: 4114 Gratificaciones por pagar.'), Hl('4151', cts, 'CTS por depositar: 4151 al Haber.'), Hl('4115', vac, 'Vacaciones por pagar: 4115 al Haber.')];
+      if (g94) op.lines.push(Dl('94', g94, 'Destino: personal administrativo → 94.', true));
+      if (g95) op.lines.push(Dl('95', g95, 'Destino: personal de ventas → 95.', true));
+      op.lines.push(Hl('791', r2(g94 + g95), '…con abono a la 79.', true));
+      op.glosa = 'Provisión de beneficios sociales del mes';
+      op.hint = 'Beneficios: 6214 (gratificación + 9%), 6291 (CTS) y 6215 (vacaciones) contra 4114, 4151 y 4115. Destino 94/95 a 79.';
+      op.fp = `bs|${gr}|${cts}`;
       break;
     }
     default: return null;
@@ -3454,29 +3560,51 @@ function solCompact(c, destino) {
 }
 /* ===================== Ciclo contable completo de una empresa (20 operaciones → 10 etapas) ===================== */
 const STAGES = [
-  {n: 1, t: 'Libro Diario', c: 'Diario', d: 'Registra las 20 operaciones del mes (Formato 5.1)'},
+  {n: 1, t: 'Libro Diario', c: 'Diario', d: 'Registra todas las operaciones del mes (Formato 5.1)'},
   {n: 2, t: 'Registro de Compras', c: 'Compras', d: 'Pasa las facturas y recibos de compra al Formato 8.1'},
   {n: 3, t: 'Registro de Ventas', c: 'Ventas', d: 'Pasa las facturas y boletas de venta al Formato 14.1'},
   {n: 4, t: 'Libro Caja', c: 'Caja', d: 'Movimientos del efectivo (Formato 1.1)'},
   {n: 5, t: 'Libro Bancos', c: 'Bancos', d: 'Movimientos de la cuenta corriente (Formato 1.2)'},
   {n: 6, t: 'Kárdex', c: 'Kárdex', d: 'Inventario permanente valorizado (13.1), promedio ponderado'},
-  {n: 7, t: 'Planilla', c: 'Planilla', d: 'Remuneraciones, ONP/AFP, ESSALUD y neto a pagar de cada trabajador'},
+  {n: 7, t: 'Planilla', c: 'Planilla', d: 'Remuneraciones, ONP/AFP, renta de 5ta, ESSALUD, neto a pagar y beneficios sociales'},
   {n: 8, t: 'Libro Mayor', c: 'Mayor', d: 'Mayoriza las cuentas principales (6.1)'},
   {n: 9, t: 'Balance de comprobación', c: 'Balance', d: 'Sumas y saldos de todas las cuentas'},
-  {n: 10, t: 'Cierre y EEFF', c: 'Cierre y EEFF', d: 'PDT 621, activos fijos, costo de ventas y estados financieros'},
+  {n: 10, t: 'Cierre y EEFF', c: 'Cierre y EEFF', d: 'PDT 621, activos fijos, Inventarios y Balances (3.x), Diario simplificado, SIRE, asientos de cierre y estados financieros'},
 ];
 const NST = STAGES.length;
+// Mini teoría de cada etapa: qué es, qué columnas lleva y un ejemplo resuelto
+const TEORIA = {
+  1: {q: 'El Libro Diario (Formato 5.1) registra cada operación en orden de fecha con un asiento: cuentas del PCGE al Debe y al Haber, siempre cuadrado (Debe = Haber).', c: ['Número correlativo y fecha', 'Glosa (descripción)', 'Código y denominación de la cuenta', 'Debe', 'Haber'], e: 'Compra de mercadería al crédito S/ 1,000 + IGV: 6011 Debe 1,000 · 40111 Debe 180 · 4212 Haber 1,180. Luego el ingreso al almacén: 2011 Debe 1,000 · 6111 Haber 1,000. Si el gasto es de la clase 6 (62, 63, 65, 68…), agrega el destino: 94/95/97 al Debe contra 791 al Haber.'},
+  2: {q: 'El Registro de Compras (Formato 8.1) lista cada comprobante de compra que da derecho a crédito fiscal. Sus totales van a la casilla 107 y 108 del PDT 621.', c: ['Fecha de emisión', 'Tipo de comprobante (Tabla 10)', 'Serie y número', 'Tipo y número de documento del proveedor (Tabla 2)', 'Razón social', 'Base imponible', 'IGV', 'Valor no gravado', 'Importe total'], e: 'Factura F020-90374 del 01/10: tipo 01, documento 6 (RUC) 20286377247, base 7,269.60, IGV 1,308.53, total 8,578.13.'},
+  3: {q: 'El Registro de Ventas e Ingresos (Formato 14.1) lista cada comprobante que emites: facturas, boletas y notas de crédito (estas en negativo). Sus totales van a las casillas 100 y 101 del PDT 621.', c: ['Fecha de emisión', 'Tipo de comprobante (01 factura, 03 boleta, 07 nota de crédito)', 'Serie y número', 'Tipo y número de documento del cliente (6 RUC, 1 DNI)', 'Base imponible', 'IGV', 'Importe total'], e: 'Boleta B001-1250 a un cliente con DNI: tipo 03, documento 1, base 254.24, IGV 45.76, total 300.00.'},
+  4: {q: 'El Libro Caja (Formato 1.1) controla el efectivo (cuenta 101): cada entrada va en Deudor y cada salida en Acreedor; al final se calcula el saldo.', c: ['Fecha', 'Descripción de la operación', 'Cuenta contable asociada (la contrapartida)', 'Deudor (ingreso)', 'Acreedor (salida)'], e: 'Saldo anterior 2,400. Venta al contado con boleta por 300: Deudor 300, cuenta asociada 7012. Saldo final = 2,400 + 300 = 2,700.'},
+  5: {q: 'El Libro Bancos (Formato 1.2) controla cada cuenta corriente (cuenta 104) con el medio de pago de la Tabla 1, el girador o beneficiario y el número de operación.', c: ['Fecha', 'Medio de pago (Tabla 1: 001 depósito, 003 transferencia, 007 cheque)', 'Descripción', 'Girador / beneficiario', 'Nº de operación', 'Cuenta asociada', 'Deudor', 'Acreedor'], e: 'Pago a proveedor por transferencia de 1,180: medio 003, cuenta asociada 4212, Acreedor 1,180; saldo = saldo anterior − 1,180.'},
+  6: {q: 'El Registro de Inventario Permanente Valorizado (Formato 13.1) controla cantidades y costos de cada producto. Con promedio ponderado, el costo unitario se recalcula en cada compra.', c: ['Fecha y documento', 'Tipo de operación (Tabla 12: 01 venta, 02 compra)', 'Entradas: cantidad, costo unitario, costo total', 'Salidas: cantidad, costo unitario, costo total', 'Saldo final: cantidad, costo unitario, costo total'], e: 'Saldo 100 u a 10.00 = 1,000. Compra 50 u a 13.00 = 650. Saldo 150 u, total 1,650, costo promedio 1,650 ÷ 150 = 11.00. Venta de 30 u: salida 30 × 11.00 = 330.'},
+  7: {q: 'La planilla calcula, por trabajador, la remuneración, los descuentos (ONP 13% o AFP: 10% + prima + comisión, y renta de 5ta si corresponde), el neto a pagar y el ESSALUD 9% que paga la empresa. Cada mes también se provisionan gratificación, CTS y vacaciones.', c: ['Básico y asignación familiar (10% de la RMV)', 'Total remuneración', 'ONP o AFP (aporte, prima, comisión)', 'Renta de 5ta', 'Neto a pagar', 'ESSALUD 9%'], e: 'Sueldo 2,000 con hijos (+123) = 2,123. AFP Integra: 212.30 + 29.09 + 32.91 = 274.30. Neto 1,848.70. ESSALUD 191.07. Asiento: 6211 2,123 y 6271 191.07 contra 4031 191.07, 407 274.30 y 4111 1,848.70.'},
+  8: {q: 'El Libro Mayor (Formato 6.1) agrupa por cuenta todos los movimientos del Diario para obtener su saldo: saldo inicial + Debe − Haber.', c: ['Fecha', 'Glosa', 'Debe', 'Haber', 'Saldo deudor o acreedor'], e: 'Cuenta 1041: saldo inicial 50,000 D; Debe 12,000; Haber 8,500. Saldo final = 50,000 + 12,000 − 8,500 = 53,500 deudor.'},
+  9: {q: 'El Balance de comprobación (Formato 3.17) lista todas las cuentas con sus sumas del Debe y Haber y su saldo. Comprueba que la suma de saldos deudores sea igual a la de acreedores.', c: ['Cuenta', 'Sumas Debe y Haber', 'Saldo deudor', 'Saldo acreedor'], e: 'Cuenta 42: Debe 9,000, Haber 15,000 → saldo acreedor 6,000. Al final: total saldos deudores = total saldos acreedores.'},
+  10: {q: 'El cierre reúne la declaración mensual (PDT 621), el Libro de Inventarios y Balances (formatos 3.x: detalle de cuentas y estados financieros), el Diario simplificado (5.2), la revisión del SIRE y la determinación del resultado con la clase 8 y el impuesto a la renta.', c: ['PDT 621: 100/101 ventas, 107/108 compras, 140 resultante, 171 percepciones, 179 retenciones, 184 a pagar', '3.2 efectivo, 3.3 clientes, 3.7 mercaderías, 3.12 proveedores', '3.1 Situación Financiera, 3.18 Flujo de Efectivo, 3.19 Patrimonio, 3.20 Resultados', 'Clase 8: 80 → 82 → 83 → 84 → 85 → 89'], e: 'IGV: ventas 4,434 − compras 1,876 = 2,558 (140); menos percepciones 36 y retenciones 465 → 184 = 2,057 a pagar.'},
+};
 // etapa de cada formato (también reubica las empresas creadas con el esquema anterior de 7 etapas)
-const STG_FMT = {diario: 1, compras: 2, ventas: 3, caja: 4, banco: 5, kardex: 6, planilla: 7, plares: 7, mayor: 8, balance: 9};
+const STG_FMT = {diario: 1, compras: 2, ventas: 3, caja: 4, banco: 5, kardex: 6, planilla: 7, plares: 7, plabs: 7, mayor: 8, balance: 9};
 function stgOf(fmt) { return STG_FMT[fmt] || 10; }
-const CYCLE_PLAN = ['compra_merc', 'compra_merc', 'venta_merc:F', 'compra_serv', 'venta_merc:B', 'cobro_banco', 'pago_prov', 'compra_merc', 'venta_merc:F', 'gasto_caja',
-  'rxh', 'venta_merc:B', 'deposito', 'compra_merc', 'venta_merc:F', 'compra_serv', 'cobro_banco', 'pago_prov', 'planilla', 'depreciacion'];
+// Dificultad progresiva: la empresa 1 es la básica; desde la 2 llegan percepciones, detracciones, retenciones, préstamo y 5ta categoría; desde la 3, activos y aportes
+const CYCLE_PLANS = {
+  1: ['compra_merc', 'compra_merc', 'venta_merc:F', 'compra_serv', 'venta_merc:B', 'cobro_banco', 'pago_prov', 'compra_merc', 'venta_merc:F', 'gasto_caja',
+    'rxh', 'venta_merc:B', 'deposito', 'compra_merc', 'venta_merc:F', 'compra_serv', 'cobro_banco', 'pago_prov', 'planilla', 'pago_planilla', 'prov_bs', 'depreciacion'],
+  2: ['compra_merc', 'compra_merc_p', 'venta_merc:F', 'compra_serv_d', 'venta_merc:B', 'cobro_banco', 'prestamo', 'compra_merc', 'venta_merc:F', 'gasto_caja', 'nota_credito', 'pago_detra',
+    'venta_merc:B', 'deposito', 'rxh', 'venta_merc:F', 'cobro_ret', 'pago_prov', 'compra_serv', 'planilla', 'pago_planilla', 'prov_bs', 'cuota', 'depreciacion'],
+  3: ['compra_merc_p', 'compra_merc', 'venta_merc:F', 'compra_serv_d', 'compra_activo', 'venta_merc:B', 'cobro_ret', 'prestamo', 'compra_merc', 'venta_merc:F', 'pago_detra', 'gasto_caja', 'nota_credito',
+    'aporte', 'venta_merc:B', 'deposito', 'rxh', 'compra_merc_p', 'venta_merc:F', 'cobro_banco', 'pago_prov', 'compra_serv', 'planilla', 'pago_planilla', 'prov_bs', 'cuota', 'depreciacion'],
+};
+const CYCLE_PLAN = CYCLE_PLANS[1];
+const LEVEL_TXT = {1: 'Nivel 1 · básico', 2: 'Nivel 2 · con percepciones, detracciones, retenciones, préstamo y renta de 5ta', 3: 'Nivel 3 · completo: además activos fijos y aportes de capital'};
 const FALLBACK_OPS = ['compra_serv', 'compra_merc', 'gasto_caja', 'aporte', 'rxh'];
 
 function genCycleOps(R, mo) {
-  const M = mo.id, L = lastDay(M), ops = [];
-  CYCLE_PLAN.forEach((item, i) => {
-    const day = Math.min(L, Math.round(1 + i * (L - 2) / (CYCLE_PLAN.length - 1)));
+  const M = mo.id, L = lastDay(M), ops = [], PLAN = CYCLE_PLANS[Math.min(3, mo.level || 1)];
+  PLAN.forEach((item, i) => {
+    const day = Math.min(L, Math.round(1 + i * (L - 2) / (PLAN.length - 1)));
     const date = `${M}-${p2(day)}`;
     const [type, f] = item.split(':');
     let op = null;
@@ -3509,7 +3637,23 @@ function stageCasesFromOps(mo, ops) {
   ops.forEach(op => { if (op.cash && op.cash.banco) push(caseFromOp(op, 'banco', mo.co)); });
   ops.forEach(op => { if (op.kx) push(caseFromOp(op, 'kardex', mo.co)); });
   ops.forEach(op => { if (op.pla) planillaCases(mo, op).forEach(push); });
+  ops.forEach(op => { if (op.bs) push(bsCase(mo, op)); });
   return out;
+}
+/* Provisión de beneficios sociales del mes (gratificación + 9%, CTS, vacaciones) */
+function bsCase(mo, op) {
+  const B = op.bs, c = {fmt: 'plabs', op: 'prov_bs', date: op.date, kind: 'grid', cp: null, fields: {}, title: 'Provisión de beneficios sociales'}, fl = c.fields;
+  const rows = B.ws.map((w, i) => {
+    fl['g' + i] = N2(w.gr, 'Gratificación del mes = remuneración ÷ 6 (julio y diciembre se paga un sueldo; cada mes se provisiona 1/6).', 'Gratificación ' + w.nm, 'calculo');
+    fl['b' + i] = N2(w.bo, 'Bonificación extraordinaria (Ley 30334) = 9% de la gratificación (reemplaza el aporte a ESSALUD).', 'Bonificación 9% ' + w.nm, 'calculo');
+    fl['c' + i] = N2(w.cts, 'CTS del mes = (remuneración + 1/6 de la gratificación) ÷ 12.', 'CTS ' + w.nm, 'calculo', {tol: 0.05});
+    fl['v' + i] = N2(w.vac, 'Vacaciones del mes = remuneración ÷ 12.', 'Vacaciones ' + w.nm, 'calculo');
+    return [w.nm, {s: nf(w.rem), c: 'num'}, {f: 'g' + i}, {f: 'b' + i}, {f: 'c' + i}, {f: 'v' + i}];
+  });
+  c.instr = 'Calcula la provisión mensual de beneficios sociales de cada trabajador (régimen laboral general).';
+  c.text = `${mo.co.name}: provisión de ${mesLbl(mo.id)}. Remuneración computable = básico + asignación familiar. Gratificación: 1/6; bonificación extraordinaria: 9% de la gratificación; CTS: (remuneración + 1/6 de la gratificación) ÷ 12; vacaciones: 1/12.`;
+  c.tbl = {cols: ['Trabajador', 'Remuneración', 'Gratificación (1/6)', 'Bonif. 9%', 'CTS', 'Vacaciones (1/12)'], rows};
+  c.hint = 'Gratificación = R ÷ 6; bonificación = gratificación × 9%; CTS = (R + R ÷ 6) ÷ 12; vacaciones = R ÷ 12.'; c.fp = 'bs'; return c;
 }
 /* Planilla de remuneraciones: una línea por trabajador + el resumen que va al Diario */
 function planillaCases(mo, op) {
@@ -3521,14 +3665,15 @@ function planillaCases(mo, op) {
     fl.ap = N2(w.ap, w.afp ? 'AFP: aporte obligatorio = 10% de la remuneración.' : 'ONP: aporte = 13% de la remuneración.', w.afp ? 'Aporte AFP 10%' : 'ONP 13%', 'calculo');
     fl.pr = N2(w.pr, w.afp ? 'Prima de seguro AFP = 1.37% de la remuneración.' : 'Los afiliados a la ONP no pagan prima de seguro (0).', 'Prima de seguro AFP', 'calculo', {z: true});
     fl.cm = N2(w.cm, w.afp ? `Comisión sobre flujo de AFP ${w.afp} = ${(AFP[w.afp] * 100).toFixed(2)}% de la remuneración.` : 'Los afiliados a la ONP no pagan comisión (0).', 'Comisión AFP', 'calculo', {z: true});
-    fl.desc = N2(w.desc, 'Total descuentos = ' + (w.afp ? 'aporte + prima + comisión.' : 'ONP.'), 'Total descuentos', 'calculo');
-    fl.net = N2(w.net, 'Neto a pagar = total remuneración − total descuentos.', 'Neto a pagar', 'calculo');
+    fl.q5 = N2(w.q5, w.q5 ? `Renta de 5ta: proyección anual ${money(w.q.proy)} (12 sueldos + 2 gratificaciones + 9%) − 7 UIT (${money(7 * UIT)}) = ${money(w.q.neta)}; impuesto con la escala 8%/14%/17%/20%/30% = ${money(w.q.imp)}; ÷ 12 = ${money(w.q5)}.` : 'Su proyección anual no supera 7 UIT: no hay retención de 5ta categoría (0).', 'Renta 5ta categoría', 'calculo', {z: true, tol: 0.05});
+    fl.desc = N2(w.desc, 'Total descuentos = ' + (w.afp ? 'aporte + prima + comisión' : 'ONP') + (w.q5 ? ' + renta de 5ta.' : '.'), 'Total descuentos', 'calculo', {tol: 0.05});
+    fl.net = N2(w.net, 'Neto a pagar = total remuneración − total descuentos.', 'Neto a pagar', 'calculo', {tol: 0.05});
     fl.ess = N2(w.ess, 'ESSALUD = 9% de la remuneración; lo paga la empresa, no se descuenta al trabajador.', 'ESSALUD 9% (empleador)', 'calculo');
     c.instr = INSTR.planilla;
-    c.text = `${w.nm} (DNI ${w.dni}), ${w.cargo}. Sueldo básico ${money(w.bas)}. ${w.hijos ? 'Tiene hijos menores de edad.' : 'No tiene hijos.'} Sistema de pensiones: ${w.afp ? `AFP ${w.afp} (aporte 10%, prima de seguro 1.37%, comisión sobre flujo ${(AFP[w.afp] * 100).toFixed(2)}%)` : 'ONP (13%)'}. RMV vigente: ${money(RMV)}. No supera 7 UIT al año, así que no hay retención de 5ta categoría.`;
-    c.tbl = {groups: [['Trabajador', 3], ['Ingresos', 3], ['Descuentos', 4], ['', 1], ['Aportes', 1]],
-      cols: ['Apellidos y nombres', 'Cargo', 'Sistema', 'Básico', 'Asig. familiar', 'Total remuneración', w.afp ? 'Aporte 10%' : 'ONP 13%', 'Prima seguro', 'Comisión', 'Total descuentos', 'Neto a pagar', 'ESSALUD 9%'],
-      rows: [[w.nm, w.cargo, w.sist, {s: nf(w.bas), c: 'num'}, {f: 'af'}, {f: 'rem'}, {f: 'ap'}, {f: 'pr'}, {f: 'cm'}, {f: 'desc'}, {f: 'net'}, {f: 'ess'}]]};
+    c.text = `${w.nm} (DNI ${w.dni}), ${w.cargo}. Sueldo básico ${money(w.bas)}. ${w.hijos ? 'Tiene hijos menores de edad.' : 'No tiene hijos.'} Sistema de pensiones: ${w.afp ? `AFP ${w.afp} (aporte 10%, prima de seguro 1.37%, comisión sobre flujo ${(AFP[w.afp] * 100).toFixed(2)}%)` : 'ONP (13%)'}. RMV vigente: ${money(RMV)}. ${w.q5 ? `Gana lo mismo todo el año: proyecta su renta anual (12 sueldos + 2 gratificaciones + bonificación extraordinaria 9%), resta 7 UIT (UIT ${money(UIT)}), aplica la escala (8% hasta 5 UIT, 14% hasta 20, 17% hasta 35, 20% hasta 45, 30% en adelante) y divide el impuesto entre 12.` : 'Su renta anual no supera 7 UIT: no hay retención de 5ta categoría.'}`;
+    c.tbl = {groups: [['Trabajador', 3], ['Ingresos', 3], ['Descuentos', 5], ['', 1], ['Aportes', 1]],
+      cols: ['Apellidos y nombres', 'Cargo', 'Sistema', 'Básico', 'Asig. familiar', 'Total remuneración', w.afp ? 'Aporte 10%' : 'ONP 13%', 'Prima seguro', 'Comisión', 'Renta 5ta', 'Total descuentos', 'Neto a pagar', 'ESSALUD 9%'],
+      rows: [[w.nm, w.cargo, w.sist, {s: nf(w.bas), c: 'num'}, {f: 'af'}, {f: 'rem'}, {f: 'ap'}, {f: 'pr'}, {f: 'cm'}, {f: 'q5'}, {f: 'desc'}, {f: 'net'}, {f: 'ess'}]]};
     c.hint = w.afp ? 'AFP: 10% + 1.37% + comisión, todo sobre la remuneración total. ESSALUD 9% lo paga la empresa.' : 'ONP: 13% de la remuneración total. ESSALUD 9% lo paga la empresa.';
     c.fp = 'pw|' + w.nm + '|' + w.bas; out.push(c);
   });
@@ -3537,11 +3682,12 @@ function planillaCases(mo, op) {
   fl.ess = N2(P.ess, 'Suma del ESSALUD de cada trabajador (6271 al Debe y 4031 al Haber).', 'ESSALUD por pagar (4031)', 'calculo');
   fl.onp = N2(P.onp, 'Suma de la ONP retenida (4032).', 'ONP por pagar (4032)', 'calculo', {z: true});
   fl.afp = N2(P.afp, 'Suma de todo lo retenido para las AFP: aportes + primas + comisiones (407).', 'AFP por pagar (407)', 'calculo', {z: true});
+  fl.q5 = N2(P.q5 || 0, 'Suma de la renta de 5ta retenida (40173).', 'Renta 5ta por pagar (40173)', 'calculo', {z: true});
   fl.net = N2(P.net, 'Suma de los netos a pagar (4111).', 'Neto a pagar (4111)', 'calculo');
   c.instr = 'Totaliza la planilla del mes: estos montos son los que van al asiento de planilla del Libro Diario.';
   c.text = `${co.name}: planilla de ${mesLbl(mo.id)} con ${P.ws.length} trabajadores. Suma las columnas de la planilla que acabas de llenar.`;
-  c.tbl = {cols: ['Concepto', 'S/'], rows: [[{s: 'Total remuneraciones'}, {f: 'S'}], [{s: 'ESSALUD 9%'}, {f: 'ess'}], [{s: 'ONP retenida'}, {f: 'onp'}], [{s: 'AFP retenida (aporte + prima + comisión)'}, {f: 'afp'}], [{s: 'Neto a pagar a los trabajadores', c: 'b'}, {f: 'net'}]]};
-  c.hint = 'Comprueba: total remuneraciones − ONP − AFP = neto a pagar.'; c.fp = 'pres'; out.push(c);
+  c.tbl = {cols: ['Concepto', 'S/'], rows: [[{s: 'Total remuneraciones'}, {f: 'S'}], [{s: 'ESSALUD 9%'}, {f: 'ess'}], [{s: 'ONP retenida'}, {f: 'onp'}], [{s: 'AFP retenida (aporte + prima + comisión)'}, {f: 'afp'}], [{s: 'Renta de 5ta retenida'}, {f: 'q5'}], [{s: 'Neto a pagar a los trabajadores', c: 'b'}, {f: 'net'}]]};
+  c.hint = 'Comprueba: total remuneraciones − ONP − AFP − 5ta = neto a pagar.'; c.fp = 'pres'; out.push(c);
   return out;
 }
 
@@ -3600,13 +3746,16 @@ function closeCases(mo, ops) {
     fl.c107 = N1(c107, 'Casilla 107: suma de bases imponibles de tu Registro de Compras, en soles enteros.', '107 Compras netas gravadas (base)', 'pdt');
     fl.c108 = N1(c108, 'Casilla 108 = casilla 107 × 18%.', '108 IGV de compras', 'igv');
     fl.c140 = N1(c140, 'Casilla 140 = 101 − 108 (si sale negativo, es saldo a favor).', '140 Impuesto resultante', 'igv');
-    fl.c184 = N1(Math.max(0, c140), 'Casilla 184: IGV a pagar (0 si hay saldo a favor). No hay saldo a favor del mes anterior.', '184 IGV a pagar', 'igv', {z: true});
+    const c171 = Math.round(ops.reduce((s, o) => s + (o.perc || 0), 0)), c179 = Math.round(ops.reduce((s, o) => s + (o.ret || 0), 0));
+    if (c171) fl.c171 = N1(c171, 'Casilla 171: percepciones que te cobraron tus proveedores en el período (cuenta 40113), en soles enteros.', '171 Percepciones del período', 'igv');
+    if (c179) fl.c179 = N1(c179, 'Casilla 179: retenciones que te hicieron tus clientes en el período (cuenta 40114), en soles enteros.', '179 Retenciones del período', 'igv');
+    fl.c184 = N1(Math.max(0, c140 - c171 - c179), 'Casilla 184: IGV a pagar = 140 − percepciones (171) − retenciones (179); 0 si sale negativo. No hay saldo a favor del mes anterior.', '184 IGV a pagar', 'igv', {z: true});
     fl.c301 = N1(c100, 'Casilla 301: ingresos netos del mes.', '301 Ingresos netos', 'pdt');
     fl.c312 = N1(Math.round(c100 * rate), `Pago a cuenta del ${REGIMEN[reg].n}: ingresos netos × ${(rate * 100).toLocaleString('en-US')}%.`, '312 Pago a cuenta de renta', 'renta');
     c.instr = 'Llena el Formulario Virtual 621 con los datos de tus Registros de Compras y Ventas de este mes (casillas en soles enteros).';
     c.text = `${co.name} · ${REGIMEN[reg].n} · período ${mesLbl(mo.id)}. Usa los totales de los registros que llenaste en las etapas 2 y 3 (aquí van las bases correctas: ventas ${money(vb)}, compras ${money(cb)}).`;
     c.tbl = {cols: ['Casilla', 'Monto (S/)'], rows: Object.keys(fl).map(k => [fl[k].l, {f: k}])};
-    c.hint = 'IGV: 101 − 108 = 140. Renta: ingresos netos × tasa del régimen.'; c.fp = '621'; out.push(c);
+    c.hint = 'IGV: 101 − 108 = 140; luego resta percepciones (171) y retenciones (179). Renta: ingresos netos × tasa del régimen.'; c.fp = '621'; out.push(c);
   }
   // Activos fijos (7.1)
   mo.state.assets.forEach((a, i) => {
@@ -3624,7 +3773,7 @@ function closeCases(mo, ops) {
   // Costo de ventas desde el kárdex
   {
     const open = mo.open.find(o => o[0] === '2011'); const ii = open ? open[1] : 0;
-    const comp = r2(ops.filter(o => o.type === 'compra_merc').reduce((s, o) => s + o.reg.bi, 0));
+    const comp = r2(ops.filter(o => o.type === 'compra_merc' || o.type === 'compra_merc_p').reduce((s, o) => s + o.reg.bi, 0));
     const dev = r2(ops.filter(o => o.type === 'nota_credito').reduce((s, o) => s + o.lines.find(l => l.c === '2011').d, 0));
     const fin = r2(Object.values(mo.state.inv).reduce((s, x) => s + x.t, 0));
     const disp = r2(ii + comp), cv = r2(disp + dev - fin);
@@ -3691,11 +3840,127 @@ function closeCases(mo, ops) {
     p.tbl = {groups: [['', 1], ['Capital', 1], ['Resultados', 1], ['Total', 1]], cols: ['Concepto', 'S/', 'S/', 'S/'], rows: [['Saldo inicial', {s: nf(capI), c: 'num'}, '', {s: nf(capI), c: 'num'}], ['Aportes', {s: nf(apo), c: 'num'}, '', ''], ['Resultado del mes', '', {s: nf(resC), c: 'num'}, ''], [{s: 'Saldo final', c: 'b'}, {f: 'capF'}, {s: nf(resC), c: 'num'}, {f: 'tot'}]]};
     p.hint = 'Suma cada columna hacia abajo.'; p.fp = 'ecp'; out.push(p);
   }
+  // ===== Libro de Inventarios y Balances: formatos de detalle =====
+  const st = mo.state, balC = code => r2(accLinesAll(mo, ops).filter(l => l.c.startsWith(code)).reduce((s, l) => s + l.d - l.h, 0));
+  {
+    const caja = balC('101'), bco = balC('104'), c = base('ib32', '3.2 Detalle de la cuenta 10 – Efectivo'), fl = c.fields;
+    fl.caja = N2(caja, 'Saldo de la 101 Caja al cierre (apertura + entradas − salidas de efectivo).', 'Saldo de Caja (101)', 'saldo');
+    fl.bco = N2(bco, 'Saldo de la 1041 Cuenta corriente al cierre.', 'Saldo de la cuenta corriente (1041)', 'saldo');
+    fl.tot = N2(r2(caja + bco), 'Total efectivo = caja + cuenta corriente. Debe ser igual al saldo de la cuenta 10 del Mayor.', 'Total cuenta 10', 'saldo');
+    c.instr = 'Completa el Formato 3.2 del Libro de Inventarios y Balances: detalle del saldo de la cuenta 10 al cierre.';
+    c.text = `${co.name} al ${lastDay(mo.id)}/${mo.id.slice(5)}/${mo.id.slice(0, 4)}. Usa los saldos finales de tu Libro Caja y de tu Libro Bancos.`;
+    c.tbl = {cols: ['Código', 'Denominación', 'Entidad financiera', 'Número de cuenta', 'Saldo contable final'], rows: [['101', 'Caja', '—', '—', {f: 'caja'}], ['1041', 'Cuentas corrientes operativas', co.banco, co.cta, {f: 'bco'}], ['', {s: 'Total', c: 'b'}, '', '', {f: 'tot'}]]};
+    c.hint = 'Toma el último saldo de tu Libro Caja (1.1) y de tu Libro Bancos (1.2).'; c.fp = 'ib32'; out.push(c);
+  }
+  {
+    const L = st.cxc.filter(x => x.total > 0.005), c = base('ib33', '3.3 Detalle de la cuenta 12 – Clientes'), fl = c.fields;
+    const rows = L.map((x, i) => { fl['s' + i] = N2(x.total, 'Saldo pendiente de cobro de ese comprobante (total menos lo cobrado o rebajado con nota de crédito).', 'Saldo ' + x.doc, 'saldo'); return [x.cli.ruc, x.cli.n, (x.prev ? 'Del mes anterior · ' : '') + 'F ' + x.doc, {f: 's' + i}]; });
+    fl.tot = N2(r2(L.reduce((s, x) => s + x.total, 0)), 'Total de clientes: debe ser igual al saldo de la cuenta 12 del Mayor.', 'Total cuenta 12', 'saldo');
+    c.instr = 'Completa el Formato 3.3: clientes con saldo pendiente al cierre (cuenta 12).';
+    c.text = `Estas facturas de ${co.name} siguen pendientes de cobro al cierre de ${mesLbl(mo.id)}. Revisa tus ventas, notas de crédito y cobranzas para hallar el saldo de cada una.`;
+    c.tbl = {cols: ['RUC', 'Cliente', 'Comprobante', 'Saldo final'], rows: [...rows, ['', {s: 'Total', c: 'b'}, '', {f: 'tot'}]]};
+    c.hint = 'Saldo = importe de la factura − cobranzas − notas de crédito. El total debe cuadrar con la 12.'; c.fp = 'ib33'; out.push(c);
+  }
+  {
+    const c = base('ib37', '3.7 Detalle de la cuenta 20 – Mercaderías'), fl = c.fields;
+    let tot = 0;
+    const rows = co.prods.map((p, i) => { const I = st.inv[p.id], cu = I.q ? r2(I.t / I.q) : 0; tot = r2(tot + I.t);
+      fl['u' + i] = N2(cu, 'Costo unitario promedio final = costo total ÷ cantidad (según tu kárdex).', 'Costo unitario ' + p.n, 'costo-promedio');
+      fl['t' + i] = N2(I.t, 'Costo total final del producto (último saldo de su kárdex).', 'Costo total ' + p.n, 'saldo', {tol: 0.05});
+      return [p.cod, p.n, p.u, {s: String(I.q), c: 'num'}, {f: 'u' + i}, {f: 't' + i}]; });
+    fl.tot = N2(tot, 'Total de mercaderías: debe ser igual al saldo de la cuenta 20.', 'Total cuenta 20', 'saldo', {tol: 0.05});
+    c.instr = 'Completa el Formato 3.7: inventario de mercaderías valorizado al cierre (cuenta 20).';
+    c.text = `Inventario físico de ${co.name} al cierre de ${mesLbl(mo.id)}. Las cantidades se contaron en el almacén; el costo sale de tu kárdex (promedio ponderado).`;
+    c.tbl = {cols: ['Código', 'Descripción', 'Unidad', 'Cantidad', 'Costo unitario', 'Costo total'], rows: [...rows, ['', {s: 'Total', c: 'b'}, '', '', '', {f: 'tot'}]]};
+    c.hint = 'Costo total = último saldo del kárdex de cada producto.'; c.fp = 'ib37'; out.push(c);
+  }
+  {
+    const hon = ops.filter(o => o.type === 'rxh').map(o => ({doc: 'RHE ' + o.cp.serie + '-' + o.cp.num, total: o.lines.find(l => l.c === '424').h, sup: {n: o.cp.em, ruc: o.cp.emRuc}, h: true}));
+    const L = st.cxp.filter(x => x.total > 0.005).concat(hon), c = base('ib312', '3.12 Detalle de la cuenta 42 – Proveedores'), fl = c.fields;
+    const rows = L.map((x, i) => { fl['s' + i] = N2(x.total, x.h ? 'Honorarios por pagar (424): el neto del recibo, después de la retención.' : 'Saldo pendiente de pago de ese comprobante.', 'Saldo ' + x.doc, 'saldo'); return [x.sup.ruc, x.sup.n, (x.prev ? 'Del mes anterior · ' : '') + x.doc, {f: 's' + i}]; });
+    fl.tot = N2(r2(L.reduce((s, x) => s + x.total, 0)), 'Total de proveedores: debe ser igual al saldo de la cuenta 42.', 'Total cuenta 42', 'saldo');
+    c.instr = 'Completa el Formato 3.12: proveedores con saldo pendiente al cierre (cuenta 42).';
+    c.text = `Estos comprobantes de ${co.name} siguen pendientes de pago al cierre (facturas de proveedores y recibos por honorarios). Revisa tus compras (con percepción, si hubo), honorarios y pagos.`;
+    c.tbl = {cols: ['RUC', 'Proveedor', 'Comprobante', 'Saldo final'], rows: [...rows, ['', {s: 'Total', c: 'b'}, '', {f: 'tot'}]]};
+    c.hint = 'Saldo = importe total del comprobante (más la percepción) − pagos.'; c.fp = 'ib312'; out.push(c);
+  }
+  // ===== Libro Diario de formato simplificado (5.2): totales del mes por cuenta =====
+  {
+    const sums = {}; ops.forEach(o => o.lines.forEach(l => { const k = k2(l.c); const x = sums[k] || (sums[k] = {d: 0, h: 0}); x.d = r2(x.d + l.d); x.h = r2(x.h + l.h); }));
+    const ks = Object.keys(sums).sort(), c = base('d52', '5.2 Diario simplificado – totales del mes'), fl = c.fields;
+    let tD = 0, tH = 0;
+    const rows = ks.map((k, i) => { tD = r2(tD + sums[k].d); tH = r2(tH + sums[k].h);
+      fl['d' + i] = N2(sums[k].d, 'Suma de todos los cargos del mes en esa columna (sin el asiento de apertura).', 'Debe ' + k, 'monto', {z: true, tol: 0.05});
+      fl['h' + i] = N2(sums[k].h, 'Suma de todos los abonos del mes en esa columna.', 'Haber ' + k, 'monto', {z: true, tol: 0.05});
+      return [k, acctName(k), {f: 'd' + i}, {f: 'h' + i}]; });
+    fl.tD = N2(tD, 'Total de cargos del mes: debe ser igual al total de abonos.', 'Total Debe', 'calculo', {tol: 0.1});
+    fl.tH = N2(tH, 'Total de abonos del mes.', 'Total Haber', 'calculo', {tol: 0.1});
+    c.instr = 'En el Libro Diario de formato simplificado (5.2) cada cuenta es una columna. Totaliza cada columna con los asientos del mes (sin la apertura).';
+    c.text = `Lo usan las empresas MYPE y del Régimen General con ingresos de hasta 300 UIT, en lugar del Diario 5.1 y el Mayor. Toma los asientos de ${mesLbl(mo.id)} de ${co.name}.`;
+    c.tbl = {cols: ['Cuenta', 'Denominación', 'Debe', 'Haber'], rows: [...rows, ['', {s: 'Totales', c: 'b'}, {f: 'tD'}, {f: 'tH'}]]};
+    c.hint = 'Suma por cuenta (2 dígitos) los cargos y los abonos de todos tus asientos del mes.'; c.fp = 'd52'; out.push(c);
+  }
+  // ===== SIRE: propuesta del Registro de Compras Electrónico (RCE) =====
+  {
+    const regs = ops.filter(o => o.reg && !['venta_merc', 'nota_credito'].includes(o.type)).map(o => ({...o.reg, ok: true}));
+    const R2 = rngFrom('sire|' + co.ruc + mo.id), bad = {fe: ops[Math.floor(ops.length / 2)].date, tcp: '01', serie: 'F0' + p2(R2.int(1, 40)), num: String(R2.int(1000, 99999)), td: '6', nd: makeRuc(R2), rs: R2.pick(['Electro Hogar', 'Tiendas Wari', 'Multicentro Tumi']) + ' S.A.C.', bi: R2.int(150, 450) * 10, ok: false};
+    bad.igv = r2(bad.bi * 0.18); bad.tot = r2(bad.bi + bad.igv);
+    const L = regs.slice(); L.splice(R2.int(1, L.length), 0, bad);
+    const c = base('sire', 'SIRE – propuesta del RCE'), fl = c.fields;
+    const rows = L.map((g, i) => { fl['a' + i] = F('sel', g.ok ? 'Incluir' : 'Excluir', g.ok ? 'Es un comprobante del negocio y ya está en tu Registro de Compras: se incluye.' : 'Es una compra personal (no es gasto del negocio): no da derecho a crédito fiscal y se excluye de la propuesta.', {l: 'Acción ' + g.serie + '-' + g.num, k: 'sire', opts: ['Incluir', 'Excluir']}); return [fmtD(g.fe), g.tcp, g.serie + '-' + g.num, g.rs, {s: nf(g.bi), c: 'num'}, {s: nf(g.igv), c: 'num'}, {f: 'a' + i}]; });
+    const bi = r2(regs.reduce((s, g) => s + g.bi, 0)), igv = r2(regs.reduce((s, g) => s + g.igv, 0));
+    fl.bi = N2(bi, 'Suma de las bases de los comprobantes incluidos.', 'Base imponible con crédito fiscal', 'pdt', {tol: 0.05});
+    fl.igv = N2(igv, 'Suma del IGV de los comprobantes incluidos: es tu crédito fiscal del mes.', 'IGV – crédito fiscal', 'igv', {tol: 0.05});
+    c.instr = 'SUNAT te muestra la propuesta del Registro de Compras Electrónico (SIRE). Decide qué comprobantes incluir y totaliza el crédito fiscal.';
+    c.text = `Propuesta del RCE de ${co.name} – ${mesLbl(mo.id)}. Uno de estos comprobantes es la compra de un electrodoméstico para la casa del gerente, emitida al RUC de la empresa.`;
+    c.tbl = {cols: ['Fecha', 'Tipo', 'Comprobante', 'Proveedor', 'Base', 'IGV', 'Acción'], rows: [...rows, ['', '', '', {s: 'Totales incluidos', c: 'b'}, {f: 'bi'}, {f: 'igv'}, '']]};
+    c.hint = 'Solo dan crédito fiscal las compras del negocio (principio de causalidad).'; c.fp = 'sire'; out.push(c);
+  }
+  // ===== Cierre: determinación del resultado (clase 8), impuesto a la renta y asientos =====
+  {
+    const n2 = k => net(k), V = -n2('70'), cv = n2('69') + n2('60') + n2('61'), m80 = r2(V - cv);
+    const m82 = r2(m80 - n2('63')), m83 = r2(m82 - n2('62') - n2('64')), m84 = r2(m83 - n2('65') - n2('68') + -n2('75')), m85 = r2(m84 - n2('66') - n2('67') + -n2('77'));
+    const reg = mo.regime || 'MYPE';
+    let ir = 0, irTxt = '';
+    if (reg === 'RER') irTxt = 'En el RER no hay impuesto anual: el pago mensual de 1.5% es definitivo (IR = 0).';
+    else if (reg === 'MYPE') { const lim = 15 * UIT; ir = m85 > 0 ? r2(Math.min(m85, lim) * 0.10 + Math.max(0, m85 - lim) * 0.295) : 0; irTxt = `Régimen MYPE: 10% hasta 15 UIT (${money(15 * UIT)}) y 29.5% por el exceso.`; }
+    else { ir = m85 > 0 ? r2(m85 * 0.295) : 0; irTxt = 'Régimen General: 29.5% de la renta neta.'; }
+    const m89 = r2(m85 - ir);
+    const c = base('det8', 'Determinación del resultado (clase 8)'), fl = c.fields;
+    fl.m80 = N2(m80, 'Margen comercial (80) = ventas netas (70) − costo de ventas (69).', '80 Margen comercial', 'calculo', {tol: 0.05});
+    fl.m82 = N2(m82, 'Valor agregado (82) = margen comercial − servicios de terceros (63).', '82 Valor agregado', 'calculo', {tol: 0.05});
+    fl.m83 = N2(m83, 'Excedente bruto de explotación (83) = valor agregado − gastos de personal (62) − tributos (64).', '83 Excedente bruto de explotación', 'calculo', {tol: 0.05});
+    fl.m84 = N2(m84, 'Resultado de explotación (84) = excedente bruto − otros gastos de gestión (65) − depreciación y provisiones (68) + otros ingresos de gestión (75).', '84 Resultado de explotación', 'calculo', {tol: 0.05});
+    fl.m85 = N2(m85, 'Resultado antes del impuesto (85) = resultado de explotación − gastos financieros (67) + ingresos financieros (77).', '85 Resultado antes de impuesto', 'calculo', {tol: 0.05});
+    fl.ir = N2(ir, irTxt + ' Si hay pérdida, el impuesto es 0.', '88 Impuesto a la renta', 'renta', {z: true, tol: 0.05});
+    fl.m89 = N2(m89, 'Resultado del ejercicio (89) = resultado antes de impuesto − impuesto a la renta.', '89 Resultado del ejercicio', 'calculo', {tol: 0.05});
+    const sc = t => t === t.toUpperCase() ? t.charAt(0) + t.slice(1).toLowerCase() : t, g = k => L(`${k} ${sc(acctName(k))}`, Math.abs(n2(k)));
+    c.instr = 'Determina el resultado con las cuentas de la clase 8 (cierre por naturaleza). Supón que este mes es todo el ejercicio.';
+    c.text = `${co.name} · ${REGIMEN[reg].n}. Saldos de las cuentas de gastos e ingresos por naturaleza. ${irTxt} No hay participación de trabajadores (la empresa tiene menos de 21 trabajadores).`;
+    c.tbl = {cols: ['Concepto', 'S/'], rows: [g('70'), L('69 Costo de ventas', cv), [{s: '80 Margen comercial', c: 'b'}, {f: 'm80'}], g('63'), [{s: '82 Valor agregado', c: 'b'}, {f: 'm82'}], g('62'), ...(n2('64') ? [g('64')] : []), [{s: '83 Excedente bruto de explotación', c: 'b'}, {f: 'm83'}], ...(n2('65') ? [g('65')] : []), ...(n2('68') ? [g('68')] : []), ...(n2('75') ? [g('75')] : []), [{s: '84 Resultado de explotación', c: 'b'}, {f: 'm84'}], ...(n2('67') ? [g('67')] : []), ...(n2('77') ? [g('77')] : []), [{s: '85 Resultado antes de impuesto', c: 'b'}, {f: 'm85'}], [{s: '88 Impuesto a la renta'}, {f: 'ir'}], [{s: '89 Resultado del ejercicio', c: 'b'}, {f: 'm89'}]]};
+    c.hint = '80 = 70 − 69 → 82 = 80 − 63 → 83 = 82 − 62 − 64 → 84 = 83 − 65 − 68 + 75 → 85 = 84 − 67 + 77 → 89 = 85 − 88.'; c.fp = 'det8'; out.push(c);
+    // Asiento de cierre de las cuentas de destino (9x contra 79)
+    const d9 = ['94', '95', '97'].map(k => [k, n2(k)]).filter(x => x[1] > 0.005), t79 = r2(d9.reduce((s, x) => s + x[1], 0));
+    const a = {fmt: 'cierre', op: 'synth', date, kind: 'diario', cp: null, title: 'Asiento de cierre de las cuentas de destino', glosa: 'Cierre de las cuentas analíticas de explotación',
+      lines: [{c: '791', d: t79, h: 0, why: 'Se cierra la 79 Cargas imputables a cuentas de costos y gastos: al Debe por su saldo acreedor.'}, ...d9.map(([k, v]) => ({c: k, d: 0, h: v, why: `Se cierra la ${k} ${acctName(k)}: al Haber por su saldo deudor.`}))]};
+    a.instr = 'Registra en el Diario el asiento de cierre de las cuentas analíticas de explotación (clase 9 contra la 79).';
+    a.text = `Al cierre del ejercicio de ${co.name}, las cuentas de destino ya cumplieron su función en el Estado de Resultados por función y se cierran contra la 79. Saldos: ${d9.map(([k, v]) => `${k} ${money(v)}`).join(', ')}; 79 ${money(t79)}.`;
+    a.hint = '79 al Debe contra 94, 95 y 97 al Haber, cada una por su saldo.'; a.fp = 'cie9'; out.push(a);
+    // Asiento del impuesto a la renta y traslado del resultado
+    const lines = [];
+    if (ir > 0) lines.push({c: '881', d: ir, h: 0, why: 'Impuesto a la renta del ejercicio: 881 Impuesto a las ganancias – corriente al Debe.'}, {c: '40171', d: 0, h: ir, why: 'Se debe a SUNAT: 40171 Renta de tercera categoría al Haber.'});
+    if (m89 >= 0) lines.push({c: '891', d: m89, h: 0, why: 'Se cierra la 89 Determinación del resultado: 891 Utilidad al Debe.'}, {c: '5911', d: 0, h: m89, why: 'La utilidad pasa al patrimonio: 5911 Utilidades acumuladas al Haber.'});
+    else lines.push({c: '5921', d: -m89, h: 0, why: 'La pérdida pasa al patrimonio: 5921 Pérdidas acumuladas al Debe.'}, {c: '892', d: 0, h: -m89, why: 'Se cierra la 89: 892 Pérdida al Haber.'});
+    const b2 = {fmt: 'cierre', op: 'synth', date, kind: 'diario', cp: null, title: 'Impuesto a la renta y resultado del ejercicio', glosa: 'Impuesto a la renta y traslado del resultado', lines};
+    b2.instr = 'Registra el impuesto a la renta del ejercicio y traslada el resultado (cuenta 89) al patrimonio (cuenta 59).';
+    b2.text = `Según tu determinación: resultado antes de impuesto ${money(m85)}, impuesto a la renta ${money(ir)}, resultado del ejercicio ${money(m89)}.`;
+    b2.hint = ir > 0 ? 'IR: 881 contra 40171. Resultado: 891 contra 5911 (utilidad) o 5921 contra 892 (pérdida).' : 'Sin impuesto: solo traslada el resultado (891 contra 5911, o 5921 contra 892).'; b2.fp = 'cieir'; out.push(b2);
+  }
   return out;
 }
 /* Crea la empresa del ciclo y todos sus casos (las 7 etapas) */
-function newCycleData(seed, regime, M) {
-  const mo = newMonth(M, regime, '|' + seed);
+function newCycleData(seed, regime, M, level = 1) {
+  const mo = newMonth(M, regime, '|' + seed); mo.level = Math.min(3, Math.max(1, level));
   const R = rngFrom('ops|' + seed);
   const ops = genCycleOps(R, mo);
   const cases = stageCasesFromOps(mo, ops);
@@ -3790,15 +4055,33 @@ async function startSession(user) {
   A.user = {uid: user.uid, name: user.displayName || 'Estudiante', email: user.email || '', photo: user.photoURL || ''};
   Store.useUser(user.uid);
   $('#view').innerHTML = `<div class="loading">${LOGO(56)}<p>Cargando tu progreso…</p></div>`;
-  const [blk, adm, aviso] = await Promise.all([Store.get('blocked/' + user.uid).catch(() => null), A.user.email ? Store.get('admins/' + A.user.email).catch(() => null) : null, Store.get('config/aviso').catch(() => null)]);
+  const [blk, adm, aviso, acc, exs] = await Promise.all([Store.get('blocked/' + user.uid).catch(() => null), A.user.email ? Store.get('admins/' + A.user.email).catch(() => null) : null, Store.get('config/aviso').catch(() => null), Store.get('config/acceso').catch(() => null), Store.get('config/examenes').catch(() => null)]);
+  A.acc = acc || {}; A.exams = (exs && exs.list) || [];
   if (blk) { $('#view').innerHTML = `<section class="card ob">${LOGO(56)}<h2>Cuenta bloqueada</h2><p>El administrador bloqueó esta cuenta. Si crees que es un error, comunícate con él.</p><button class="ghost" data-act="logout">Cerrar sesión</button></section>`; return; }
   A.isAdmin = A.user.email.toLowerCase() === SUPER_ADMIN || !!adm;
   A.aviso = aviso && aviso.on && aviso.text ? aviso : null;
   renderNav();
   A.P = await Store.get(PATH.prof());
   if (!A.P) return onboarding();
+  if (await needGroup()) return groupGate();
   if (A.P.name !== A.user.name || A.P.photo !== A.user.photo || A.P.email !== A.user.email) { A.P.name = A.user.name; A.P.photo = A.user.photo; A.P.email = A.user.email; saveProfile(); }
   await afterProfile();
+}
+/* Acceso solo con código de grupo (si el administrador lo activó) */
+async function needGroup() {
+  if (!A.acc || !A.acc.req || A.isAdmin) return false;
+  if (!A.P.group) return true;
+  const g = await Store.get('groups/' + A.P.group).catch(() => null); return !g;
+}
+function groupGate() {
+  $('#view').innerHTML = `<section class="card ob">${LOGO(56)}<h2>Escribe el código de tu grupo</h2><p>Para practicar en Viernes necesitas el código que te dio tu profesor o administrador (por ejemplo VIE-4821).</p>
+    <label class="fld">Código de grupo<input id="ggC" placeholder="VIE-0000" autocomplete="off" style="text-transform:uppercase"></label>
+    <div class="row"><button class="btn" id="ggGo">Entrar</button><button class="ghost" data-act="logout">Cerrar sesión</button></div></section>`;
+  $('#ggGo').onclick = async () => {
+    const code = $('#ggC').value.trim().toUpperCase(); if (!code) return toast('Escribe el código');
+    const g = await Store.get('groups/' + code).catch(() => null); if (!g) return toast('Ese código no existe. Pídelo a tu administrador.');
+    A.P.group = code; await saveProfile(); await afterProfile();
+  };
 }
 async function afterProfile() {
   await loadIdx();
@@ -3808,12 +4091,13 @@ async function afterProfile() {
 }
 function onboarding() {
   modal(`<div class="ob">${LOGO(56)}<h2>Hola, ${esc(A.user.name.split(' ')[0])}</h2>
-    <p>En Viernes llevas la contabilidad de una empresa simulada durante un mes: <b>20 operaciones</b> que registras en el Libro Diario y luego pasas a Compras, Ventas, Caja y Bancos, Kárdex, Mayor y Balance, hasta el <b>PDT 621 y los estados financieros</b>. Al terminar el ciclo, llega otra empresa.</p>
+    <p>En Viernes llevas la contabilidad de una empresa simulada durante un mes: <b>más de 20 operaciones</b> que registras en el Libro Diario y luego pasas a Compras, Ventas, Caja, Bancos, Kárdex, Planilla, Mayor y Balance, hasta el <b>PDT 621, Inventarios y Balances y los estados financieros</b>. Al terminar el ciclo llega otra empresa, cada vez con operaciones más completas.</p>
     <label class="fld">Régimen de tus empresas<select id="obR"><option value="MYPE">Régimen MYPE Tributario</option><option value="GEN">Régimen General</option><option value="RER">Régimen Especial (RER)</option></select></label>
-    <label class="fld">Código de tu grupo o salón (opcional)<input id="obG" placeholder="Ej. VIE-4821" autocomplete="off"></label>
+    <label class="fld">Código de tu grupo o salón ${A.acc && A.acc.req && !A.isAdmin ? '(obligatorio)' : '(opcional)'}<input id="obG" placeholder="Ej. VIE-4821" autocomplete="off"></label>
     <button class="btn" id="obGo">Empezar mi primera empresa</button></div>`, 'narrow');
   $('#obGo').onclick = async () => {
     const code = $('#obG').value.trim().toUpperCase();
+    if (!code && A.acc && A.acc.req && !A.isAdmin) { toast('Escribe el código de tu grupo'); return; }
     let group = '';
     if (code) { const g = await Store.get('groups/' + code).catch(() => null); if (!g) { toast('Ese código de grupo no existe. Revísalo o déjalo vacío.'); return; } group = code; }
     A.P = {name: A.user.name, email: A.user.email, photo: A.user.photo, regime: $('#obR').value, destino: true, group, cycleN: 0, created: Date.now(), ts: Date.now()};
@@ -3830,7 +4114,7 @@ function newIndex(b) {
   return {id: b.id, kind: b.kind, ts: b.ts, month: b.month, date: b.date, hour: b.hour || '', n: b.cases.length, cycleNo: b.cycleNo || 0,
     emp: b.emp, summ: b.cases.map(c => ({f: c.fmt, o: c.op, t: c.title, d: c.date, st: b.kind === 'ciclo' ? stgOf(c.fmt) : (c.stage || 0), g: c.glosa || '', doc: c.cp ? (c.cp.serie + '-' + c.cp.num) : '', rs: c.reg ? c.reg.rs : ''})), ans: {}, done: 0, okc: 0};
 }
-function empOf(mo) { return {id: mo.id, regime: mo.regime, co: mo.co, open: mo.open, c621: null}; }
+function empOf(mo) { return {id: mo.id, regime: mo.regime, co: mo.co, open: mo.open, c621: null, level: mo.level || 1}; }
 function activeCycle() { return A.idx.filter(x => x.kind === 'ciclo').sort((a, b) => b.ts - a.ts).find(x => !x.fin) || null; }
 async function ensureCycle(force) {
   if (A.busy) return; A.busy = true;
@@ -3839,7 +4123,7 @@ async function ensureCycle(force) {
     const n = (A.P.cycleN || 0) + 1, id = 'C' + String(n).padStart(4, '0');
     if (await Store.get(PATH.i(id))) { A.P.cycleN = n; await saveProfile(); await loadIdx(); return; }
     const M = limaISO().slice(0, 7);
-    const {mo, cases} = newCycleData(A.user.uid + '|' + n, A.P.regime || 'MYPE', M);
+    const {mo, cases} = newCycleData(A.user.uid + '|' + n, A.P.regime || 'MYPE', M, n);
     const b = {id, kind: 'ciclo', ts: Date.now(), month: M, date: limaISO(), cycleNo: n, emp: empOf(mo), cases};
     await Store.set(PATH.b(id), b);
     const li = newIndex(b);
@@ -3869,7 +4153,8 @@ function pushRank() {
     const ans = allAnswers(), ok = ans.filter(x => x.a.ok).length;
     const cyc = activeCycle(), si = cyc ? stageInfo(cyc) : null;
     const r = {name: A.user.name, photo: A.user.photo, group: A.P.group || '', casos: ans.length, ok, pct: ans.length ? Math.round(ok / ans.length * 100) : 0,
-      empresas: A.idx.filter(x => x.kind === 'ciclo' && x.fin).length, etapa: si ? si.cur : 0, racha: streak().n, ts: Date.now()};
+      empresas: A.idx.filter(x => x.kind === 'ciclo' && x.fin).length, etapa: si ? si.cur : 0, racha: streak().n, ts: Date.now(), ex: {}};
+    A.idx.filter(x => x.kind === 'examen' && x.exam && x.exam.gid && x.exam.fin).forEach(x => { r.ex[x.exam.gid] = {nota: Math.round(x.okc / x.n * 20), ok: x.okc, n: x.n, at: x.exam.done || x.ts}; });
     try { await Store.set('rank/' + A.user.uid, r, true); } catch (e) { console.warn(e); }
   }, 1500);
 }
@@ -3933,12 +4218,15 @@ function renderHome() {
     <p class="sub2">Etapa ${si.cur} de ${NST}: <b>${esc(stg.t)}</b> · ${esc(stg.d)}</p>
     <button class="btn">${li.done ? 'Continuar' : 'Empezar'}</button>
   </section>` : `<section class="card"><p>Preparando tu empresa…</p></section>`}
+  ${groupExams().map(e => { const open = Date.now() >= e.start, fin = e.li && e.li.exam.fin; const d = ms => { const x = new Date(ms - OFF); return `${p2(x.getUTCDate())}/${p2(x.getUTCMonth() + 1)} ${p2(x.getUTCHours())}:${p2(x.getUTCMinutes())}`; };
+    return `<section class="card gexam"><div><p class="eyebrow">Examen ${e.group ? 'de tu grupo ' + esc(e.group) : 'para todos'}</p><h2>${esc(e.title)}</h2><p class="sub2">${e.n} casos · ${e.mins} minutos · disponible del ${d(e.start)} al ${d(e.end)}</p></div>
+    ${fin ? `<div class="nums"><b>${Math.round(e.li.okc / e.li.n * 20)}/20</b><span>entregado</span></div><button class="ghost" data-open="${e.li.id}">Revisar</button>` : open ? `<button class="btn" data-act="gexam" data-id="${esc(e.id)}">${e.li ? 'Continuar examen' : 'Empezar examen'}</button>` : '<span class="pill">Aún no empieza</span>'}</section>`; }).join('')}
   <div class="grid3">
     <button class="tile" data-act="repaso"><b>Repaso de errores</b><span>${fails ? `${fails} caso${fails > 1 ? 's' : ''} fallado${fails > 1 ? 's' : ''}: te armo 10 nuevos parecidos` : 'Aún no tienes errores registrados'}</span></button>
     <button class="tile" data-act="examen"><b>${exam ? 'Continuar examen' : 'Modo examen'}</b><span>${exam ? 'Tienes un examen en curso' : '20 casos · 30 minutos · sin pistas'}</span></button>
     <div class="tile stat"><b>${ans.length ? Math.round(okA / ans.length * 100) : 0}%</b><span>de acierto en ${ans.length} caso${ans.length === 1 ? '' : 's'} · ${done.length} empresa${done.length === 1 ? '' : 's'} terminada${done.length === 1 ? '' : 's'}</span></div>
   </div>
-  ${done.length ? `<h3 class="sec">Empresas terminadas</h3><div class="list">${done.slice(0, 8).map(x => `<section class="card lote" data-open="${x.id}"><div class="lote-h"><div><p class="eyebrow">Empresa ${x.cycleNo} · ${mesLbl(x.emp.id)}</p><h3>${esc(x.emp.co.name)}</h3></div><div class="nums"><b>${Math.round(x.okc / x.n * 20)}/20</b><span>${x.okc} de ${x.n} correctos</span></div></div></section>`).join('')}</div>` : ''}`;
+  ${done.length ? `<h3 class="sec">Empresas terminadas</h3><div class="list">${done.slice(0, 8).map(x => `<section class="card lote" data-open="${x.id}"><div class="lote-h"><div><p class="eyebrow">Empresa ${x.cycleNo} · ${mesLbl(x.emp.id)}</p><h3>${esc(x.emp.co.name)}</h3></div><div class="nums"><b>${Math.round(x.okc / x.n * 20)}/20</b><span>${x.okc} de ${x.n} correctos</span><button class="link" data-act="constancia" data-id="${x.id}">Constancia PDF</button></div></div></section>`).join('')}</div>` : ''}`;
 }
 function showLevels() {
   const li = activeCycle(), si = li ? stageInfo(li) : {cur: 1, per: {}};
@@ -3958,6 +4246,7 @@ function empresaCard(mo, li) {
       <div><dt>Período</dt><dd>${mesLbl(M)}<small>01/${M.slice(5)}/${M.slice(0, 4)} al ${fin}/${M.slice(5)}/${M.slice(0, 4)}</small></dd></div>
       <div><dt>Régimen</dt><dd>${esc(REGIMEN[mo.regime || 'MYPE'].n)}</dd></div>
       <div><dt>Cuenta corriente</dt><dd>${esc(mo.co.banco)}<small class="mono">${esc(mo.co.cta)}</small></dd></div>
+      ${li && li.kind === 'ciclo' ? `<div><dt>Dificultad</dt><dd>${esc(LEVEL_TXT[mo.level || 1] || LEVEL_TXT[1])}</dd></div>` : ''}
     </dl>
   </section>`;
 }
@@ -4001,8 +4290,9 @@ function renderLote() {
 function stageSummary(stn) {
   const li = A.li, p = stageInfo(li).per[stn]; const s = STAGES[stn - 1];
   if (!p) return '';
-  if (p.done < p.n) return `<div class="bsum"><b>Etapa ${stn}: ${esc(s.t)}.</b> ${esc(s.d)}.</div>`;
-  return `<div class="bsum good">Etapa ${stn} terminada: <b>${p.ok} de ${p.n}</b> correctos.${(() => { const nx = nextStage(li, stn); return nx ? ' Ya puedes pasar a la etapa ' + nx + ': ' + esc(STAGES[nx - 1].t) + '.' : ''; })()}</div>`;
+  const T = TEORIA[stn], teo = T ? `<details class="teo"><summary>Teoría de esta etapa</summary><p>${esc(T.q)}</p><p class="eyebrow">Columnas</p><ul>${T.c.map(x => `<li>${esc(x)}</li>`).join('')}</ul><p class="eyebrow">Ejemplo</p><p>${esc(T.e)}</p></details>` : '';
+  if (p.done < p.n) return `<div class="bsum"><b>Etapa ${stn}: ${esc(s.t)}.</b> ${esc(s.d)}.${teo}</div>`;
+  return `<div class="bsum good">${teo.replace('<details class="teo">', '<details class="teo fin">')}Etapa ${stn} terminada: <b>${p.ok} de ${p.n}</b> correctos.${(() => { const nx = nextStage(li, stn); return nx ? ' Ya puedes pasar a la etapa ' + nx + ': ' + esc(STAGES[nx - 1].t) + '.' : ''; })()}</div>`;
 }
 function nextStage(li, stn) { const per = stageInfo(li).per; for (let s = stn + 1; s <= NST; s++) if (per[s] && per[s].n) return s; return 0; }
 function caseByN(n) { return A.lote.cases.find(c => c.n === n); }
@@ -4081,6 +4371,7 @@ function colLabels(t) {
 }
 function gridCards(c, cellHtml) {
   const t = c.tbl, L = colLabels(t);
+  if (t.cols.length === 2 && !t.groups) return `<div class="mcard mlist">${t.rows.map(r => { const [a, b] = r; const lab = typeof a === 'string' ? esc(a) : `<span class="${a.c === 'b' ? 'b' : ''}">${esc(a.s)}</span>`; const v = b == null || b === '' ? '' : cellHtml(b); return `<div class="mli ${b && b.f ? 'mf' : ''} ${a && a.c === 'b' ? 'tot' : ''}"><span class="ml">${lab}</span><span class="mv">${v}</span></div>`; }).join('')}</div>`;
   const codeHead = t.cols[0] === 'Código' && t.cols[1] === 'Denominación';
   return `<div class="mcards">${t.rows.map(r => {
     const hasF = r.some(x => x && x.f);
@@ -4166,7 +4457,7 @@ async function checkCycle(li, stn) {
   if (li.done >= li.n && !li.fin) {
     li.fin = true; li.finAt = Date.now(); await saveIndex(li); pushRank();
     const nota = Math.round(li.okc / li.n * 20);
-    modal(`<div class="ob">${LOGO(56)}<h2>¡Terminaste el ciclo contable!</h2><p>Completaste la contabilidad de <b>${esc(li.emp.co.name)}</b> del Diario a los estados financieros.</p><p class="big">${nota}/20</p><p>${li.okc} de ${li.n} casos correctos.</p><div class="row"><button class="btn" data-act="newcycle">Empezar la siguiente empresa</button><button class="ghost" data-act="close">Revisar esta empresa</button></div></div>`, 'narrow');
+    modal(`<div class="ob">${LOGO(56)}<h2>¡Terminaste el ciclo contable!</h2><p>Completaste la contabilidad de <b>${esc(li.emp.co.name)}</b> del Diario a los estados financieros.</p><p class="big">${nota}/20</p><p>${li.okc} de ${li.n} casos correctos.</p><div class="row"><button class="btn" data-act="newcycle">Empezar la siguiente empresa</button><button class="ghost" data-act="constancia" data-id="${li.id}">Descargar constancia (PDF)</button><button class="ghost" data-act="close">Revisar esta empresa</button></div></div>`, 'narrow');
   } else if (p && p.done === p.n && nextStage(li, stn)) {
     const nx = nextStage(li, stn); toast(`Etapa ${stn} terminada (${p.ok}/${p.n}). Se abrió la etapa ${nx}: ${STAGES[nx - 1].t}.`, 5000);
   }
@@ -4199,6 +4490,23 @@ async function makeExtra(kind) {
   A.lotes[id] = b; A.idx.unshift(li);
   openLote(id);
 }
+/* Exámenes programados por el administrador */
+function groupExams() {
+  const now = Date.now(), mine = e => !e.group || e.group === (A.P && A.P.group);
+  return (A.exams || []).filter(e => mine(e) && e.end > now).map(e => ({...e, li: A.idx.find(x => x.kind === 'examen' && x.exam && x.exam.gid === e.id)})).sort((a, b) => a.start - b.start);
+}
+async function startGroupExam(gid) {
+  const e = (A.exams || []).find(x => x.id === gid); if (!e) return toast('Ese examen ya no existe');
+  const done = A.idx.find(x => x.kind === 'examen' && x.exam && x.exam.gid === gid); if (done) return openLote(done.id);
+  const now = Date.now(); if (now < e.start) return toast('Este examen aún no empieza'); if (now >= e.end) return toast('El examen ya cerró');
+  const M = limaISO().slice(0, 7), mo = newMonth(M, A.P.regime || 'MYPE', '|gx' + gid + A.user.uid), R = rngFrom('gx' + gid + A.user.uid);
+  const plan = Array.from({length: e.n}, () => R.pick(e.f));
+  const id = 'G' + gid, cases = genCases('gx:' + gid + ':' + A.user.uid, mo, plan, limaISO(), false);
+  const b = {id, kind: 'examen', ts: now, month: M, date: limaISO(), hour: new Date(now - OFF).toISOString().slice(11, 16), emp: empOf(mo), cases};
+  const li = newIndex(b); li.exam = {t0: now, end: Math.min(now + e.mins * 60e3, e.end), fin: false, gid, title: e.title};
+  await Store.set(PATH.b(id), b); await Store.set(PATH.i(id), li); A.lotes[id] = b; A.idx.unshift(li);
+  openLote(id);
+}
 function startTimer() { clearInterval(A.timer); A.timer = setInterval(updTimer, 1000); }
 function updTimer() {
   const li = A.li; if (!isExamOpen()) { clearInterval(A.timer); return; }
@@ -4224,6 +4532,7 @@ async function finishExam(auto) {
   }
   li.exam.fin = true; li.exam.done = Date.now();
   await saveIndex(li);
+  if (li.exam.gid) pushRank();
   const ok = li.okc, n = li.n, mins = Math.round((Math.min(li.exam.done, li.exam.end) - li.exam.t0) / 60e3);
   A.cur = 1; renderLote();
   modal(`<div class="ob">${LOGO(56)}<h2>${auto ? 'Se acabó el tiempo' : 'Examen terminado'}</h2><p class="big">${ok} / ${n}</p><p>Nota en escala vigesimal: <b>${Math.round(ok / n * 20)}</b> · tiempo: ${mins} min.</p><p class="mini">Ahora puedes revisar cada caso con su corrección y la solución.</p><button class="btn" data-act="close">Revisar el examen</button></div>`, 'narrow');
@@ -4408,6 +4717,32 @@ applyTheme();
 
 /* Al girar el celular o cambiar el tamaño de la ventana, el caso se redibuja en el formato que corresponde */
 window.matchMedia('(max-width: 700px)').addEventListener('change', () => { if (A.view === 'lote' && A.lote) { saveDraft(); renderCase(); } });
+
+/* Constancia en PDF al terminar una empresa */
+async function constanciaPDF(id) {
+  const li = await getIndex(id); if (!li || !li.fin) return toast('La constancia está disponible al terminar la empresa');
+  toast('Preparando constancia…');
+  try { await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'); } catch (e) { toast('No se pudo cargar el generador de PDF'); return; }
+  const {jsPDF} = window.jspdf, doc = new jsPDF({unit: 'pt', format: 'a4'}), W = 595, co = li.emp.co, nota = Math.round(li.okc / li.n * 20);
+  const d = new Date((li.finAt || Date.now()) - OFF), fecha = `${p2(d.getUTCDate())}/${p2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
+  doc.setFillColor(47, 42, 133); doc.rect(0, 0, W, 120, 'F'); doc.setFillColor(226, 85, 61); doc.rect(0, 120, W, 6, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(30); doc.text('Viernes', 50, 62); doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Práctica contable SUNAT', 50, 86);
+  doc.setTextColor(30, 30, 50); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text('Constancia de práctica', W / 2, 190, {align: 'center'});
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.text('Se deja constancia de que', W / 2, 230, {align: 'center'});
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.text(A.user.name, W / 2, 262, {align: 'center'});
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
+  doc.text(doc.splitTextToSize(`completó el ciclo contable completo de la empresa simulada ${co.name} (RUC ${co.ruc}), período ${mesLbl(li.emp.id)}, ${REGIMEN[li.emp.regime || 'MYPE'].n}: del Libro Diario a los estados financieros.`, 440), W / 2, 296, {align: 'center'});
+  doc.setDrawColor(220, 220, 230); doc.roundedRect(130, 360, 335, 110, 10, 10, 'S');
+  doc.setFontSize(11); doc.text('Nota', 200, 392, {align: 'center'}); doc.text('Casos correctos', 395, 392, {align: 'center'});
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(34); doc.setTextColor(47, 42, 133); doc.text(nota + '/20', 200, 440, {align: 'center'}); doc.text(`${li.okc}/${li.n}`, 395, 440, {align: 'center'});
+  doc.setTextColor(30, 30, 50); doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+  doc.text('Libros y formatos practicados:', 70, 510);
+  doc.setFontSize(10); doc.text(doc.splitTextToSize(STAGES.map(s => s.n + '. ' + s.t).join('  ·  '), 455), 70, 530);
+  doc.text(`Empresa ${li.cycleNo} · ${LEVEL_TXT[li.emp.level || 1] || ''}`, 70, 590);
+  doc.text(`Fecha: ${fecha}`, 70, 610);
+  doc.setFontSize(8.5); doc.setTextColor(120, 120, 140); doc.text('Datos de empresa ficticios generados para práctica. Formatos según la R.S. 234-2006/SUNAT. josueoo07.github.io/viernes', W / 2, 800, {align: 'center'});
+  await saveFile(`Constancia-Viernes-empresa-${li.cycleNo}.pdf`, doc.output('blob'));
+}
 /* ===================== Mi mes: libros armados con TUS respuestas (los errores se arrastran) ===================== */
 function monthItems(idxs) {
   const out = [];
@@ -4497,7 +4832,7 @@ async function renderMes() {
     <label class="fld">Régimen tributario de la empresa<select id="mReg">${Object.entries(REGIMEN).map(([k, r]) => `<option value="${k}" ${mo.regime === k ? 'selected' : ''}>${r.n}</option>`).join('')}</select></label>
     <div><p class="eyebrow">Libros obligatorios en este régimen</p><ul class="libs">${REGIMEN[mo.regime || 'MYPE'].libros.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>
   </section>
-  <p class="mini">Estos libros se arman con <b>tus respuestas</b>: ${dia.length} de 20 asientos del Diario, ${cnt('compras')} compra${cnt('compras') === 1 ? '' : 's'} y ${cnt('ventas')} venta${cnt('ventas') === 1 ? '' : 's'} registradas. Si te equivocaste en un caso, el error se arrastra hasta el balance y los EEFF, y Viernes te muestra en qué caso se originó.</p>
+  <p class="mini">Estos libros se arman con <b>tus respuestas</b>: ${dia.length} de ${li.summ.filter(x => x.f === 'diario').length || 20} asientos del Diario, ${cnt('compras')} compra${cnt('compras') === 1 ? '' : 's'} y ${cnt('ventas')} venta${cnt('ventas') === 1 ? '' : 's'} registradas. Si te equivocaste en un caso, el error se arrastra hasta el balance y los EEFF, y Viernes te muestra en qué caso se originó.</p>
   <div class="tabs" role="tablist">${tabs.map(([k, t]) => `<button role="tab" class="tab ${k === T ? 'on' : ''}" data-mtab="${k}">${t}</button>`).join('')}</div>
   <div id="mbody"></div>`;
   $('#mSel').onchange = e => { A.mesM = e.target.value; renderMes(); };
@@ -4533,7 +4868,7 @@ function renderMesTab() {
       : `<p class="empty">Aún no registraste ${T === 'compras' ? 'compras' : 'ventas'} este mes. Se llenan en la etapa ${T === 'compras' ? 2 : 3} de la empresa.</p>`;
   } else if (T === 'planilla') {
     const L = items.filter(it => it.s.f === 'planilla');
-    const cols = [['af', 'Asig. fam.'], ['rem', 'Total remun.'], ['ap', 'ONP / AFP'], ['pr', 'Prima'], ['cm', 'Comisión'], ['desc', 'Descuentos'], ['net', 'Neto'], ['ess', 'ESSALUD']];
+    const cols = [['af', 'Asig. fam.'], ['rem', 'Total remun.'], ['ap', 'ONP / AFP'], ['pr', 'Prima'], ['cm', 'Comisión'], ['desc', 'Descuentos'], ['q5', 'Renta 5ta'], ['net', 'Neto'], ['ess', 'ESSALUD']];
     const uv = (it, k) => parseNum(it.a.v[k]) || 0, sv = (it, k) => it.a.s[k] || 0;
     const tot = (w, k) => r2(L.reduce((a, it) => a + (w === 'u' ? uv(it, k) : sv(it, k)), 0));
     box.innerHTML = L.length ? `<section class="card"><h2>Planilla de remuneraciones del mes</h2><p class="mini">Tu planilla, trabajador por trabajador. Celdas en rojo: no coinciden con el cálculo correcto. Toca la fila para ver el caso.</p>
@@ -4703,6 +5038,8 @@ document.addEventListener('click', async e => {
   if (act === 'theme') return openTheme();
   if (act === 'repaso') return makeExtra('repaso');
   if (act === 'examen') return makeExtra('examen');
+  if (act === 'gexam') return startGroupExam(t.dataset.id);
+  if (act === 'constancia') return constanciaPDF(t.dataset.id);
   if (act === 'finexam') { if (confirmFin()) return finishExam(false); return; }
   if (act === 'histmore') { A.histN += 400; await loadIdx(); return renderHist(); }
   if (act === 'openlote') { closeModal(); return openLote(t.dataset.id, +t.dataset.n); }
@@ -4919,7 +5256,7 @@ async function renderAdmin() {
   A.view = 'admin'; setNavOn('admin');
   const tab = A.admTab || 'usuarios';
   $('#view').innerHTML = `<header class="hero sm"><div><p class="eyebrow">Solo administradores</p><h1>Administrar</h1><p class="sub">Usuarios, grupos, avisos y administradores de Viernes.</p></div></header>
-  <div class="tabs">${[['usuarios', 'Usuarios'], ['grupos', 'Grupos'], ['avisos', 'Avisos'], ['admins', 'Administradores']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-atab="${k}">${l}</button>`).join('')}</div>
+  <div class="tabs">${[['usuarios', 'Usuarios'], ['grupos', 'Grupos'], ['examenes', 'Exámenes'], ['avisos', 'Avisos'], ['admins', 'Administradores']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-atab="${k}">${l}</button>`).join('')}</div>
   <div id="abody"><div class="loading sm"><p>Cargando…</p></div></div>`;
   const box = $('#abody');
   try {
@@ -4931,10 +5268,34 @@ async function renderAdmin() {
       box.innerHTML = `<div class="kpis"><div class="kpi"><span>Usuarios</span><b>${rk.length}</b><small>con progreso guardado</small></div><div class="kpi"><span>Activos esta semana</span><b>${activos}</b><small>practicaron en 7 días</small></div><div class="kpi"><span>Casos resueltos</span><b>${rk.reduce((s, r) => s + (r.casos || 0), 0)}</b><small>entre todos</small></div><div class="kpi"><span>Bloqueados</span><b>${blocked.size}</b><small>sin acceso</small></div></div>
       <div class="tw"><table class="book resp"><thead><tr><th>Estudiante</th><th>Grupo</th><th>Casos</th><th>% acierto</th><th>Empresas</th><th>Etapa</th><th>Última actividad</th><th>Estado</th></tr></thead>
       <tbody>${rk.map(r => `<tr class="click" data-auser="${r.id}"><td class="tx lead" data-l="Estudiante"><span class="who">${r.photo ? `<img src="${esc(r.photo)}" alt="" referrerpolicy="no-referrer">` : ''}${esc(r.name || 'Estudiante')}</span></td><td data-l="Grupo">${esc(r.group || '—')}</td><td class="num" data-l="Casos">${r.casos || 0}</td><td class="num" data-l="% acierto">${r.pct || 0}%</td><td class="num" data-l="Empresas">${r.empresas || 0}</td><td data-l="Etapa">${r.etapa || '—'}</td><td data-l="Última actividad">${r.ts ? fmtD(limaISO(r.ts)) : '—'}</td><td data-l="Estado">${blocked.has(r.id) ? '<span class="pill bad">Bloqueado</span>' : '<span class="pill ok">Activo</span>'}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">Aún no hay usuarios.</td></tr>'}</tbody></table></div>
-      <p class="mini">Toca un estudiante para ver su detalle, bloquearlo o eliminar sus datos.</p>`;
+      <p class="mini">Toca un estudiante para ver su detalle, bloquearlo o eliminar sus datos.</p>
+      <section class="card"><h2>Excel de notas</h2><p class="mini">Lista de estudiantes con casos, % de acierto, nota sobre 20, empresas terminadas, etapa y notas de los exámenes del grupo.</p>
+      <div class="row"><select id="xgGr" aria-label="Grupo"><option value="">Todos los estudiantes</option>${[...new Set(rk.map(r => r.group).filter(Boolean))].sort().map(g => `<option>${esc(g)}</option>`).join('')}</select><button class="btn" data-act="admxls">Descargar Excel</button></div></section>`;
+    } else if (tab === 'examenes') {
+      const [ex, gr, rk] = await Promise.all([Store.get('config/examenes').catch(() => null), Store.listPlain('groups', 500), Store.listPlain('rank', 1000)]);
+      const L = ((ex && ex.list) || []).sort((a, b) => b.start - a.start), now = Date.now();
+      const dt = ms => { const d = new Date(ms - OFF); return `${p2(d.getUTCDate())}/${p2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} ${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}`; };
+      const inp = ms => new Date(ms - OFF).toISOString().slice(0, 16);
+      const d0 = Date.now() + 864e5;
+      box.innerHTML = `<section class="card"><h2>Programar examen</h2>
+        <div class="fgrid"><label class="fld">Título<input id="exT" placeholder="Ej. Práctica calificada 1"></label>
+        <label class="fld">Grupo<select id="exG"><option value="">Todos los estudiantes</option>${gr.map(g => `<option value="${esc(g.id)}">${esc(g.id)} · ${esc(g.name || '')}</option>`).join('')}</select></label>
+        <label class="fld">Disponible desde<input id="exS" type="datetime-local" value="${inp(d0 - (d0 % 36e5))}"></label>
+        <label class="fld">Disponible hasta<input id="exE" type="datetime-local" value="${inp(d0 - (d0 % 36e5) + 2 * 36e5)}"></label>
+        <label class="fld">Número de casos<select id="exN">${[5, 10, 15, 20, 30].map(n => `<option ${n === 10 ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+        <label class="fld">Duración (minutos)<select id="exM">${[15, 20, 30, 45, 60, 90].map(n => `<option ${n === 30 ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
+        <p class="eyebrow">Libros que entran</p><div class="chks">${LEVELS.map((l, i) => `<label class="chk"><input type="checkbox" class="exF" value="${i}" ${i < 3 ? 'checked' : ''}> ${esc(l.t)}</label>`).join('')}</div>
+        <button class="btn" data-act="admexadd">Programar examen</button>
+        <p class="mini">Cada estudiante recibe casos distintos (mismos temas, otros datos) y su nota llega aquí al terminar.</p></section>
+      ${L.length ? L.map(e => { const tgt = rk.filter(r => !e.group || r.group === e.group), done = tgt.filter(r => r.ex && r.ex[e.id]); const st = now < e.start ? 'Programado' : now > e.end ? 'Cerrado' : 'En curso';
+        return `<section class="card"><div class="exh"><div><h2>${esc(e.title)}</h2><p class="mini">${e.group ? 'Grupo ' + esc(e.group) : 'Todos'} · ${dt(e.start)} a ${dt(e.end)} · ${e.n} casos · ${e.mins} min</p></div><span class="pill ${st === 'En curso' ? 'ok' : ''}">${st}</span></div>
+        <div class="tw"><table class="book resp"><thead><tr><th>Estudiante</th><th>Grupo</th><th>Correctos</th><th>Nota</th><th>Entregado</th></tr></thead><tbody>${tgt.map(r => { const x = r.ex && r.ex[e.id]; return `<tr><td class="tx lead" data-l="Estudiante">${esc(r.name || 'Estudiante')}</td><td data-l="Grupo">${esc(r.group || '—')}</td><td class="num" data-l="Correctos">${x ? x.ok + '/' + x.n : '—'}</td><td class="num b" data-l="Nota">${x ? x.nota : '—'}</td><td data-l="Entregado">${x ? dt(x.at) : 'Pendiente'}</td></tr>`; }).join('') || '<tr><td colspan="5" class="empty">No hay estudiantes en este grupo.</td></tr>'}</tbody></table></div>
+        <div class="row"><span class="mini">${done.length} de ${tgt.length} entregaron</span><span class="sp"></span><button class="ghost sm" data-act="admexxls" data-id="${esc(e.id)}">Excel de notas</button><button class="ghost sm" data-act="admexdel" data-id="${esc(e.id)}">Eliminar</button></div></section>`; }).join('') : '<p class="empty">Aún no programaste exámenes.</p>'}`;
     } else if (tab === 'grupos') {
       const [gr, rk] = await Promise.all([Store.listPlain('groups', 500), Store.listPlain('rank', 1000)]);
-      box.innerHTML = `<section class="card"><h2>Crear grupo</h2><div class="row"><input id="agName" placeholder="Nombre, p. ej. Contabilidad Integral – Sección A" style="flex:1;min-width:200px"><button class="btn" data-act="admgroupadd">Crear y generar código</button></div></section>
+      const acc = await Store.get('config/acceso').catch(() => null);
+      box.innerHTML = `<section class="card"><h2>Acceso a Viernes</h2><label class="chk"><input type="checkbox" id="accReq" ${acc && acc.req ? 'checked' : ''}> Solo pueden entrar estudiantes con un código de grupo válido</label><p class="mini">Si lo activas, quien entre con su cuenta de Google sin código (o con un código eliminado) tendrá que escribir el código de su grupo para practicar. Los administradores siempre entran.</p><button class="btn" data-act="admacceso">Guardar</button></section>
+      <section class="card"><h2>Crear grupo</h2><div class="row"><input id="agName" placeholder="Nombre, p. ej. Contabilidad Integral – Sección A" style="flex:1;min-width:200px"><button class="btn" data-act="admgroupadd">Crear y generar código</button></div></section>
       <div class="tw"><table class="book resp"><thead><tr><th>Código</th><th>Nombre</th><th>Integrantes</th><th>Creado</th><th></th></tr></thead><tbody>${gr.sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(g => `<tr><td class="mono b lead" data-l="Código">${esc(g.id)}</td><td class="tx" data-l="Nombre">${esc(g.name || '')}</td><td class="num" data-l="Integrantes">${rk.filter(r => r.group === g.id).length}</td><td data-l="Creado">${g.ts ? fmtD(limaISO(g.ts)) : ''}</td><td data-l=""><button class="ghost sm" data-act="admgroupdel" data-id="${esc(g.id)}">Eliminar</button></td></tr>`).join('') || '<tr><td colspan="5" class="empty">Aún no hay grupos.</td></tr>'}</tbody></table></div>
       <p class="mini">Comparte el código con tu salón. Cada estudiante lo pega en Más → Mi cuenta y queda registrado en el grupo.</p>`;
     } else if (tab === 'avisos') {
@@ -4959,7 +5320,7 @@ async function adminUser(uid) {
     const cyc = idx.filter(x => x.kind === 'ciclo').sort((a, b) => b.ts - a.ts);
     $('#aud').innerHTML = `<div class="acct">${prof && prof.photo ? `<img src="${esc(prof.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<div><b>${esc((prof && prof.name) || (rk && rk.name) || 'Estudiante')}</b><small>${esc((prof && prof.email) || '')} · grupo ${esc((prof && prof.group) || '—')}</small></div></div>
     <div class="kpis"><div class="kpi"><span>Casos</span><b>${ans.length}</b></div><div class="kpi"><span>Acierto</span><b>${ans.length ? Math.round(ok / ans.length * 100) : 0}%</b></div><div class="kpi"><span>Empresas terminadas</span><b>${cyc.filter(x => x.fin).length}</b></div><div class="kpi"><span>Racha</span><b>${streak(idx).n} d</b></div></div>
-    <h3 class="sec">Empresas</h3><div class="tw"><table class="book resp"><thead><tr><th>Nº</th><th>Empresa</th><th>Período</th><th>Avance</th><th>Correctos</th><th>Nota</th></tr></thead><tbody>${cyc.map(c => `<tr><td class="num" data-l="Nº">${c.cycleNo}</td><td class="tx lead" data-l="Empresa">${esc(c.emp.co.name)}</td><td data-l="Período">${mesLbl(c.emp.id)}</td><td data-l="Avance">${c.fin ? 'Terminada' : 'Etapa ' + stageInfo(c).cur + ' de 7'} · ${c.done}/${c.n}</td><td class="num" data-l="Correctos">${c.okc}</td><td class="num" data-l="Nota">${c.done ? Math.round(c.okc / c.done * 20) : 0}/20</td></tr>`).join('') || '<tr><td colspan="6" class="empty">Sin empresas.</td></tr>'}</tbody></table></div>
+    <h3 class="sec">Empresas</h3><div class="tw"><table class="book resp"><thead><tr><th>Nº</th><th>Empresa</th><th>Período</th><th>Avance</th><th>Correctos</th><th>Nota</th></tr></thead><tbody>${cyc.map(c => `<tr><td class="num" data-l="Nº">${c.cycleNo}</td><td class="tx lead" data-l="Empresa">${esc(c.emp.co.name)}</td><td data-l="Período">${mesLbl(c.emp.id)}</td><td data-l="Avance">${c.fin ? 'Terminada' : 'Etapa ' + stageInfo(c).cur + ' de ' + NST} · ${c.done}/${c.n}</td><td class="num" data-l="Correctos">${c.okc}</td><td class="num" data-l="Nota">${c.done ? Math.round(c.okc / c.done * 20) : 0}/20</td></tr>`).join('') || '<tr><td colspan="6" class="empty">Sin empresas.</td></tr>'}</tbody></table></div>
     <h3 class="sec">Acierto por libro</h3>${Object.entries(byF).map(([f, o]) => { const p = Math.round(o.ok / o.n * 100); return `<div class="srow"><div class="sl"><span>${esc(LIBRO[f] || f)}</span><span class="num">${p}% · ${o.ok}/${o.n}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('') || '<p class="empty">Sin casos resueltos.</p>'}
     <div class="actions"><button class="ghost" data-act="${bl ? 'admunblock' : 'admblock'}" data-id="${uid}">${bl ? 'Desbloquear' : 'Bloquear acceso'}</button><span class="sp"></span><button class="btn warn" data-act="admwipe" data-id="${uid}">Eliminar sus datos</button></div>`;
   } catch (e) { $('#aud').innerHTML = `<p class="empty">No se pudo cargar: ${esc(e.message || e)}</p>`; }
@@ -4972,6 +5333,19 @@ async function adminAct(act, t) {
       await Store.set('groups/' + code, {name, ts: Date.now(), by: A.user.email}, true); toast('Grupo creado: ' + code); return renderAdmin();
     }
     if (act === 'admgroupdel') { if (!confirmTwice('g' + t.dataset.id, '¿Eliminar el grupo ' + t.dataset.id + '? Toca otra vez para confirmar.')) return; await Store.del('groups/' + t.dataset.id); toast('Grupo eliminado'); return renderAdmin(); }
+    if (act === 'admacceso') { await Store.set('config/acceso', {req: $('#accReq').checked, ts: Date.now()}, true); return toast($('#accReq').checked ? 'Ahora se pide código de grupo para entrar' : 'Acceso libre con cuenta de Google'); }
+    if (act === 'admxls') return notasXLS($('#xgGr').value);
+    if (act === 'admexxls') { const ex = await Store.get('config/examenes'); const e = ((ex && ex.list) || []).find(x => x.id === t.dataset.id); return notasXLS(e ? e.group : '', e); }
+    if (act === 'admexadd') {
+      const title = $('#exT').value.trim(), start = new Date($('#exS').value + ':00Z').getTime() + OFF, end = new Date($('#exE').value + ':00Z').getTime() + OFF;
+      const fm = $$('.exF').filter(x => x.checked).flatMap(x => LEVELS[+x.value].f);
+      if (!title) return toast('Escribe el título del examen'); if (!(end > start)) return toast('La hora de cierre debe ser después del inicio'); if (!fm.length) return toast('Elige al menos un libro');
+      const ex = (await Store.get('config/examenes')) || {list: []};
+      ex.list = (ex.list || []).filter(e => e.end > Date.now() - 120 * 864e5);
+      ex.list.push({id: 'E' + Date.now().toString(36).toUpperCase(), title, group: $('#exG').value, start, end, n: +$('#exN').value, mins: +$('#exM').value, f: fm, by: A.user.email, ts: Date.now()});
+      ex.ts = Date.now(); await Store.set('config/examenes', ex); toast('Examen programado'); return renderAdmin();
+    }
+    if (act === 'admexdel') { if (!confirmTwice('e' + t.dataset.id, '¿Eliminar este examen? Toca otra vez para confirmar.')) return; const ex = (await Store.get('config/examenes')) || {list: []}; ex.list = (ex.list || []).filter(e => e.id !== t.dataset.id); ex.ts = Date.now(); await Store.set('config/examenes', ex); toast('Examen eliminado'); return renderAdmin(); }
     if (act === 'admaviso') { await Store.set('config/aviso', {text: $('#avTx').value.trim(), on: $('#avOn').checked, ts: Date.now()}, true); A.aviso = $('#avOn').checked && $('#avTx').value.trim() ? {text: $('#avTx').value.trim(), on: true} : null; return toast('Aviso guardado'); }
     if (act === 'admadminadd') { const em = $('#adEm').value.trim().toLowerCase(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast('Escribe un correo válido'); await Store.set('admins/' + em, {ts: Date.now(), by: A.user.email}, true); toast('Administrador agregado'); return renderAdmin(); }
     if (act === 'admadmindel') { await Store.del('admins/' + t.dataset.id); toast('Administrador quitado'); return renderAdmin(); }
@@ -4985,6 +5359,22 @@ async function adminAct(act, t) {
       toast('Datos eliminados'); closeModal(); return renderAdmin();
     }
   } catch (e) { console.error(e); toast('No se pudo completar: ' + (e.message || e)); }
+}
+/* Excel de notas para el administrador */
+async function notasXLS(group, exam) {
+  toast('Preparando Excel…');
+  try { await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'); } catch (e) { toast('No se pudo cargar el generador de Excel'); return; }
+  const [rk, exd] = await Promise.all([Store.listPlain('rank', 1000), Store.get('config/examenes').catch(() => null)]);
+  const L = rk.filter(r => !group || r.group === group).sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'es'));
+  const exs = exam ? [exam] : ((exd && exd.list) || []).filter(e => !group || !e.group || e.group === group).sort((a, b) => a.start - b.start);
+  const head = ['Nº', 'Estudiante', 'Grupo', 'Casos resueltos', 'Correctos', '% acierto', 'Nota (0-20)', 'Empresas terminadas', 'Etapa actual', 'Última actividad', ...exs.map(e => e.title + ' (nota)')];
+  const rows = [head, ...L.map((r, i) => [i + 1, r.name || 'Estudiante', r.group || '', r.casos || 0, r.ok || 0, (r.pct || 0) / 100, Math.round((r.pct || 0) / 5), r.empresas || 0, r.etapa ? r.etapa + ' · ' + STAGES[Math.min(r.etapa, NST) - 1].t : '', r.ts ? fmtD(limaISO(r.ts)) : '', ...exs.map(e => r.ex && r.ex[e.id] ? r.ex[e.id].nota : null)])];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = head.map((h, ci) => ({wch: Math.min(40, Math.max(8, ...rows.map(r => String(r[ci] ?? '').length + 2)))}));
+  for (let R = 1; R < rows.length; R++) { const c = ws[XLSX.utils.encode_cell({r: R, c: 5})]; if (c) c.z = '0%'; }
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Notas');
+  const out = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+  await saveFile(`Viernes-notas-${exam ? exam.title.replace(/[^A-Za-z0-9]+/g, '-') : group || 'todos'}-${limaISO()}.xlsx`, new Blob([out], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
 }
 function confirmTwice(key, msg) { if (A._cf === key && Date.now() - A._cfT < 5000) { A._cf = null; return true; } A._cf = key; A._cfT = Date.now(); toast(msg, 5000); return false; }
 document.addEventListener('click', e => { const b = e.target.closest('[data-act=rktab]'); if (b) { A.rkTab = b.dataset.k; renderRanking(); } });
