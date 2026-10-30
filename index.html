@@ -345,6 +345,9 @@ input::placeholder{color:var(--muted);opacity:.6}input:disabled::placeholder{col
 .chk.big input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--brand)}
 .chk.big span{display:grid;gap:2px}.chk.big small{color:var(--muted);font-size:.85rem}
 .ghost.adm{border-style:dashed;border-color:var(--brand);color:var(--brand)}
+.trx{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.trb{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;display:grid;gap:2px;color:var(--ink)}
+.trb small{color:var(--muted);font-size:.78rem;line-height:1.3}.trb.on{border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}.trb.on b{color:var(--brand)}
 .tpl{margin:12px 0 4px;font-weight:700;font-size:.92rem}.tpl small{font-weight:500;color:var(--muted)}
 .tprev{border-radius:14px;padding:14px;border:1px solid var(--line);transition:background .3s}
 .tpcard{border:1px solid;border-radius:12px;padding:12px 14px;display:grid;gap:4px;position:relative;overflow:hidden;max-width:320px}
@@ -2411,7 +2414,7 @@ const PCGE_FULL = `1|ACTIVO DISPONIBLE Y EXIGIBLE
 96|GASTOS DE OPERACIÓN (cuentas analíticas)
 97|GASTOS FINANCIEROS
 98|CUENTAS ANALÍTICAS (de libre uso)`;
-const APP_V = '23';
+const APP_V = '24';
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -4922,6 +4925,7 @@ function renderMas() {
     <button class="tile" data-go="mes"><b>Exportar mis libros</b><span>Excel o PDF, desde Mi empresa</span></button>
   </div>
   <section class="card"><h2>Tema y colores</h2><div class="tpwrap">${themePicker()}</div></section>
+  <section class="card"><h2>Transición entre pantallas</h2><p class="mini">Se ve al cambiar entre Inicio, Practicar, Mi empresa, Historial y Más. Toca una para probarla.</p><div class="trx">${FX_LIST.map(([k, n, d]) => `<button class="trb ${k === fxType() ? 'on' : ''}" data-trx="${k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div></section>
   <section class="card"><h2>Mi cuenta</h2>
     <div class="acct">${A.user.photo ? `<img src="${esc(A.user.photo)}" alt="" referrerpolicy="no-referrer">` : ''}<div><b>${esc(A.user.name)}</b><small>${esc(A.user.email)}${A.isAdmin ? ' · Administrador' : ''}</small></div><button class="ghost sm" data-act="logout">Cerrar sesión</button></div>
     <label class="fld">Código de grupo o salón<div class="row"><input id="sGr" value="${esc(A.P.group || '')}" placeholder="Ej. VIE-4821" autocomplete="off" style="flex:1"><button class="ghost sm" data-act="joingroup">Guardar</button></div></label>
@@ -5366,7 +5370,7 @@ async function exportPDF() {
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-act],[data-go],[data-open],[data-stg],[data-case],[data-hist],[data-mtab],[data-code],[data-ct],[data-hoja],[data-atab],[data-auser]');
   if (!t) { if (e.target.id === 'modal') closeModal(); return; }
-  if (t.dataset.go) { if (A.view === 'lote') saveDraft(); dustFx(t.dataset.go); closeModal(); return go(t.dataset.go); }
+  if (t.dataset.go) { if (A.view === 'lote') saveDraft(); screenFx(t.dataset.go, t); closeModal(); return go(t.dataset.go); }
   if (t.dataset.open) return openLote(t.dataset.open);
   if (t.dataset.stg) { const sn = +t.dataset.stg; if (!unlocked(sn)) { toast(maxStBlock(sn) ? 'Tu profesor todavía no habilita la etapa ' + sn + '.' : 'Primero termina la etapa ' + stageInfo(A.li).cur + '.'); return; } saveDraft(); const c = A.lote.cases.find(c => (c.stage || 1) === sn && (!A.li.ans[c.n] || A.li.ans[c.n].draft)) || A.lote.cases.find(c => (c.stage || 1) === sn); if (c) A.cur = c.n; return renderLote(); }
   if (t.dataset.atab) { A.admTab = t.dataset.atab; return renderAdmin(); }
@@ -5682,10 +5686,7 @@ function dustSnap(W, H, dpr) {
   late.forEach(el => walk(el, null, false));
   return c;
 }
-function dustFx(to) {
-  if (Dust.busy || to === A.view || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let snap; const W = innerWidth, H = innerHeight;
-  try { snap = dustSnap(W, H, Math.min(2, devicePixelRatio || 1)); } catch (e) { console.warn('dust', e); return; }
+function dustRun(snap, W, H) {
   // partículas: muestreo de la pantalla a baja resolución (unas 22 mil en total)
   const st = Math.max(3, Math.ceil(Math.sqrt(W * H / 22000))), cw = Math.ceil(W / st), chh = Math.ceil(H / st);
   const small = document.createElement('canvas'); small.width = cw; small.height = chh; const sg = small.getContext('2d'); sg.imageSmoothingEnabled = true; sg.drawImage(snap, 0, 0, cw, chh);
@@ -5697,7 +5698,7 @@ function dustFx(to) {
   document.body.appendChild(cv);
   const g = cv.getContext('2d'), buf = document.createElement('canvas'); buf.width = W; buf.height = H;
   const bg = buf.getContext('2d'), img = bg.createImageData(W, H), out = new Uint32Array(img.data.buffer), sx = cv.width / W;
-  const MS = 1250, t0 = performance.now(); Dust.busy = true;
+  const MS = 1250, t0 = performance.now();
   const frame = now => {
     const t = Math.min(1, (now - t0) / MS);
     g.clearRect(0, 0, cv.width, cv.height);
@@ -5720,6 +5721,96 @@ function dustFx(to) {
   frame(t0);
 }
 
+/* Transiciones entre pantallas: el usuario elige en Más (o "Ninguna") */
+const FX_LIST = [['none', 'Ninguna', 'Cambio directo, sin animación'], ['dust', 'Desintegración', 'La pantalla se deshace en partículas'], ['choreo', 'Coreografía escalonada', 'Las tarjetas entran en cascada (estilo Apple)'], ['morph', 'Botón que se transforma', 'El botón crece hasta ser la pantalla (estilo Google)'], ['page', 'Pasar la página', 'La hoja se dobla como un libro contable'], ['glass', 'Cristal que se rompe', 'Fragmentos que caen girando'], ['ink', 'Tinta', 'Una mancha verde abre la nueva pantalla'], ['wave', 'Onda expansiva', 'Anillos de luz desde el botón'], ['rain', 'Lluvia de números', 'Caen cifras contables y aparece la nueva'], ['origami', 'Origami', 'La pantalla se pliega en franjas'], ['fade', 'Fundido', 'Se desvanece suavemente']];
+function fxType() { const u = uiGet(); return FX_LIST.some(x => x[0] === u.tr) ? u.tr : 'dust'; }
+const fxE = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function fxCanvas(snap) {
+  const cv = document.createElement('canvas'); cv.id = 'dustcv'; cv.width = snap.width; cv.height = snap.height; cv.setAttribute('aria-hidden', 'true');
+  cv.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:9999;pointer-events:none'; document.body.appendChild(cv);
+  const g = cv.getContext('2d'), k = cv.width / innerWidth; g.setTransform(k, 0, 0, k, 0, 0); return {cv, g, k};
+}
+function fxLoop(ms, draw, done) { const t0 = performance.now(); const fr = now => { const t = Math.min(1, (now - t0) / ms); draw(t); if (t < 1) requestAnimationFrame(fr); else done(); }; requestAnimationFrame(fr); draw(0); }
+function fxEnter(delay = 0) { setTimeout(() => { const v = document.getElementById('view'); if (!v || !v.animate) return; [...v.children].slice(0, 12).forEach((el, i) => el.animate([{opacity: 0, transform: 'translateY(26px) scale(.97)'}, {opacity: 1, transform: 'none'}], {duration: 520, delay: i * 60, easing: 'cubic-bezier(.34,1.56,.64,1)', fill: 'backwards'})); }, delay); }
+function screenFx(to, src, force) {
+  const ty = fxType();
+  if (ty === 'none' || Dust.busy || (!force && to === A.view) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const W = innerWidth, H = innerHeight; let snap;
+  try { snap = dustSnap(W, H, Math.min(2, devicePixelRatio || 1)); } catch (e) { console.warn('fx', e); return; }
+  Dust.busy = true; const off = () => { Dust.busy = false; };
+  if (ty === 'dust') { dustRun(snap, W, H); setTimeout(off, 1300); return; }
+  const r = src && src.getBoundingClientRect ? src.getBoundingClientRect() : {left: W / 2, top: H / 2, width: 0, height: 0, right: W / 2, bottom: H / 2};
+  const ox = r.left + r.width / 2, oy = r.top + r.height / 2, big = Math.hypot(Math.max(ox, W - ox), Math.max(oy, H - oy)) + 30;
+  const {cv, g, k} = fxCanvas(snap), done = () => { cv.remove(); off(); };
+  const img = (sx, sy, sw, sh, dx, dy, dw, dh) => { if (sw > 0 && sh > 0) g.drawImage(snap, sx * k, sy * k, sw * k, sh * k, dx, dy, dw, dh); };
+  const brand = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#0d5c46';
+  const brand2 = getComputedStyle(document.documentElement).getPropertyValue('--brand-2').trim() || '#14805f';
+  const clear = () => g.clearRect(0, 0, W, H);
+  if (ty === 'fade') return fxLoop(380, t => { clear(); g.globalAlpha = 1 - fxE(t); img(0, 0, W, H, 0, 0, W, H); g.globalAlpha = 1; }, done);
+  if (ty === 'choreo') { fxEnter(160); return fxLoop(300, t => { clear(); g.globalAlpha = 1 - t; img(0, 0, W, H, -18 * t, -10 * t, W, H); g.globalAlpha = 1; }, done); }
+  if (ty === 'morph') {
+    const box = document.createElement('div'); box.style.cssText = `position:fixed;z-index:10000;pointer-events:none;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;border-radius:14px;background:linear-gradient(135deg,${brand},${brand2});box-shadow:0 20px 40px rgba(0,0,0,.25)`; document.body.appendChild(box);
+    box.animate([{left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: '14px'}, {left: '0px', top: '0px', width: W + 'px', height: H + 'px', borderRadius: '0px'}], {duration: 420, easing: 'cubic-bezier(.3,0,.1,1)', fill: 'forwards'});
+    setTimeout(() => { cv.remove(); box.animate([{opacity: 1}, {opacity: 0}], {duration: 320, fill: 'forwards'}); fxEnter(0); setTimeout(() => { box.remove(); off(); }, 340); }, 430);
+    return fxLoop(430, t => { clear(); g.globalAlpha = 1 - t * .5; img(0, 0, W, H, W * .03 * t, H * .03 * t, W * (1 - .06 * t), H * (1 - .06 * t)); g.globalAlpha = 1; }, () => {});
+  }
+  if (ty === 'page') return fxLoop(950, t => {
+    clear(); const f = W * (1 - fxE(t)), w = W - f, l = 2 * f - W;
+    img(0, 0, f, H, 0, 0, f, H);
+    if (w > 0 && t < .99) {
+      g.save(); g.beginPath(); g.rect(Math.max(0, l), 0, f - Math.max(0, l), H); g.clip();
+      g.shadowColor = 'rgba(40,25,5,.35)'; g.shadowBlur = 24; g.fillStyle = '#f3e9d3'; g.fillRect(l, 0, w, H); g.shadowBlur = 0;
+      g.globalAlpha = .12; g.save(); g.translate(2 * f, 0); g.scale(-1, 1); img(f, 0, w, H, f, 0, w, H); g.restore(); g.globalAlpha = 1;
+      const gr = g.createLinearGradient(l, 0, f, 0); gr.addColorStop(0, 'rgba(120,95,50,.35)'); gr.addColorStop(.55, 'rgba(245,236,216,.5)'); gr.addColorStop(.92, 'rgba(255,252,242,.9)'); gr.addColorStop(1, 'rgba(190,165,120,.6)'); g.fillStyle = gr; g.fillRect(l, 0, w, H); g.restore();
+      const cs = g.createLinearGradient(f, 0, f + 60, 0); cs.addColorStop(0, 'rgba(40,25,5,.35)'); cs.addColorStop(1, 'rgba(40,25,5,0)'); g.fillStyle = cs; g.fillRect(f, 0, 60, H);
+    }
+  }, done);
+  if (ty === 'glass') {
+    const C = W > 700 ? 7 : 4, Rw = W > 700 ? 5 : 7, P = [];
+    for (let j = 0; j <= Rw; j++) { P.push([]); for (let i = 0; i <= C; i++) P[j].push([i * W / C + (i > 0 && i < C ? (Math.random() - .5) * W / C * .5 : 0), j * H / Rw + (j > 0 && j < Rw ? (Math.random() - .5) * H / Rw * .5 : 0)]); }
+    const T = []; for (let j = 0; j < Rw; j++) for (let i = 0; i < C; i++) { const a = P[j][i], b = P[j][i + 1], c = P[j + 1][i + 1], d = P[j + 1][i]; (Math.random() < .5 ? [[a, b, c], [a, c, d]] : [[a, b, d], [b, c, d]]).forEach(tr => { const mx = (tr[0][0] + tr[1][0] + tr[2][0]) / 3, my = (tr[0][1] + tr[1][1] + tr[2][1]) / 3; T.push({tr, mx, my, dl: Math.hypot(mx - ox, my - oy) / big * .18, vx: (mx - W / 2) * .5 + (Math.random() - .5) * 120, vy: H * (.9 + Math.random() * .5), rot: (Math.random() - .5) * 4, sq: Math.random() * 6}); }); }
+    return fxLoop(1250, t => {
+      clear();
+      T.forEach(s => { const lt = Math.max(0, (t - .12 - s.dl) / (.88 - s.dl)); if (lt >= 1) return; const e = lt * lt;
+        g.save(); g.globalAlpha = 1 - lt * .7; g.translate(s.mx + s.vx * e + (t < .12 ? (s.mx - ox) * .02 * t / .12 : (s.mx - ox) * .02), s.my + s.vy * e + (t < .12 ? (s.my - oy) * .02 * t / .12 : (s.my - oy) * .02)); g.rotate(s.rot * e); g.scale(1, Math.cos(s.sq * e)); g.translate(-s.mx, -s.my);
+        g.beginPath(); s.tr.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); g.save(); g.clip(); img(0, 0, W, H, 0, 0, W, H); g.restore();
+        g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = 1.2; g.stroke(); g.restore(); });
+    }, done);
+  }
+  if (ty === 'ink' || ty === 'wave') {
+    const seeds = Array.from({length: 7}, () => [Math.random() * 6.28, 1 + Math.random() * 4]);
+    const ms = ty === 'ink' ? 950 : 850;
+    return fxLoop(ms, t => {
+      clear(); img(0, 0, W, H, 0, 0, W, H); const e = fxE(t), rad = e * (big + 60);
+      g.beginPath();
+      for (let i = 0; i <= 72; i++) { const a = i / 72 * 6.283; let m = 1; if (ty === 'ink') seeds.forEach(([p, f]) => { m += Math.sin(a * f * 2 + p + t * 3) * .05; }); const rr = rad * m; i ? g.lineTo(ox + Math.cos(a) * rr, oy + Math.sin(a) * rr) : g.moveTo(ox + Math.cos(a) * rr, oy + Math.sin(a) * rr); }
+      g.closePath(); g.globalCompositeOperation = 'destination-out'; g.fill(); g.globalCompositeOperation = 'source-over';
+      if (ty === 'ink') { g.lineWidth = 18 * (1 - t) + 2; g.strokeStyle = brand; g.globalAlpha = .85 * (1 - t * .6); g.stroke(); g.globalAlpha = 1; }
+      else { g.shadowColor = 'rgba(201,164,106,.9)'; g.shadowBlur = 24; g.lineWidth = 4; g.strokeStyle = '#c9a46a'; g.globalAlpha = 1 - t * .5; g.stroke(); g.shadowBlur = 0;
+        for (let i = 1; i <= 3; i++) { const rr = rad + i * 36 * (1 - t) + i * 10; g.beginPath(); g.arc(ox, oy, rr, 0, 6.283); g.lineWidth = 3 - i * .6; g.strokeStyle = i % 2 ? brand2 : '#c9a46a'; g.globalAlpha = (1 - t) * (1 - i * .22); g.stroke(); }
+        g.globalAlpha = 1; }
+    }, done);
+  }
+  if (ty === 'rain') {
+    const cw = W > 700 ? 16 : 13, n = Math.ceil(W / cw), cols = Array.from({length: n}, (_, i) => ({d: Math.random() * .25 + Math.abs(i - n / 2) / n * .15, sp: 1.1 + Math.random() * .5})), ch = '0123456789S/.,-+';
+    return fxLoop(1150, t => {
+      clear(); g.font = `bold ${cw - 1}px ui-monospace,Menlo,monospace`; g.textBaseline = 'top';
+      cols.forEach((c, i) => { const p = Math.max(0, Math.min(1.3, (t - c.d) * c.sp / .75)), hy = p * (H + 120) - 60, cut = Math.max(0, Math.min(H, hy - 40));
+        img(i * cw, cut, cw, H - cut, i * cw, cut, cw, H - cut);
+        for (let q = 0; q < 14; q++) { const yy = hy - q * (cw + 3); if (yy < -20 || yy > H) continue; g.globalAlpha = Math.max(0, 1 - q / 14) * (t > .85 ? (1 - t) / .15 : 1); g.fillStyle = q === 0 ? '#fff4cf' : q < 3 ? '#c9a46a' : brand2; g.fillText(ch[(Math.random() * ch.length) | 0], i * cw + 1, yy); } g.globalAlpha = 1; });
+    }, done);
+  }
+  if (ty === 'origami') {
+    const N = 6, h = H / N;
+    return fxLoop(950, t => {
+      clear();
+      for (let i = 0; i < N; i++) { const p = Math.max(0, Math.min(1, (t - (N - 1 - i) * .08) / .55)); if (p >= 1) continue; const c = Math.cos(p * Math.PI / 2), up = (N - 1 - i) * h * .25 * p, hh = h * c, y0 = i * h - up + (i % 2 ? 0 : h - hh);
+        img(0, i * h, W, h, 0, y0, W, hh); g.fillStyle = `rgba(30,20,5,${.5 * p})`; g.fillRect(0, y0, W, hh); }
+    }, done);
+  }
+  done();
+}
+
 /* Administrador: rellena el caso con la respuesta correcta (para revisar o preparar la clase) */
 function adminFill() {
   const c = caseByN(A.cur), key = A.li.id + ':' + c.n;
@@ -5733,6 +5824,7 @@ function adminFill() {
   }
   toast('Respuesta correcta colocada. Toca Revisar para registrarla.');
 }
+document.addEventListener('click', e => { const b = e.target.closest('[data-trx]'); if (!b) return; const u = uiGet(); u.tr = b.dataset.trx; uiSet(u); if (u.tr === 'none') { renderMas(); return toast('Sin transición'); } const y = scrollY; screenFx('mas', b, true); renderMas(); window.scrollTo(0, y); });
 /* ===================== Ranking ===================== */
 async function renderRanking() {
   A.view = 'ranking'; setNavOn('ranking');
